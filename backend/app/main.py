@@ -2,7 +2,7 @@ from app.routes.health_routes import health_router
 from app.routes.auth_routes import auth_router
 from fastapi import FastAPI
 
-app = FastAPI()
+app = FastAPI(title="ZETTA", description="DOCS API ZETTA")
 
 
 app.include_router(health_router, tags=["Health"])
