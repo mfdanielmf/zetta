@@ -4,5 +4,5 @@ health_router = APIRouter()
 
 
 @health_router.get("/")
-async def health():
+def health():
     return {"msg": "OK"}
