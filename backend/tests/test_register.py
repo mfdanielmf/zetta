@@ -5,6 +5,7 @@ from app.main import app
 from unittest.mock import patch
 
 from app.models.user import User
+from app.models.exceptions import NombreYaUsadoException, CorreoYaUsadoException
 
 
 client = TestClient(app)
@@ -46,8 +47,8 @@ def test_insertar_usuario_nombre_usado():
     }
 
     with patch("app.routes.auth_routes.crear_usuario") as mock_crear_usuario:
-        mock_crear_usuario.side_effect = HTTPException(
-            status_code=400, detail=f"Ya se ha encontrado un usuario con nombre {data['nombre']}")
+        mock_crear_usuario.side_effect = NombreYaUsadoException(
+            f"Ya se ha encontrado un usuario con nombre {data['nombre']}")
         response = client.post("/auth/register", json=data)
 
     assert response.status_code == 400
@@ -64,8 +65,8 @@ def test_insertar_usuario_correo_usado():
     }
 
     with patch("app.routes.auth_routes.crear_usuario") as mock_crear_usuario:
-        mock_crear_usuario.side_effect = HTTPException(
-            status_code=400, detail=f"Ya se ha encontrado un usuario con el correo {data['correo']}")
+        mock_crear_usuario.side_effect = CorreoYaUsadoException(
+            f"Ya se ha encontrado un usuario con el correo {data['correo']}")
         response = client.post("/auth/register", json=data)
 
     assert response.status_code == 400
