@@ -1,7 +1,6 @@
-import datetime
 import uuid
 from app.database.db import Base
-from sqlalchemy import UUID, Column, DateTime, String
+from sqlalchemy import UUID, Column, DateTime, String, func
 
 
 class User(Base):
@@ -11,4 +10,4 @@ class User(Base):
     nombre = Column(String(20), nullable=False, unique=True)
     correo = Column(String(120), nullable=False, unique=True)
     contraseña = Column(String, nullable=False)
-    fecha_creacion = Column(DateTime, default=datetime.UTC)
+    fecha_creacion = Column(DateTime, default=func.now())
