@@ -2,12 +2,14 @@ services:
   api:
     build: .
     container_name: backend-dev
+    env_file:
+      - .env
     ports:
       - "8080:8080"
     depends_on:
       - db
     volumes:
-      - ./app:/app/app
+      - ./:/app
 
     #Override config prod
     command: >
