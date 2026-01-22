@@ -17,3 +17,7 @@ class TokenData(BaseModel):
     id: uuid.UUID
     nombre: str
     correo: str
+
+
+class LoginResponse(RegisterResponse):
+    pass

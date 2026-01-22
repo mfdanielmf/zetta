@@ -11,7 +11,7 @@ from app.schemas.auth_schemas import LoginRequest, TokenData
 from app.models.exceptions import ContraseñaIncorrectaException
 
 
-def login_usuario(usuario_req: LoginRequest, db: Session) -> str:
+def login_usuario(usuario_req: LoginRequest, db: Session) -> tuple[str, User]:
     """
     UsuarioNoEncontradoException, ContraseñaIncorrectaException
     """
@@ -28,7 +28,7 @@ def login_usuario(usuario_req: LoginRequest, db: Session) -> str:
 
     token: str = generar_access_token(token_data)
 
-    return token
+    return token, usuario
 
 
 def generar_access_token(data: TokenData):
