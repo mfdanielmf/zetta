@@ -7,6 +7,7 @@ click==8.3.1
 colorama==0.4.6
 coverage==7.13.1
 dnspython==2.8.0
+ecdsa==0.19.1
 email-validator==2.3.0
 fastapi==0.128.0
 fastapi-cli==0.0.20
@@ -26,6 +27,7 @@ mdurl==0.1.2
 packaging==25.0
 pluggy==1.6.0
 psycopg2-binary==2.9.11
+pyasn1==0.6.2
 pydantic==2.12.5
 pydantic-extra-types==2.11.0
 pydantic-settings==2.12.0
@@ -34,13 +36,16 @@ Pygments==2.19.2
 pytest==9.0.2
 pytest-cov==7.0.0
 python-dotenv==1.2.1
+python-jose==3.5.0
 python-multipart==0.0.21
 PyYAML==6.0.3
 rich==14.2.0
 rich-toolkit==0.17.1
 rignore==0.7.6
+rsa==4.9.1
 sentry-sdk==2.49.0
 shellingham==1.5.4
+six==1.17.0
 SQLAlchemy==2.0.45
 starlette==0.50.0
 typer==0.21.1
