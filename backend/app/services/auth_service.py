@@ -47,7 +47,7 @@ def generar_access_token(data: TokenData):
     return encoded_jwt
 
 
-async def obtener_usuario_jwt(token: str, db: Session) -> User:
+def obtener_usuario_jwt(token: str, db: Session) -> User:
     """
     UsuarioNoEncontradoException, UsuarioNoAutenticadoException
     """

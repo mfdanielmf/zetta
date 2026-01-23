@@ -25,3 +25,7 @@ class LoginResponse(RegisterResponse):
 
 class MeResponse(BaseModel):
     usuario: UserReturn
+
+
+class LogoutResponse(BaseModel):
+    msg: str
