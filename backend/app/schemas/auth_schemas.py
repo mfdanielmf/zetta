@@ -21,3 +21,7 @@ class TokenData(BaseModel):
 
 class LoginResponse(RegisterResponse):
     pass
+
+
+class MeResponse(BaseModel):
+    usuario: UserReturn

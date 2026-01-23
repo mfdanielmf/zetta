@@ -7,8 +7,11 @@ class CorreoYaUsadoException(Exception):
     pass
 
 
-# USUARIOS
+class UsuarioNoAutenticadoException(Exception):
+    pass
 
+
+# USUARIOS
 class UsuarioNoEncontradoException(Exception):
     pass
 
