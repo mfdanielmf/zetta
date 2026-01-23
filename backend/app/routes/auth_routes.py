@@ -6,7 +6,7 @@ from app.database.db import get_db
 from app.models.user import User
 from app.models.exceptions import CorreoYaUsadoException, NombreYaUsadoException, UsuarioNoEncontradoException, ContraseñaIncorrectaException, UsuarioNoAutenticadoException
 from app.schemas.user_schemas import UserCreate, UserReturn
-from app.schemas.auth_schemas import RegisterResponse, LoginRequest, LoginResponse, MeResponse
+from app.schemas.auth_schemas import RegisterResponse, LoginRequest, LoginResponse, MeResponse, LogoutResponse
 from app.services.user_service import crear_usuario
 from app.services.auth_service import login_usuario, obtener_usuario_jwt
 
@@ -49,14 +49,14 @@ def login(usuario_req: LoginRequest, db: Session = Depends(get_db)):
 
 
 @auth_router.get("/me", response_model=MeResponse)
-async def me(request: Request, db=Depends(get_db)):
+def me(request: Request, db=Depends(get_db)):
     token = request.cookies.get("access_token")
 
     if not token:
         raise HTTPException(status_code=401, detail="Usuario no autenticado")
 
     try:
-        usuario: User = await obtener_usuario_jwt(token=token, db=db)
+        usuario: User = obtener_usuario_jwt(token=token, db=db)
 
         return {
             "usuario": UserReturn.model_validate(usuario)
@@ -66,3 +66,13 @@ async def me(request: Request, db=Depends(get_db)):
             status_code=404, detail="No se ha encontrado el usuario")
     except UsuarioNoAutenticadoException:
         raise HTTPException(status_code=400, detail="Token incorrecto")
+
+
+@auth_router.post("/logout", response_model=LogoutResponse)
+def logout():
+    response = JSONResponse(content={
+        "msg": "Sesión cerrada con éxito"
+    })
+    response.delete_cookie("access_token")
+
+    return response
