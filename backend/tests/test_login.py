@@ -3,7 +3,6 @@ from fastapi.testclient import TestClient
 from app.main import app
 from unittest.mock import patch
 from app.models.exceptions import UsuarioNoEncontradoException, ContraseñaIncorrectaException
-from app.models.user import User
 
 client = TestClient(app)
 
