@@ -8,24 +8,11 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.models.user import User
+from app.models.file import File
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-
-# POSTGRES_USER = os.getenv("POSTGRES_USER")
-# POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-# POSTGRES_DB = os.getenv("POSTGRES_DB")
-# POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-# POSTGRES_PORT = os.getenv("POSTGRES_PORT")
-
-# DATABASE_URL = (
-#     f"postgresql://{POSTGRES_USER}:"
-#     f"{POSTGRES_PASSWORD}@"
-#     f"{POSTGRES_HOST}:"
-#     f"{POSTGRES_PORT}/"
-#     f"{POSTGRES_DB}"
-# )
 
 config.set_main_option("sqlalchemy.url", configuracion.DATABASE_URL)
 

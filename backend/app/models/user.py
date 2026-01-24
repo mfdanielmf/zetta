@@ -1,6 +1,7 @@
 import uuid
 from app.database.db import Base
 from sqlalchemy import UUID, Column, DateTime, String, func
+from sqlalchemy.orm import relationship
 
 
 class User(Base):
@@ -11,3 +12,6 @@ class User(Base):
     correo = Column(String(120), nullable=False, unique=True)
     contraseña = Column(String, nullable=False)
     fecha_creacion = Column(DateTime, default=func.now())
+
+    archivos = relationship(
+        "File", back_populates="usuario", passive_deletes=True)
