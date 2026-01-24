@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 from app.config import config
 
 from app.models.user import User
-from app.services.user_service import comprobar_hash_contraseña, obtener_usuario_nombre
+from app.services.user_services import comprobar_hash_contraseña, obtener_usuario_nombre
 from app.schemas.auth_schemas import LoginRequest, TokenData
 from app.models.exceptions import UsuarioNoEncontradoException, ContraseñaIncorrectaException, UsuarioNoAutenticadoException
 
