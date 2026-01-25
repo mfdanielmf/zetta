@@ -38,3 +38,9 @@ def test_subir_archivo():
     assert archivo_response.archivo.nombre_original == archivo_falso.nombre_original
     assert archivo_response.archivo.path == archivo_falso.path
     assert archivo_response.archivo.id_usuario == archivo_falso.id_usuario
+
+
+def test_subir_sin_archivo():
+    response = client.post("/api/files")
+
+    assert response.status_code == 422
