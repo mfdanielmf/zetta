@@ -1,13 +1,15 @@
 
 from datetime import datetime, timedelta, timezone
 import uuid
+from fastapi import Cookie, Depends, HTTPException
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 
 from app.config import config
 
+from app.database.db import get_db
 from app.models.user import User
-from app.services.user_service import comprobar_hash_contraseña, obtener_usuario_nombre
+from app.services.user_services import comprobar_hash_contraseña, obtener_usuario_nombre
 from app.schemas.auth_schemas import LoginRequest, TokenData
 from app.models.exceptions import UsuarioNoEncontradoException, ContraseñaIncorrectaException, UsuarioNoAutenticadoException
 
@@ -51,7 +53,6 @@ def obtener_usuario_jwt(token: str, db: Session) -> User:
     """
     UsuarioNoEncontradoException, UsuarioNoAutenticadoException
     """
-
     try:
         payload = jwt.decode(token, config.JWT_SECRET_KEY,
                              algorithms=[config.ALGORITHM])
@@ -69,3 +70,23 @@ def obtener_usuario_jwt(token: str, db: Session) -> User:
     user: User = obtener_usuario_nombre(nombre=token_data.nombre, db=db)
 
     return user
+
+
+# Middleware para inyectar en las rutas
+def get_current_user(db: Session = Depends(get_db), access_token: str = Cookie(None)) -> User:
+    """
+    HTTPException
+    """
+    if access_token is None:
+        raise HTTPException(
+            401,
+            detail="No se proporcionó token"
+        )
+
+    try:
+        return obtener_usuario_jwt(access_token, db)
+    except UsuarioNoEncontradoException:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    except UsuarioNoAutenticadoException:
+        raise HTTPException(
+            status_code=401, detail="Token incorrecto o expirado")

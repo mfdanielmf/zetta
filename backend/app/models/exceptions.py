@@ -18,3 +18,17 @@ class UsuarioNoEncontradoException(Exception):
 
 class ContraseñaIncorrectaException(Exception):
     pass
+
+
+# ARCHIVOS
+class TamañoExcedidoException(Exception):
+    pass
+
+
+class ArchivoNoEncontradoException(Exception):
+    pass
+
+
+# GENERAL
+class IdYaUsadaException(Exception):
+    pass

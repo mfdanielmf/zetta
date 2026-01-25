@@ -7,8 +7,8 @@ from app.models.user import User
 from app.models.exceptions import CorreoYaUsadoException, NombreYaUsadoException, UsuarioNoEncontradoException, ContraseñaIncorrectaException, UsuarioNoAutenticadoException
 from app.schemas.user_schemas import UserCreate, UserReturn
 from app.schemas.auth_schemas import RegisterResponse, LoginRequest, LoginResponse, MeResponse, LogoutResponse
-from app.services.user_service import crear_usuario
-from app.services.auth_service import login_usuario, obtener_usuario_jwt
+from app.services.user_services import crear_usuario
+from app.services.auth_services import login_usuario, obtener_usuario_jwt
 
 auth_router = APIRouter()
 
@@ -49,7 +49,7 @@ def login(usuario_req: LoginRequest, db: Session = Depends(get_db)):
 
 
 @auth_router.get("/me", response_model=MeResponse)
-def me(request: Request, db=Depends(get_db)):
+def me(request: Request, db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
 
     if not token:
