@@ -14,7 +14,7 @@ def test_me_sin_token():
 
 
 def test_me_token_incorrecto():
-    response = client.get("auth/me", cookies={"access_token": "wwww"})
+    response = client.get("/auth/me", cookies={"access_token": "wwww"})
 
     assert response.status_code == 400
     assert response.json() == {

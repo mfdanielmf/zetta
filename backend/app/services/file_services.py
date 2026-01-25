@@ -5,6 +5,7 @@ from fastapi import UploadFile
 from sqlalchemy.orm import Session
 from app.models.exceptions import TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException
 from app.models.file import File
+from app.models.user import User
 from app.repositories.file_repo import insert_file_db, get_file_by_id
 
 UPLOAD_DIR = Path("uploads")
@@ -25,7 +26,7 @@ def obtener_archivo_id(id: uuid.UUID, db: Session) -> File:
     return archivo
 
 
-async def guardar_archivo(file_upload: UploadFile, db: Session) -> File:
+async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -> File:
     """
     TamañoExcedidoException, IdYaUsadaException
     """
@@ -36,7 +37,7 @@ async def guardar_archivo(file_upload: UploadFile, db: Session) -> File:
             f"Has excedido el tamaño máximo de subida")
 
     archivo_db, file_path = añadir_archivo_db(
-        nombre_original=file_upload.filename, db=db)
+        nombre_original=file_upload.filename, db=db, usuario=usuario)
 
     with file_path.open("wb") as f:
         f.write(data)
@@ -44,7 +45,7 @@ async def guardar_archivo(file_upload: UploadFile, db: Session) -> File:
     return archivo_db
 
 
-def añadir_archivo_db(nombre_original: str, db: Session) -> tuple[File, str]:
+def añadir_archivo_db(nombre_original: str, db: Session, usuario: User) -> tuple[File, str]:
     """
     IdYaUsadaException
     """
@@ -59,9 +60,8 @@ def añadir_archivo_db(nombre_original: str, db: Session) -> tuple[File, str]:
 
     file_path = UPLOAD_DIR / f"{str(id)}.{extension}"
 
-    # -------------- ID USUARIO TEMPORAL DE PRUEBA (reicibirla de token después) -------------------
     archivo: File = File(id=id, nombre_original=nombre_original,
-                         path=str(file_path), id_usuario="1029855d-bae1-4787-982c-08800ccbeaef")
+                         path=str(file_path), id_usuario=usuario.id)
 
     archivo_db: File = insert_file_db(archivo=archivo, db=db)
 

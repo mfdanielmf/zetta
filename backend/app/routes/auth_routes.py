@@ -35,7 +35,7 @@ def login(usuario_req: LoginRequest, db: Session = Depends(get_db)):
 
         response = JSONResponse(content={
             "msg": "Sesión iniciada correctamente",
-            "usuario": UserReturn.model_validate(usuario)
+            "usuario": UserReturn.model_validate(usuario).model_dump(mode="json")
         })
 
         response.set_cookie(key="access_token", value=token, samesite="lax",
@@ -49,7 +49,7 @@ def login(usuario_req: LoginRequest, db: Session = Depends(get_db)):
 
 
 @auth_router.get("/me", response_model=MeResponse)
-def me(request: Request, db=Depends(get_db)):
+def me(request: Request, db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
 
     if not token:
