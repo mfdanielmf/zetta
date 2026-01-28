@@ -7,6 +7,7 @@ export default defineConfig({
       target: 'src/api/backend.api.ts',
       schemas: 'src/api/model',
       client: 'vue-query',
+      httpClient: 'axios',
       override: {
         mutator: {
           path: "src/api/axios.config.ts",

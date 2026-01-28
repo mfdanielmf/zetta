@@ -19,6 +19,7 @@ import type {
 } from '@tanstack/vue-query'
 
 import { unref } from 'vue'
+import type { MaybeRef } from 'vue'
 
 import type {
   BodyUploadFileApiFilesPost,
@@ -33,32 +34,12 @@ import type {
 } from './model'
 
 import { customInstance } from './axios.config'
-import type { BodyType } from './axios.config'
-
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
  * @summary Health
  */
-export type healthGetResponse200 = {
-  data: unknown
-  status: 200
-}
-
-export type healthGetResponseSuccess = healthGetResponse200 & {
-  headers: Headers
-}
-export type healthGetResponse = healthGetResponseSuccess
-
-export const getHealthGetUrl = () => {
-  return `/`
-}
-
-export const healthGet = async (options?: RequestInit): Promise<healthGetResponse> => {
-  return customInstance<healthGetResponse>(getHealthGetUrl(), {
-    ...options,
-    method: 'GET',
-  })
+export const healthGet = (signal?: AbortSignal) => {
+  return customInstance<unknown>({ url: `/`, method: 'GET', signal })
 }
 
 export const getHealthGetQueryKey = () => {
@@ -70,14 +51,13 @@ export const getHealthGetQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof healthGet>>, TError, TData>>
-  request?: SecondParameter<typeof customInstance>
 }) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions } = options ?? {}
 
   const queryKey = getHealthGetQueryKey()
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof healthGet>>> = ({ signal }) =>
-    healthGet({ signal, ...requestOptions })
+    healthGet(signal)
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof healthGet>>,
@@ -96,7 +76,6 @@ export type HealthGetQueryError = unknown
 export function useHealthGet<TData = Awaited<ReturnType<typeof healthGet>>, TError = unknown>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof healthGet>>, TError, TData>>
-    request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient,
 ): UseQueryReturnType<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -114,40 +93,18 @@ export function useHealthGet<TData = Awaited<ReturnType<typeof healthGet>>, TErr
 /**
  * @summary Register
  */
-export type registerAuthRegisterPostResponse200 = {
-  data: RegisterResponse
-  status: 200
-}
+export const registerAuthRegisterPost = (
+  userCreate: MaybeRef<UserCreate>,
+  signal?: AbortSignal,
+) => {
+  userCreate = unref(userCreate)
 
-export type registerAuthRegisterPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type registerAuthRegisterPostResponseSuccess = registerAuthRegisterPostResponse200 & {
-  headers: Headers
-}
-export type registerAuthRegisterPostResponseError = registerAuthRegisterPostResponse422 & {
-  headers: Headers
-}
-
-export type registerAuthRegisterPostResponse =
-  | registerAuthRegisterPostResponseSuccess
-  | registerAuthRegisterPostResponseError
-
-export const getRegisterAuthRegisterPostUrl = () => {
-  return `/auth/register`
-}
-
-export const registerAuthRegisterPost = async (
-  userCreate: UserCreate,
-  options?: RequestInit,
-): Promise<registerAuthRegisterPostResponse> => {
-  return customInstance<registerAuthRegisterPostResponse>(getRegisterAuthRegisterPostUrl(), {
-    ...options,
+  return customInstance<RegisterResponse>({
+    url: `/auth/register`,
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(userCreate),
+    headers: { 'Content-Type': 'application/json' },
+    data: userCreate,
+    signal,
   })
 }
 
@@ -158,30 +115,29 @@ export const getRegisterAuthRegisterPostMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof registerAuthRegisterPost>>,
     TError,
-    { data: BodyType<UserCreate> },
+    { data: UserCreate },
     TContext
   >
-  request?: SecondParameter<typeof customInstance>
 }): UseMutationOptions<
   Awaited<ReturnType<typeof registerAuthRegisterPost>>,
   TError,
-  { data: BodyType<UserCreate> },
+  { data: UserCreate },
   TContext
 > => {
   const mutationKey = ['registerAuthRegisterPost']
-  const { mutation: mutationOptions, request: requestOptions } = options
+  const { mutation: mutationOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey } }
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof registerAuthRegisterPost>>,
-    { data: BodyType<UserCreate> }
+    { data: UserCreate }
   > = (props) => {
     const { data } = props ?? {}
 
-    return registerAuthRegisterPost(data, requestOptions)
+    return registerAuthRegisterPost(data)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -190,7 +146,7 @@ export const getRegisterAuthRegisterPostMutationOptions = <
 export type RegisterAuthRegisterPostMutationResult = NonNullable<
   Awaited<ReturnType<typeof registerAuthRegisterPost>>
 >
-export type RegisterAuthRegisterPostMutationBody = BodyType<UserCreate>
+export type RegisterAuthRegisterPostMutationBody = UserCreate
 export type RegisterAuthRegisterPostMutationError = HTTPValidationError
 
 /**
@@ -201,16 +157,15 @@ export const useRegisterAuthRegisterPost = <TError = HTTPValidationError, TConte
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof registerAuthRegisterPost>>,
       TError,
-      { data: BodyType<UserCreate> },
+      { data: UserCreate },
       TContext
     >
-    request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient,
 ): UseMutationReturnType<
   Awaited<ReturnType<typeof registerAuthRegisterPost>>,
   TError,
-  { data: BodyType<UserCreate> },
+  { data: UserCreate },
   TContext
 > => {
   return useMutation(getRegisterAuthRegisterPostMutationOptions(options), queryClient)
@@ -219,40 +174,15 @@ export const useRegisterAuthRegisterPost = <TError = HTTPValidationError, TConte
 /**
  * @summary Login
  */
-export type loginAuthLoginPostResponse200 = {
-  data: LoginResponse
-  status: 200
-}
+export const loginAuthLoginPost = (loginRequest: MaybeRef<LoginRequest>, signal?: AbortSignal) => {
+  loginRequest = unref(loginRequest)
 
-export type loginAuthLoginPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type loginAuthLoginPostResponseSuccess = loginAuthLoginPostResponse200 & {
-  headers: Headers
-}
-export type loginAuthLoginPostResponseError = loginAuthLoginPostResponse422 & {
-  headers: Headers
-}
-
-export type loginAuthLoginPostResponse =
-  | loginAuthLoginPostResponseSuccess
-  | loginAuthLoginPostResponseError
-
-export const getLoginAuthLoginPostUrl = () => {
-  return `/auth/login`
-}
-
-export const loginAuthLoginPost = async (
-  loginRequest: LoginRequest,
-  options?: RequestInit,
-): Promise<loginAuthLoginPostResponse> => {
-  return customInstance<loginAuthLoginPostResponse>(getLoginAuthLoginPostUrl(), {
-    ...options,
+  return customInstance<LoginResponse>({
+    url: `/auth/login`,
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(loginRequest),
+    headers: { 'Content-Type': 'application/json' },
+    data: loginRequest,
+    signal,
   })
 }
 
@@ -263,30 +193,29 @@ export const getLoginAuthLoginPostMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof loginAuthLoginPost>>,
     TError,
-    { data: BodyType<LoginRequest> },
+    { data: LoginRequest },
     TContext
   >
-  request?: SecondParameter<typeof customInstance>
 }): UseMutationOptions<
   Awaited<ReturnType<typeof loginAuthLoginPost>>,
   TError,
-  { data: BodyType<LoginRequest> },
+  { data: LoginRequest },
   TContext
 > => {
   const mutationKey = ['loginAuthLoginPost']
-  const { mutation: mutationOptions, request: requestOptions } = options
+  const { mutation: mutationOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey } }
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof loginAuthLoginPost>>,
-    { data: BodyType<LoginRequest> }
+    { data: LoginRequest }
   > = (props) => {
     const { data } = props ?? {}
 
-    return loginAuthLoginPost(data, requestOptions)
+    return loginAuthLoginPost(data)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -295,7 +224,7 @@ export const getLoginAuthLoginPostMutationOptions = <
 export type LoginAuthLoginPostMutationResult = NonNullable<
   Awaited<ReturnType<typeof loginAuthLoginPost>>
 >
-export type LoginAuthLoginPostMutationBody = BodyType<LoginRequest>
+export type LoginAuthLoginPostMutationBody = LoginRequest
 export type LoginAuthLoginPostMutationError = HTTPValidationError
 
 /**
@@ -306,16 +235,15 @@ export const useLoginAuthLoginPost = <TError = HTTPValidationError, TContext = u
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof loginAuthLoginPost>>,
       TError,
-      { data: BodyType<LoginRequest> },
+      { data: LoginRequest },
       TContext
     >
-    request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient,
 ): UseMutationReturnType<
   Awaited<ReturnType<typeof loginAuthLoginPost>>,
   TError,
-  { data: BodyType<LoginRequest> },
+  { data: LoginRequest },
   TContext
 > => {
   return useMutation(getLoginAuthLoginPostMutationOptions(options), queryClient)
@@ -324,25 +252,8 @@ export const useLoginAuthLoginPost = <TError = HTTPValidationError, TContext = u
 /**
  * @summary Me
  */
-export type meAuthMeGetResponse200 = {
-  data: MeResponse
-  status: 200
-}
-
-export type meAuthMeGetResponseSuccess = meAuthMeGetResponse200 & {
-  headers: Headers
-}
-export type meAuthMeGetResponse = meAuthMeGetResponseSuccess
-
-export const getMeAuthMeGetUrl = () => {
-  return `/auth/me`
-}
-
-export const meAuthMeGet = async (options?: RequestInit): Promise<meAuthMeGetResponse> => {
-  return customInstance<meAuthMeGetResponse>(getMeAuthMeGetUrl(), {
-    ...options,
-    method: 'GET',
-  })
+export const meAuthMeGet = (signal?: AbortSignal) => {
+  return customInstance<MeResponse>({ url: `/auth/me`, method: 'GET', signal })
 }
 
 export const getMeAuthMeGetQueryKey = () => {
@@ -354,14 +265,13 @@ export const getMeAuthMeGetQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meAuthMeGet>>, TError, TData>>
-  request?: SecondParameter<typeof customInstance>
 }) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions } = options ?? {}
 
   const queryKey = getMeAuthMeGetQueryKey()
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof meAuthMeGet>>> = ({ signal }) =>
-    meAuthMeGet({ signal, ...requestOptions })
+    meAuthMeGet(signal)
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof meAuthMeGet>>,
@@ -380,7 +290,6 @@ export type MeAuthMeGetQueryError = unknown
 export function useMeAuthMeGet<TData = Awaited<ReturnType<typeof meAuthMeGet>>, TError = unknown>(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof meAuthMeGet>>, TError, TData>>
-    request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient,
 ): UseQueryReturnType<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -398,27 +307,8 @@ export function useMeAuthMeGet<TData = Awaited<ReturnType<typeof meAuthMeGet>>, 
 /**
  * @summary Logout
  */
-export type logoutAuthLogoutPostResponse200 = {
-  data: LogoutResponse
-  status: 200
-}
-
-export type logoutAuthLogoutPostResponseSuccess = logoutAuthLogoutPostResponse200 & {
-  headers: Headers
-}
-export type logoutAuthLogoutPostResponse = logoutAuthLogoutPostResponseSuccess
-
-export const getLogoutAuthLogoutPostUrl = () => {
-  return `/auth/logout`
-}
-
-export const logoutAuthLogoutPost = async (
-  options?: RequestInit,
-): Promise<logoutAuthLogoutPostResponse> => {
-  return customInstance<logoutAuthLogoutPostResponse>(getLogoutAuthLogoutPostUrl(), {
-    ...options,
-    method: 'POST',
-  })
+export const logoutAuthLogoutPost = (signal?: AbortSignal) => {
+  return customInstance<LogoutResponse>({ url: `/auth/logout`, method: 'POST', signal })
 }
 
 export const getLogoutAuthLogoutPostMutationOptions = <
@@ -431,7 +321,6 @@ export const getLogoutAuthLogoutPostMutationOptions = <
     void,
     TContext
   >
-  request?: SecondParameter<typeof customInstance>
 }): UseMutationOptions<
   Awaited<ReturnType<typeof logoutAuthLogoutPost>>,
   TError,
@@ -439,17 +328,17 @@ export const getLogoutAuthLogoutPostMutationOptions = <
   TContext
 > => {
   const mutationKey = ['logoutAuthLogoutPost']
-  const { mutation: mutationOptions, request: requestOptions } = options
+  const { mutation: mutationOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey } }
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof logoutAuthLogoutPost>>,
     void
   > = () => {
-    return logoutAuthLogoutPost(requestOptions)
+    return logoutAuthLogoutPost()
   }
 
   return { mutationFn, ...mutationOptions }
@@ -472,7 +361,6 @@ export const useLogoutAuthLogoutPost = <TError = unknown, TContext = unknown>(
       void,
       TContext
     >
-    request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient,
 ): UseMutationReturnType<
@@ -487,42 +375,20 @@ export const useLogoutAuthLogoutPost = <TError = unknown, TContext = unknown>(
 /**
  * @summary Upload File
  */
-export type uploadFileApiFilesPostResponse200 = {
-  data: FileResponse
-  status: 200
-}
-
-export type uploadFileApiFilesPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-
-export type uploadFileApiFilesPostResponseSuccess = uploadFileApiFilesPostResponse200 & {
-  headers: Headers
-}
-export type uploadFileApiFilesPostResponseError = uploadFileApiFilesPostResponse422 & {
-  headers: Headers
-}
-
-export type uploadFileApiFilesPostResponse =
-  | uploadFileApiFilesPostResponseSuccess
-  | uploadFileApiFilesPostResponseError
-
-export const getUploadFileApiFilesPostUrl = () => {
-  return `/api/files/`
-}
-
-export const uploadFileApiFilesPost = async (
-  bodyUploadFileApiFilesPost: BodyUploadFileApiFilesPost,
-  options?: RequestInit,
-): Promise<uploadFileApiFilesPostResponse> => {
+export const uploadFileApiFilesPost = (
+  bodyUploadFileApiFilesPost: MaybeRef<BodyUploadFileApiFilesPost>,
+  signal?: AbortSignal,
+) => {
+  bodyUploadFileApiFilesPost = unref(bodyUploadFileApiFilesPost)
   const formData = new FormData()
   formData.append(`file_upload`, bodyUploadFileApiFilesPost.file_upload)
 
-  return customInstance<uploadFileApiFilesPostResponse>(getUploadFileApiFilesPostUrl(), {
-    ...options,
+  return customInstance<FileResponse>({
+    url: `/api/files/`,
     method: 'POST',
-    body: formData,
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: formData,
+    signal,
   })
 }
 
@@ -533,30 +399,29 @@ export const getUploadFileApiFilesPostMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof uploadFileApiFilesPost>>,
     TError,
-    { data: BodyType<BodyUploadFileApiFilesPost> },
+    { data: BodyUploadFileApiFilesPost },
     TContext
   >
-  request?: SecondParameter<typeof customInstance>
 }): UseMutationOptions<
   Awaited<ReturnType<typeof uploadFileApiFilesPost>>,
   TError,
-  { data: BodyType<BodyUploadFileApiFilesPost> },
+  { data: BodyUploadFileApiFilesPost },
   TContext
 > => {
   const mutationKey = ['uploadFileApiFilesPost']
-  const { mutation: mutationOptions, request: requestOptions } = options
+  const { mutation: mutationOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey } }
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof uploadFileApiFilesPost>>,
-    { data: BodyType<BodyUploadFileApiFilesPost> }
+    { data: BodyUploadFileApiFilesPost }
   > = (props) => {
     const { data } = props ?? {}
 
-    return uploadFileApiFilesPost(data, requestOptions)
+    return uploadFileApiFilesPost(data)
   }
 
   return { mutationFn, ...mutationOptions }
@@ -565,7 +430,7 @@ export const getUploadFileApiFilesPostMutationOptions = <
 export type UploadFileApiFilesPostMutationResult = NonNullable<
   Awaited<ReturnType<typeof uploadFileApiFilesPost>>
 >
-export type UploadFileApiFilesPostMutationBody = BodyType<BodyUploadFileApiFilesPost>
+export type UploadFileApiFilesPostMutationBody = BodyUploadFileApiFilesPost
 export type UploadFileApiFilesPostMutationError = HTTPValidationError
 
 /**
@@ -576,16 +441,15 @@ export const useUploadFileApiFilesPost = <TError = HTTPValidationError, TContext
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof uploadFileApiFilesPost>>,
       TError,
-      { data: BodyType<BodyUploadFileApiFilesPost> },
+      { data: BodyUploadFileApiFilesPost },
       TContext
     >
-    request?: SecondParameter<typeof customInstance>
   },
   queryClient?: QueryClient,
 ): UseMutationReturnType<
   Awaited<ReturnType<typeof uploadFileApiFilesPost>>,
   TError,
-  { data: BodyType<BodyUploadFileApiFilesPost> },
+  { data: BodyUploadFileApiFilesPost },
   TContext
 > => {
   return useMutation(getUploadFileApiFilesPostMutationOptions(options), queryClient)
