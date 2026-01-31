@@ -16,8 +16,12 @@ export const useAuthStore = defineStore('auth-store', () => {
     try {
       const req = await authApi.registrarUsuario(data)
 
-      usuario.value = req.data
+      toast.success(req.data.msg || 'Usuario registrado correctamente')
+
+      usuario.value = req.data.usuario
       logueado.value = true
+
+      return true //Hacer push a la ruta de login
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         toast.error(e.response?.data?.detail || 'Ocurrió un error inesperado al registrarse', {
@@ -31,6 +35,8 @@ export const useAuthStore = defineStore('auth-store', () => {
 
       usuario.value = null
       logueado.value = false
+
+      return false // No hacer push a login
     } finally {
       cargando.value = false
     }
