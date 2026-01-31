@@ -4,10 +4,18 @@ from app.routes.health_routes import health_router
 from app.routes.auth_routes import auth_router
 from app.routes.file_routes import file_router
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="ZETTA", description="DOCS API ZETTA")
 
-# MODELOS DB
+# Config temporal
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # RUTAS
 app.include_router(health_router, tags=["Health"])
