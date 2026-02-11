@@ -11,7 +11,7 @@ import * as zod from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useField, useForm } from 'vee-validate'
 import { useAuthStore } from '@/stores/auth.store'
-import type { UserRequest } from '@/api/types/types'
+import type { LoginRequest } from '@/api/types/types'
 import { useRouter } from 'vue-router'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
 
@@ -27,34 +27,23 @@ const schema = toTypedSchema(
         .min(1, 'Este campo es obligatorio')
         .min(4, 'Mínimo 4 caracteres')
         .max(20, 'Máximo 20 caracteres'),
-      correo: zod.string().min(1, 'Este campo es obligatorio').email('Correo incorrecto'),
       contraseña: zod.string().min(1, 'Este campo es obligatorio').min(6, 'Mínimo 6 caracteres'),
-      contraseña_repetir: zod.string().min(1, 'Este campo es obligatorio'),
     })
-    .refine((data) => data.contraseña === data.contraseña_repetir, {
-      message: 'Las contraseñas no coinciden',
-      path: ['contraseña_repetir'],
-    }),
 )
 
 const { handleSubmit, errors } = useForm({ validationSchema: schema })
 
 const { value: nombre } = useField('nombre', undefined, { initialValue: '' })
-const { value: correo } = useField('correo', undefined, { initialValue: '' })
 const { value: contraseña } = useField('contraseña', undefined, { initialValue: '' })
-const { value: contraseña_repetir } = useField('contraseña_repetir', undefined, {
-  initialValue: '',
-})
 
 const authStore = useAuthStore()
-
 const router = useRouter()
 
-const onSubmit = handleSubmit(async (data: UserRequest) => {
-  const success = await authStore.registrarUsuario(data)
+const onSubmit = handleSubmit(async (data: LoginRequest) => {
+  const success = await authStore.iniciarSesion(data)
 
   if (success) {
-    router.push({"name": "login"})
+    router.push({name: "dashboard"})
   }
 })
 </script>
@@ -72,10 +61,10 @@ const onSubmit = handleSubmit(async (data: UserRequest) => {
             <span class="sr-only">Zetta</span>
           </a>
 
-          <h1 class="text-xl font-bold">Bienvenido a Zetta</h1>
+          <h1 class="text-xl font-bold">Bienvenido de nuevo</h1>
 
           <FieldDescription>
-            ¿Ya tienes una cuenta? <RouterLink :to="{name: 'login'}">Iniciar Sesión</RouterLink>
+            ¿No tienes una cuenta? <RouterLink :to="{name: 'register'}">Crear Cuenta</RouterLink>
           </FieldDescription>
         </div>
 
@@ -86,32 +75,16 @@ const onSubmit = handleSubmit(async (data: UserRequest) => {
         </Field>
 
         <Field>
-          <FieldLabel for="email"> Correo* </FieldLabel>
-          <Input id="email" type="email" placeholder="correo@ejemplo.com" v-model="correo" />
-          <FieldError v-if="errors.correo">{{ errors.correo }}</FieldError>
-        </Field>
-
-        <Field>
           <FieldLabel for="contraseña"> Contraseña* </FieldLabel>
           <Input id="contraseña" type="password" placeholder="***********" v-model="contraseña" />
           <FieldError v-if="errors.contraseña">{{ errors.contraseña }}</FieldError>
         </Field>
 
         <Field>
-          <FieldLabel for="contraseña-repetir"> Repetir Contraseña* </FieldLabel>
-          <Input
-            id="contraseña-repetir"
-            type="password"
-            placeholder="***********"
-            v-model="contraseña_repetir"
-          />
-          <FieldError v-if="errors.contraseña_repetir">{{ errors.contraseña_repetir }}</FieldError>
-        </Field>
 
-        <Field>
           <Button type="submit" class="hover:cursor-pointer" :disabled="authStore.cargando">
             <Spinner v-if="authStore.cargando"/>
-            {{ !authStore.cargando ? "Crear Cuenta" :  "Cargando..." }}
+            {{ !authStore.cargando ? "Iniciar Sesión" :  "Cargando..." }}
           </Button>
         </Field>
       </FieldGroup>
