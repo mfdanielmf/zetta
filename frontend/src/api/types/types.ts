@@ -4,3 +4,5 @@ import type { components } from './backend.types'
 export type UserRequest = components['schemas']['UserCreate']
 export type UserReturn = components['schemas']['UserReturn']
 export type RegisterResponse = components['schemas']['RegisterResponse']
+export type LoginRequest = components['schemas']['LoginRequest']
+export type LoginResponse = components['schemas']['LoginResponse']
