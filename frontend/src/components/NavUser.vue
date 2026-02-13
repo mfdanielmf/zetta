@@ -28,6 +28,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
+import { useAuthStore } from "@/stores/auth.store";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
   user: {
@@ -38,6 +40,15 @@ const props = defineProps<{
 }>()
 
 const { isMobile } = useSidebar()
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+async function handleLogout(){
+  const success = await authStore.cerrarSesion()
+
+  if (success) router.push({ name: "login" })
+}
 </script>
 
 <template>
@@ -105,7 +116,7 @@ const { isMobile } = useSidebar()
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem @click="handleLogout">
             <LogOut />
             Log out
           </DropdownMenuItem>

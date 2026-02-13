@@ -24,13 +24,9 @@ export const useAuthStore = defineStore('auth-store', () => {
       return true //Hacer push a la ruta de login
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
-        toast.error(e.response?.data?.detail || 'Ocurrió un error inesperado al registrarse', {
-          position: 'top-right',
-        })
+        toast.error(e.response?.data?.detail || 'Ocurrió un error inesperado al registrarse')
       } else {
-        toast.error('Ocurrió un error inesperado al registrarse', {
-          position: 'top-right',
-        })
+        toast.error('Ocurrió un error inesperado al registrarse')
       }
 
       usuario.value = null
@@ -55,13 +51,9 @@ export const useAuthStore = defineStore('auth-store', () => {
 
     }catch(e: unknown){
       if (axios.isAxiosError(e)) {
-        toast.error(e.response?.data?.detail || 'Ocurrió un error inesperado al iniciar sesión', {
-          position: 'top-right',
-        })
+        toast.error(e.response?.data?.detail || 'Ocurrió un error inesperado al iniciar sesión')
       } else {
-        toast.error('Ocurrió un error inesperado al iniciar sesión', {
-          position: 'top-right',
-        })
+        toast.error('Ocurrió un error inesperado al iniciar sesión')
       }
 
       usuario.value = null
@@ -91,5 +83,19 @@ export const useAuthStore = defineStore('auth-store', () => {
     }
   }
 
-  return { usuario, logueado, cargando, obteniendoUsuario, registrarUsuario, iniciarSesion, obtenerUsuario }
+  async function cerrarSesion(){
+    try{
+      const req = await authApi.cerrarSesion()
+
+      toast.success(req.data.msg)
+
+      return true //Redirigir login
+    }catch{
+      toast.error("Ocurrió un error inesperado al cerrar sesión")
+
+      return false //No redirigir
+    }
+  }
+
+  return { usuario, logueado, cargando, obteniendoUsuario, registrarUsuario, iniciarSesion, obtenerUsuario, cerrarSesion }
 })

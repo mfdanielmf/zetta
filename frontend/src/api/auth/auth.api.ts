@@ -1,5 +1,5 @@
 import api from '../axios.config'
-import type { UserRequest, RegisterResponse, LoginRequest, LoginResponse, MeResponse } from '../types/types'
+import type { UserRequest, RegisterResponse, LoginRequest, LoginResponse, MeResponse, LogoutResponse } from '../types/types'
 
 export default {
   registrarUsuario(data: UserRequest) {
@@ -10,5 +10,8 @@ export default {
   },
   obtenerUsuario(){
     return api().get<MeResponse>('/auth/me')
+  },
+  cerrarSesion(){
+    return api().post<LogoutResponse>('/auth/logout')
   }
 }
