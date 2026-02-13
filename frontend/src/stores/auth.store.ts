@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import authApi from '@/api/auth/auth.api'
 import type { UserReturn, UserRequest, LoginRequest } from '@/api/types/types'
 import axios from 'axios'
@@ -7,8 +7,9 @@ import { toast } from 'vue-sonner'
 
 export const useAuthStore = defineStore('auth-store', () => {
   const usuario = ref<null | UserReturn>(null)
-  const logueado = ref<boolean>(false)
   const cargando = ref<boolean>(false)
+  const obteniendoUsuario = ref<boolean>(false)
+  const logueado = computed(() => !!usuario.value)
 
   async function registrarUsuario(data: UserRequest) {
     cargando.value = true
@@ -19,7 +20,6 @@ export const useAuthStore = defineStore('auth-store', () => {
       toast.success(req.data.msg || 'Usuario registrado correctamente')
 
       usuario.value = req.data.usuario
-      logueado.value = true
 
       return true //Hacer push a la ruta de login
     } catch (e: unknown) {
@@ -34,7 +34,6 @@ export const useAuthStore = defineStore('auth-store', () => {
       }
 
       usuario.value = null
-      logueado.value = false
 
       return false // No hacer push a login
     } finally {
@@ -51,7 +50,6 @@ export const useAuthStore = defineStore('auth-store', () => {
       toast.success(req.data.msg || 'Sesión iniciada correctamente')
 
       usuario.value = req.data.usuario
-      logueado.value = true
 
       return true // Hacer push
 
@@ -67,7 +65,6 @@ export const useAuthStore = defineStore('auth-store', () => {
       }
 
       usuario.value = null
-      logueado.value = false
 
       return false // No hacer push
     }finally{
@@ -75,5 +72,24 @@ export const useAuthStore = defineStore('auth-store', () => {
     }
   }
 
-  return { usuario, logueado, cargando, registrarUsuario, iniciarSesion }
+  // Endpoint me
+  async function obtenerUsuario(){
+    obteniendoUsuario.value = true
+
+    try{
+      const req = await authApi.obtenerUsuario()
+
+      usuario.value = req.data.usuario
+
+      return true //Redirigir dash
+    }catch{
+      usuario.value = null
+
+      return false //Redigir login
+    }finally{
+      obteniendoUsuario.value = false
+    }
+  }
+
+  return { usuario, logueado, cargando, obteniendoUsuario, registrarUsuario, iniciarSesion, obtenerUsuario }
 })
