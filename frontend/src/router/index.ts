@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import MainLayout from '@/layouts/MainLayout.vue'
+import { useAuthStore } from '@/stores/auth.store'
+import { toast } from 'vue-sonner'
 
+const MainLayout = () => import("@/layouts/MainLayout.vue")
 const AuthLayout = () => import("@/layouts/AuthLayout.vue")
 
 const RegisterView = () => import("@/views/auth/RegisterView.vue")
@@ -12,7 +14,8 @@ const router = createRouter({
     {
       path: '/',
       name: 'dashboard',
-      component: MainLayout
+      component: MainLayout,
+      meta: { authRequired: true }
     },
     {
       path: "/auth",
@@ -33,6 +36,22 @@ const router = createRouter({
     }
 
   ],
+})
+
+router.beforeEach(async (to) => {
+  const authStore = useAuthStore()
+
+  if (to.meta.authRequired){
+    if (authStore.logueado) return
+
+    const logueado = await authStore.obtenerUsuario()
+
+    if (!logueado){
+      toast.info("Inicia sesión para acceder aquí")
+      return { name: "login" }
+    }
+  }
+
 })
 
 export default router
