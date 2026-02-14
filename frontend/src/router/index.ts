@@ -7,7 +7,7 @@ const AuthLayout = () => import("@/layouts/AuthLayout.vue")
 
 const RegisterView = () => import("@/views/auth/RegisterView.vue")
 const LoginView = () => import("@/views/auth/LoginView.vue")
-const FileView = () => import("@/views/FileView.vue")
+const FilesView = () => import("@/views/FilesView.vue")
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,7 +22,7 @@ const router = createRouter({
         {
           path: "/files",
           name: "archivos",
-          component: FileView
+          component: FilesView
         }
       ]
     },
