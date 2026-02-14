@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.models.exceptions import TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException
 from app.models.file import File
 from app.models.user import User
-from app.repositories.file_repo import insert_file_db, get_file_by_id
+from app.repositories.file_repo import insert_file_db, get_file_by_id, get_files_user
 
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -66,3 +66,7 @@ def añadir_archivo_db(nombre_original: str, db: Session, usuario: User) -> tupl
     archivo_db: File = insert_file_db(archivo=archivo, db=db)
 
     return archivo_db, file_path
+
+
+def obtener_archivos_usuario(usuario: User, db: Session) -> list[File]:
+    return get_files_user(usuario=usuario, db=db)
