@@ -25,18 +25,16 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar'
+import { useAuthStore } from '@/stores/auth.store'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: "icon",
 })
 
+const authStore = useAuthStore()
+
 // This is sample data.
 const data = {
-  user: {
-    name: "Usuario",
-    email: "usuario@test.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
       name: "Zetta",
@@ -171,7 +169,7 @@ const data = {
       <NavProjects :projects="data.projects" />
     </SidebarContent>
     <SidebarFooter>
-      <NavUser :user="data.user" />
+      <NavUser :user="authStore.usuario" v-if="authStore.usuario"/>
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>

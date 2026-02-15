@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, UUID, ForeignKey, String, DateTime, func
+from sqlalchemy import Column, UUID, ForeignKey, String, DateTime, func, Integer
 from sqlalchemy.orm import relationship
 from app.database.db import Base
 
@@ -10,6 +10,7 @@ class File(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     nombre_original = Column(String(100), nullable=False)
     path = Column(String, nullable=False)
+    tamaño_bytes = Column(Integer, nullable=False)
     fecha_creacion = Column(DateTime, default=func.now())
     id_usuario = Column(UUID(as_uuid=True), ForeignKey(
         "usuarios.id"), nullable=False)

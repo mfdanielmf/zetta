@@ -10,7 +10,9 @@ class FileBase(BaseModel):
     nombre_original: str
     path: str
     fecha_creacion: datetime
+    tamaño_bytes: int
     id_usuario: uuid.UUID
+    nombre_usuario: str
 
 
 class FileResponse(BaseModel):

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.models.exceptions import TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException
 from app.models.file import File
 from app.models.user import User
-from app.repositories.file_repo import insert_file_db, get_file_by_id
+from app.repositories.file_repo import insert_file_db, get_file_by_id, get_files_user
 
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -37,7 +37,7 @@ async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -
             f"Has excedido el tamaño máximo de subida")
 
     archivo_db, file_path = añadir_archivo_db(
-        nombre_original=file_upload.filename, db=db, usuario=usuario)
+        nombre_original=file_upload.filename, db=db, usuario=usuario, tamaño=len(data))
 
     with file_path.open("wb") as f:
         f.write(data)
@@ -45,7 +45,7 @@ async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -
     return archivo_db
 
 
-def añadir_archivo_db(nombre_original: str, db: Session, usuario: User) -> tuple[File, str]:
+def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario: User) -> tuple[File, str]:
     """
     IdYaUsadaException
     """
@@ -58,11 +58,19 @@ def añadir_archivo_db(nombre_original: str, db: Session, usuario: User) -> tupl
 
     extension = nombre_original.split(".").pop()  # png, jpg, txt...
 
-    file_path = UPLOAD_DIR / f"{str(id)}.{extension}"
+    # Crear la carpeta si no existe
+    ruta_usuario = UPLOAD_DIR / str(usuario.id)
+    ruta_usuario.mkdir(parents=True, exist_ok=True)
+
+    file_path = ruta_usuario / f"{str(id)}.{extension}"
 
     archivo: File = File(id=id, nombre_original=nombre_original,
-                         path=str(file_path), id_usuario=usuario.id)
+                         path=str(file_path), id_usuario=usuario.id, tamaño_bytes=tamaño)
 
     archivo_db: File = insert_file_db(archivo=archivo, db=db)
 
     return archivo_db, file_path
+
+
+def obtener_archivos_usuario(usuario: User, db: Session) -> list[File]:
+    return get_files_user(usuario=usuario, db=db)
