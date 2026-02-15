@@ -58,7 +58,11 @@ def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario:
 
     extension = nombre_original.split(".").pop()  # png, jpg, txt...
 
-    file_path = UPLOAD_DIR / f"{str(id)}.{extension}"
+    # Crear la carpeta si no existe
+    ruta_usuario = UPLOAD_DIR / str(usuario.id)
+    ruta_usuario.mkdir(parents=True, exist_ok=True)
+
+    file_path = ruta_usuario / f"{str(id)}.{extension}"
 
     archivo: File = File(id=id, nombre_original=nombre_original,
                          path=str(file_path), id_usuario=usuario.id, tamaño_bytes=tamaño)
