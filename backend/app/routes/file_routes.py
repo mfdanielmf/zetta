@@ -18,7 +18,15 @@ async def upload_file(file_upload: UploadFile = File(...), db: Session = Depends
 
         return {
             "msg": "Archivo guardado con éxito",
-            "archivo": FileBase.model_validate(archivo_db)
+            "archivo": FileBase(
+                id=archivo_db.id,
+                nombre_original=archivo_db.nombre_original,
+                path=archivo_db.path,
+                tamaño_bytes=archivo_db.tamaño_bytes,
+                fecha_creacion=archivo_db.fecha_creacion,
+                id_usuario=archivo_db.id_usuario,
+                nombre_usuario=archivo_db.usuario.nombre
+            )
         }
     except TamañoExcedidoException as e1:
         raise HTTPException(413, str(e1))
@@ -28,4 +36,17 @@ async def upload_file(file_upload: UploadFile = File(...), db: Session = Depends
 
 @file_router.get("", response_model=list[FileBase])
 def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
-    return obtener_archivos_usuario(usuario=usuario, db=db)
+    archivos: list[File] = obtener_archivos_usuario(usuario=usuario, db=db)
+
+    return [
+        FileBase(
+            id=archivo_db.id,
+            nombre_original=archivo_db.nombre_original,
+            path=archivo_db.path,
+            tamaño_bytes=archivo_db.tamaño_bytes,
+            fecha_creacion=archivo_db.fecha_creacion,
+            id_usuario=archivo_db.id_usuario,
+            nombre_usuario=archivo_db.usuario.nombre
+        )
+        for archivo_db in archivos
+    ]

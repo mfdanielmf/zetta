@@ -89,7 +89,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/files/": {
+    "/api/files": {
         parameters: {
             query?: never;
             header?: never;
@@ -97,10 +97,10 @@ export interface paths {
             cookie?: never;
         };
         /** Get Files */
-        get: operations["get_files_api_files__get"];
+        get: operations["get_files_api_files_get"];
         put?: never;
         /** Upload File */
-        post: operations["upload_file_api_files__post"];
+        post: operations["upload_file_api_files_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -111,8 +111,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** Body_upload_file_api_files__post */
-        Body_upload_file_api_files__post: {
+        /** Body_upload_file_api_files_post */
+        Body_upload_file_api_files_post: {
             /**
              * File Upload
              * Format: binary
@@ -135,11 +135,15 @@ export interface components {
              * Format: date-time
              */
             fecha_creacion: string;
+            /** Tamaño Bytes */
+            "tama\u00F1o_bytes": number;
             /**
              * Id Usuario
              * Format: uuid
              */
             id_usuario: string;
+            /** Nombre Usuario */
+            nombre_usuario: string;
         };
         /** FileResponse */
         FileResponse: {
@@ -355,7 +359,7 @@ export interface operations {
             };
         };
     };
-    get_files_api_files__get: {
+    get_files_api_files_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -386,7 +390,7 @@ export interface operations {
             };
         };
     };
-    upload_file_api_files__post: {
+    upload_file_api_files_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -397,7 +401,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "multipart/form-data": components["schemas"]["Body_upload_file_api_files__post"];
+                "multipart/form-data": components["schemas"]["Body_upload_file_api_files_post"];
             };
         };
         responses: {

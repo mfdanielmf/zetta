@@ -37,7 +37,7 @@ async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -
             f"Has excedido el tamaño máximo de subida")
 
     archivo_db, file_path = añadir_archivo_db(
-        nombre_original=file_upload.filename, db=db, usuario=usuario)
+        nombre_original=file_upload.filename, db=db, usuario=usuario, tamaño=len(data))
 
     with file_path.open("wb") as f:
         f.write(data)
@@ -45,7 +45,7 @@ async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -
     return archivo_db
 
 
-def añadir_archivo_db(nombre_original: str, db: Session, usuario: User) -> tuple[File, str]:
+def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario: User) -> tuple[File, str]:
     """
     IdYaUsadaException
     """
@@ -61,7 +61,7 @@ def añadir_archivo_db(nombre_original: str, db: Session, usuario: User) -> tupl
     file_path = UPLOAD_DIR / f"{str(id)}.{extension}"
 
     archivo: File = File(id=id, nombre_original=nombre_original,
-                         path=str(file_path), id_usuario=usuario.id)
+                         path=str(file_path), id_usuario=usuario.id, tamaño_bytes=tamaño)
 
     archivo_db: File = insert_file_db(archivo=archivo, db=db)
 
