@@ -11,3 +11,4 @@ export type LogoutResponse = components['schemas']['LogoutResponse']
 
 // FILES
 export type GetFilesResponse = components['schemas']['FileBase'][]
+export type PostFilesResponse = components['schemas']['FileResponse']
