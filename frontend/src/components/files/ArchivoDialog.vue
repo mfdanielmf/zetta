@@ -14,10 +14,12 @@ import { ref, useTemplateRef } from 'vue'
 import { formatearTamañoService } from '@/services/file.services'
 import { X } from 'lucide-vue-next'
 import Button from '../ui/button/Button.vue'
-import filesApi from '@/api/files/files.api'
+import { useInsertFiles } from '@/queries/useFilesQuery'
 
 const fileInput = useTemplateRef('fileInput')
 const archivos = ref<File | null | undefined>(null)
+
+const { mutateAsync, isSuccess } = useInsertFiles()
 
 function handleChange(e: Event) {
   const target = e.target as HTMLInputElement
@@ -41,12 +43,10 @@ async function subirArchivo() {
   const formData = new FormData()
   formData.append('file_upload', archivos.value)
 
-  try {
-    const req = await filesApi.subirArchivosUsuario(formData)
+  await mutateAsync(formData)
 
-    console.log(req.data.msg)
-  } catch {
-    console.log('error')
+  if (isSuccess) {
+    eliminarArchivo()
   }
 }
 </script>
