@@ -17,4 +17,4 @@ class FileBase(BaseModel):
 
 class FileResponse(BaseModel):
     msg: str
-    archivo: FileBase
+    archivos: list[FileBase]
