@@ -1,8 +1,11 @@
-import api from "../axios.config";
-import type { GetFilesResponse } from "../types/types";
+import api from '../axios.config'
+import type { GetFilesResponse, PostFilesResponse } from '../types/types'
 
 export default {
-  obtenerArchivosUsuario(){
+  obtenerArchivosUsuario() {
     return api().get<GetFilesResponse>('/api/files')
-  }
+  },
+  subirArchivosUsuario(data: FormData) {
+    return api().post<PostFilesResponse>('/api/files', data)
+  },
 }
