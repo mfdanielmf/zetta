@@ -31,11 +31,11 @@ def test_subir_archivo():
         response.json())
 
     assert response.status_code == 200
-    assert archivo_response.archivo.id == archivo_falso.id
-    assert archivo_response.archivo.nombre_original == archivo_falso.nombre_original
-    assert archivo_response.archivo.path == archivo_falso.path
-    assert archivo_response.archivo.id_usuario == archivo_falso.id_usuario
-    assert archivo_response.archivo.nombre_usuario == usuario_falso.nombre
+    assert archivo_response.archivos[0].id == archivo_falso.id
+    assert archivo_response.archivos[0].nombre_original == archivo_falso.nombre_original
+    assert archivo_response.archivos[0].path == archivo_falso.path
+    assert archivo_response.archivos[0].id_usuario == archivo_falso.id_usuario
+    assert archivo_response.archivos[0].nombre_usuario == usuario_falso.nombre
 
     app.dependency_overrides.clear()
 
