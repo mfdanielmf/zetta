@@ -27,8 +27,7 @@ def test_subir_archivo():
             "file_upload": ("test.txt", io.BytesIO(b"Test"), "text/plain")
         })
 
-    archivo_response: FileResponse = FileResponse.model_validate(
-        response.json())
+    archivo_response: FileResponse = FileResponse.model_validate(response.json())
 
     assert response.status_code == 200
     assert archivo_response.archivos[0].id == archivo_falso.id
@@ -46,5 +45,37 @@ def test_subir_sin_archivo():
     response = client.post("/api/files")
 
     assert response.status_code == 422
+
+    app.dependency_overrides.clear()
+
+def test_subir_varios_archivos():
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+    id: uuid.UUID = uuid.uuid4()
+    usuario_falso: User = User(id=id, nombre="testinggg")
+    archivo_falso: File = File(id=id, nombre_original="test.txt", tamaño_bytes="20",
+                               path=f"uploads/{id}.txt", fecha_creacion="2026-01-21T01:44:31.825198", id_usuario=id, usuario=usuario_falso)
+    archivo_falso2: File = File(id=id, nombre_original="test2.txt", tamaño_bytes="100",
+                               path=f"uploads/{id}.txt", fecha_creacion="2026-01-22T01:44:31.825198", id_usuario=id, usuario=usuario_falso)
+    
+    archivos_falsos = [archivo_falso, archivo_falso2]
+
+    with patch("app.routes.file_routes.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
+        mock_guardar.side_effect = archivos_falsos
+
+        response = client.post("/api/files", files=[
+            ("file_upload", ("test1.txt", io.BytesIO(b"Test1"), "text/plain")),
+            ("file_upload", ("test2.txt", io.BytesIO(b"Test2"), "text/plain"))
+        ])
+
+    archivo_response: FileResponse = FileResponse.model_validate(response.json())
+
+    assert response.status_code == 200
+    for i, archivo in enumerate(archivos_falsos):
+        assert archivo_response.archivos[i].id == archivo.id
+        assert archivo_response.archivos[i].nombre_original == archivo.nombre_original
+        assert archivo_response.archivos[i].path == archivo.path
+        assert archivo_response.archivos[i].id_usuario == archivo.id_usuario
+        assert archivo_response.archivos[i].nombre_usuario == usuario_falso.nombre
 
     app.dependency_overrides.clear()
