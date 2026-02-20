@@ -15,6 +15,7 @@ import { formatearTamañoService } from '@/services/file.services'
 import { X } from 'lucide-vue-next'
 import Button from '../ui/button/Button.vue'
 import { useInsertFiles } from '@/queries/useFilesQuery'
+import ScrollArea from '../ui/scroll-area/ScrollArea.vue'
 
 const fileInput = useTemplateRef('fileInput')
 const archivos = ref<File[]>([])
@@ -42,7 +43,7 @@ function eliminarArchivo(indice: number | null = null) {
 }
 
 async function subirArchivo() {
-  if (!archivos.value) return
+  if (!archivos.value || archivos.value.length < 1) return
 
   const formData = new FormData()
   archivos.value.forEach((archivo) => formData.append('file_upload', archivo))
@@ -70,25 +71,27 @@ function reiniciarInputArchivos() {
         <AlertDialogDescription>
           <Input type="file" multiple ref="fileInput" @change="handleChange" />
 
-          <div
-            v-if="archivos"
-            class="flex items-center gap-3 mt-4"
-            v-for="(archivo, index) of archivos"
-            :key="archivo.name + '-' + archivo.lastModified"
-          >
-            <Button
-              variant="outline"
-              size="icon-sm"
-              class="rounded-full hover:cursor-pointer"
-              @click="eliminarArchivo(index)"
+          <ScrollArea class="h-50 w-full mt-4">
+            <div
+              class="flex items-center gap-3 mt-4"
+              v-for="(archivo, index) of archivos"
+              :key="archivo.name + '-' + archivo.lastModified"
             >
-              <X />
-            </Button>
-            <div>
-              <p>{{ archivo.name }}</p>
-              <p>{{ formatearTamañoService(archivo.size) }}</p>
+              <Button
+                variant="outline"
+                size="icon-sm"
+                class="rounded-full hover:cursor-pointer"
+                @click="eliminarArchivo(index)"
+              >
+                <X />
+              </Button>
+
+              <div>
+                <p>{{ archivo.name }}</p>
+                <p>{{ formatearTamañoService(archivo.size) }}</p>
+              </div>
             </div>
-          </div>
+          </ScrollArea>
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
