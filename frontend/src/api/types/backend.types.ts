@@ -113,11 +113,8 @@ export interface components {
     schemas: {
         /** Body_upload_file_api_files_post */
         Body_upload_file_api_files_post: {
-            /**
-             * File Upload
-             * Format: binary
-             */
-            file_upload: string;
+            /** File Upload */
+            file_upload: string[];
         };
         /** FileBase */
         FileBase: {
@@ -149,7 +146,8 @@ export interface components {
         FileResponse: {
             /** Msg */
             msg: string;
-            archivo: components["schemas"]["FileBase"];
+            /** Archivos */
+            archivos: components["schemas"]["FileBase"][];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
