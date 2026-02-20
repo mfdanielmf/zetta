@@ -22,20 +22,23 @@ import {
 import { useGetFilesUser } from '@/queries/useFilesQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { Plus } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { defineAsyncComponent, ref } from 'vue'
+
+const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 
 const { data } = useGetFilesUser()
 
-const archivosSubir = ref<File | null>(null)
+// const archivosSubir = ref<File | null>(null)
+const subirAbierto = ref<boolean>(false)
 
-function onChange(e: Event) {
-  const target = e.target as HTMLInputElement
-  const files = target.files
+// function onChange(e: Event) {
+//   const target = e.target as HTMLInputElement
+//   const files = target.files
 
-  if (files && files.length > 0) {
-    archivosSubir.value = files[0] || null
-  }
-}
+//   if (files && files.length > 0) {
+//     archivosSubir.value = files[0] || null
+//   }
+// }
 </script>
 
 <template>
@@ -50,11 +53,9 @@ function onChange(e: Event) {
       <DropdownMenuContent class="w-56" align="start">
         <DropdownMenuLabel>Archivos</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem as-child @select.prevent>
-            <label for="subir-archivo" class="w-full h-full hover:cursor-pointer"
-              >Subir archivo</label
-            >
-          </DropdownMenuItem>
+          <DropdownMenuItem @click="subirAbierto = true" class="hover:cursor-pointer"
+            >Subir archivo</DropdownMenuItem
+          >
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Organización</DropdownMenuLabel>
@@ -64,7 +65,7 @@ function onChange(e: Event) {
       </DropdownMenuContent>
     </DropdownMenu>
 
-    <input type="file" name="subir-archivo" id="subir-archivo" class="hidden" @change="onChange" />
+    <ArchivoDialog v-model:open="subirAbierto" />
 
     <Table>
       <TableCaption v-if="data && data.length < 1"
