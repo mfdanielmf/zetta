@@ -12,21 +12,26 @@ file_router = APIRouter()
 
 
 @file_router.post("", response_model=FileResponse)
-async def upload_file(file_upload: UploadFile = File(...), db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+async def upload_file(file_upload: list[UploadFile] = File(...), db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
-        archivo_db: File = await guardar_archivo(file_upload=file_upload, db=db, usuario=usuario)
+        archivos: list[File] = []
+        for file in file_upload:
+            archivo_db: File = await guardar_archivo(file_upload=file, db=db, usuario=usuario)
+            archivos.append(archivo_db)
 
         return {
-            "msg": "Archivo guardado con éxito",
-            "archivo": FileBase(
-                id=archivo_db.id,
-                nombre_original=archivo_db.nombre_original,
-                path=archivo_db.path,
-                tamaño_bytes=archivo_db.tamaño_bytes,
-                fecha_creacion=archivo_db.fecha_creacion,
-                id_usuario=archivo_db.id_usuario,
-                nombre_usuario=archivo_db.usuario.nombre
-            )
+            "msg": "Archivos guardados con éxito",
+            "archivos": [
+                FileBase(
+                    id=archivo.id,
+                    nombre_original=archivo.nombre_original,
+                    path=archivo.path,
+                    tamaño_bytes=archivo.tamaño_bytes,
+                    fecha_creacion=archivo.fecha_creacion,
+                    id_usuario=archivo.id_usuario,
+                    nombre_usuario=archivo.usuario.nombre
+                ) for archivo in archivos
+            ]
         }
     except TamañoExcedidoException as e1:
         raise HTTPException(413, str(e1))

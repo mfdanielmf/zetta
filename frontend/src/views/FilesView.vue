@@ -54,7 +54,7 @@ const subirAbierto = ref<boolean>(false)
         <DropdownMenuLabel>Archivos</DropdownMenuLabel>
         <DropdownMenuGroup>
           <DropdownMenuItem @click="subirAbierto = true" class="hover:cursor-pointer"
-            >Subir archivo</DropdownMenuItem
+            >Subir archivos</DropdownMenuItem
           >
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
@@ -77,7 +77,7 @@ const subirAbierto = ref<boolean>(false)
           <TableHead>Nombre</TableHead>
           <TableHead>Propietario</TableHead>
           <TableHead>Tamaño</TableHead>
-          <TableHead>Fecha Creación</TableHead>
+          <TableHead>Fecha Subida</TableHead>
         </TableRow>
       </TableHeader>
 

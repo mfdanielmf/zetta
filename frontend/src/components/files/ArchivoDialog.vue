@@ -15,38 +15,50 @@ import { formatearTamañoService } from '@/services/file.services'
 import { X } from 'lucide-vue-next'
 import Button from '../ui/button/Button.vue'
 import { useInsertFiles } from '@/queries/useFilesQuery'
+import ScrollArea from '../ui/scroll-area/ScrollArea.vue'
 
 const fileInput = useTemplateRef('fileInput')
-const archivos = ref<File | null | undefined>(null)
+const archivos = ref<File[]>([])
 
 const { mutateAsync, isSuccess } = useInsertFiles()
 
 function handleChange(e: Event) {
   const target = e.target as HTMLInputElement
-  const files = target.files
+  const files = target.files as FileList
 
-  archivos.value = files?.[0]
+  archivos.value = Array.from(files)
 }
 
-function eliminarArchivo() {
-  archivos.value = null
+function eliminarArchivo(indice: number | null = null) {
+  //Eliminamos todos si cerramos el dialog
+  if (indice == null) {
+    archivos.value = []
+    reiniciarInputArchivos()
 
-  const input = fileInput.value?.$el as HTMLInputElement
-  if (input) {
-    input.value = ''
+    return
   }
+
+  archivos.value.splice(indice, 1)
+  reiniciarInputArchivos()
 }
 
 async function subirArchivo() {
-  if (!archivos.value) return
+  if (!archivos.value || archivos.value.length < 1) return
 
   const formData = new FormData()
-  formData.append('file_upload', archivos.value)
+  archivos.value.forEach((archivo) => formData.append('file_upload', archivo))
 
   await mutateAsync(formData)
 
   if (isSuccess) {
     eliminarArchivo()
+  }
+}
+
+function reiniciarInputArchivos() {
+  const input = fileInput.value?.$el as HTMLInputElement
+  if (input) {
+    input.value = ''
   }
 }
 </script>
@@ -55,28 +67,35 @@ async function subirArchivo() {
   <AlertDialog>
     <AlertDialogContent>
       <AlertDialogHeader>
-        <AlertDialogTitle>Añade un archivo</AlertDialogTitle>
+        <AlertDialogTitle>Añade archivos</AlertDialogTitle>
         <AlertDialogDescription>
-          <Input type="file" ref="fileInput" @change="handleChange" />
+          <Input type="file" multiple ref="fileInput" @change="handleChange" />
 
-          <div v-if="archivos" class="flex items-center gap-3 mt-4">
-            <Button
-              variant="outline"
-              size="icon-sm"
-              class="rounded-full hover:cursor-pointer"
-              @click="eliminarArchivo"
+          <ScrollArea class="h-50 w-full mt-4">
+            <div
+              class="flex items-center gap-3 mt-4"
+              v-for="(archivo, index) of archivos"
+              :key="archivo.name + '-' + archivo.lastModified"
             >
-              <X />
-            </Button>
-            <div>
-              <p>{{ archivos.name }}</p>
-              <p>{{ formatearTamañoService(archivos.size) }}</p>
+              <Button
+                variant="outline"
+                size="icon-sm"
+                class="rounded-full hover:cursor-pointer"
+                @click="eliminarArchivo(index)"
+              >
+                <X />
+              </Button>
+
+              <div>
+                <p>{{ archivo.name }}</p>
+                <p>{{ formatearTamañoService(archivo.size) }}</p>
+              </div>
             </div>
-          </div>
+          </ScrollArea>
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel class="hover:cursor-pointer" @click="eliminarArchivo"
+        <AlertDialogCancel class="hover:cursor-pointer" @click="eliminarArchivo()"
           >Cancelar</AlertDialogCancel
         >
         <AlertDialogAction class="hover:cursor-pointer" @click="subirArchivo"
