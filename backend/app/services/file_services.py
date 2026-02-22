@@ -13,23 +13,12 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 TAMAÑO_LIMITE = 1000 * 1024 * 1024  # Lo limito a 1GB de momento
 
 
-# def obtener_archivo_id(id: uuid.UUID, db: Session) -> File:
-#     """
-#     ArchivoNoEncontradoException
-#     """
-#     archivo: File | None = get_file_by_id(id=id, db=db)
-
-#     if not archivo:
-#         raise ArchivoNoEncontradoException(
-#             f"No se ha encontrado el archivo con id {id}")
-
-#     return archivo
-
 def obtener_archivo_id(id: uuid.UUID, usuario: User, db: Session) -> File:
     """
     ArchivoNoEncontradoException
     """
-    archivo: File | None = get_file_by_id_and_user(id=id, usuario=usuario, db=db)
+    archivo: File | None = get_file_by_id_and_user(
+        id=id, usuario=usuario, db=db)
 
     if not archivo:
         raise ArchivoNoEncontradoException(
