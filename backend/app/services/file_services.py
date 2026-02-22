@@ -6,18 +6,30 @@ from sqlalchemy.orm import Session
 from app.models.exceptions import TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException
 from app.models.file import File
 from app.models.user import User
-from app.repositories.file_repo import insert_file_db, get_file_by_id, get_files_user
+from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user
 
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 TAMAÑO_LIMITE = 1000 * 1024 * 1024  # Lo limito a 1GB de momento
 
 
-def obtener_archivo_id(id: uuid.UUID, db: Session) -> File:
+# def obtener_archivo_id(id: uuid.UUID, db: Session) -> File:
+#     """
+#     ArchivoNoEncontradoException
+#     """
+#     archivo: File | None = get_file_by_id(id=id, db=db)
+
+#     if not archivo:
+#         raise ArchivoNoEncontradoException(
+#             f"No se ha encontrado el archivo con id {id}")
+
+#     return archivo
+
+def obtener_archivo_id(id: uuid.UUID, usuario: User, db: Session) -> File:
     """
     ArchivoNoEncontradoException
     """
-    archivo: File | None = get_file_by_id(id=id, db=db)
+    archivo: File | None = get_file_by_id_and_user(id=id, usuario=usuario, db=db)
 
     if not archivo:
         raise ArchivoNoEncontradoException(
@@ -52,7 +64,7 @@ def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario:
     id: uuid.UUID = uuid.uuid4()
 
     # Por si se genera un UUID ya usado
-    if (get_file_by_id(id=id, db=db)):
+    if (get_file_by_id_and_user(id=id, usuario=usuario, db=db)):
         raise IdYaUsadaException(
             f"Ya se ha usado la ID {id}. Vuelve a subir el archivo")
 
