@@ -24,6 +24,7 @@ import { formatDateService, formatearTamañoService } from '@/services/file.serv
 import { Download, Ellipsis, FolderPlus, Plus, Upload } from 'lucide-vue-next'
 import { defineAsyncComponent, ref } from 'vue'
 import filesApi from '@/api/files/files.api'
+import { toast } from 'vue-sonner'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 
@@ -32,20 +33,24 @@ const { data } = useGetFilesUser()
 const subirAbierto = ref<boolean>(false)
 
 async function descargarArchivo(id: string, nombre: string) {
-  const req = await filesApi.descargarArchivo(id)
+  try {
+    const req = await filesApi.descargarArchivo(id)
 
-  const blob = new Blob([req.data], {
-    type: req.headers['content-type'],
-  })
+    const blob = new Blob([req.data], {
+      type: req.headers['content-type'],
+    })
 
-  const url = window.URL.createObjectURL(blob)
+    const url = window.URL.createObjectURL(blob)
 
-  const link = document.createElement('a')
-  link.href = url
-  link.setAttribute('download', nombre)
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', nombre)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  } catch {
+    toast.error('Ha ocurrido un error al descargar los archivos')
+  }
 }
 </script>
 
