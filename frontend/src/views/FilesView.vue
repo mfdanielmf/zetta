@@ -21,24 +21,32 @@ import {
 
 import { useGetFilesUser } from '@/queries/useFilesQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
-import { Plus } from 'lucide-vue-next'
+import { Download, Ellipsis, FolderPlus, Plus, Upload } from 'lucide-vue-next'
 import { defineAsyncComponent, ref } from 'vue'
+import filesApi from '@/api/files/files.api'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 
 const { data } = useGetFilesUser()
 
-// const archivosSubir = ref<File | null>(null)
 const subirAbierto = ref<boolean>(false)
 
-// function onChange(e: Event) {
-//   const target = e.target as HTMLInputElement
-//   const files = target.files
+async function descargarArchivo(id: string, nombre: string) {
+  const req = await filesApi.descargarArchivo(id)
 
-//   if (files && files.length > 0) {
-//     archivosSubir.value = files[0] || null
-//   }
-// }
+  const blob = new Blob([req.data], {
+    type: req.headers['content-type'],
+  })
+
+  const url = window.URL.createObjectURL(blob)
+
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', nombre)
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+}
 </script>
 
 <template>
@@ -53,14 +61,18 @@ const subirAbierto = ref<boolean>(false)
       <DropdownMenuContent class="w-56" align="start">
         <DropdownMenuLabel>Archivos</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem @click="subirAbierto = true" class="hover:cursor-pointer"
-            >Subir archivos</DropdownMenuItem
-          >
+          <DropdownMenuItem @click="subirAbierto = true" class="hover:cursor-pointer">
+            <Upload />
+            Subir archivos
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Organización</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem class="hover:cursor-pointer">Crear carpeta</DropdownMenuItem>
+          <DropdownMenuItem class="hover:cursor-pointer">
+            <FolderPlus />
+            Crear carpeta
+          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -78,6 +90,7 @@ const subirAbierto = ref<boolean>(false)
           <TableHead>Propietario</TableHead>
           <TableHead>Tamaño</TableHead>
           <TableHead>Fecha Subida</TableHead>
+          <TableHead>Acciones</TableHead>
         </TableRow>
       </TableHeader>
 
@@ -94,6 +107,26 @@ const subirAbierto = ref<boolean>(false)
           </TableCell>
           <TableCell class="font-medium">
             {{ formatDateService(file.fecha_creacion) }}
+          </TableCell>
+          <TableCell>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="outline" size="icon" class="hover:cursor-pointer">
+                  <Ellipsis />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="descargarArchivo(file.id, file.nombre_original)"
+                >
+                  <Download />
+                  Descargar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </TableCell>
         </TableRow>
       </TableBody>
