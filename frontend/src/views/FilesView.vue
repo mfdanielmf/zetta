@@ -23,6 +23,7 @@ import { useGetFilesUser } from '@/queries/useFilesQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { Download, Ellipsis, FolderPlus, Plus, Upload } from 'lucide-vue-next'
 import { defineAsyncComponent, ref } from 'vue'
+import filesApi from '@/api/files/files.api'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 
@@ -30,8 +31,21 @@ const { data } = useGetFilesUser()
 
 const subirAbierto = ref<boolean>(false)
 
-function descargarArchivo(id: string) {
-  console.log('test', id)
+async function descargarArchivo(id: string, nombre: string) {
+  const req = await filesApi.descargarArchivo(id)
+
+  const blob = new Blob([req.data], {
+    type: req.headers['content-type'],
+  })
+
+  const url = window.URL.createObjectURL(blob)
+
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', nombre)
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
 }
 </script>
 
@@ -104,7 +118,10 @@ function descargarArchivo(id: string) {
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem class="hover:cursor-pointer" @click="descargarArchivo(file.id)">
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="descargarArchivo(file.id, file.nombre_original)"
+                >
                   <Download />
                   Descargar
                 </DropdownMenuItem>

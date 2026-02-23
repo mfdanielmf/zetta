@@ -59,11 +59,14 @@ def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current
         for archivo_db in archivos
     ]
 
+
 @file_router.get("/{id_archivo}", response_class=FileResp)
 def download_files(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
-        archivo: File = obtener_archivo_id(id=id_archivo, usuario=usuario, db=db)
+        archivo: File = obtener_archivo_id(
+            id=id_archivo, usuario=usuario, db=db)
 
         return FileResp(path=archivo.path, filename=archivo.nombre_original)
     except ArchivoNoEncontradoException:
-        raise HTTPException(404, detail=f"No se ha encontrado el archivo con id {id_archivo}")
+        raise HTTPException(
+            404, detail=f"No se ha encontrado el archivo con id {id_archivo}")

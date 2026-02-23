@@ -1,17 +1,26 @@
 import api from '../axios.config'
-import type { UserRequest, RegisterResponse, LoginRequest, LoginResponse, MeResponse, LogoutResponse } from '../types/types'
+import type {
+  UserRequest,
+  RegisterResponse,
+  LoginRequest,
+  LoginResponse,
+  MeResponse,
+  LogoutResponse,
+} from '../types/types'
+
+const URL = '/auth'
 
 export default {
   registrarUsuario(data: UserRequest) {
-    return api().post<RegisterResponse>('/auth/register', data)
+    return api().post<RegisterResponse>(URL + `/register`, data)
   },
-  iniciarSesion(data: LoginRequest){
-    return api().post<LoginResponse>('/auth/login', data)
+  iniciarSesion(data: LoginRequest) {
+    return api().post<LoginResponse>(URL + `/login`, data)
   },
-  obtenerUsuario(){
-    return api().get<MeResponse>('/auth/me')
+  obtenerUsuario() {
+    return api().get<MeResponse>(URL + `/me`)
   },
-  cerrarSesion(){
-    return api().post<LogoutResponse>('/auth/logout')
-  }
+  cerrarSesion() {
+    return api().post<LogoutResponse>(URL + `/logout`)
+  },
 }
