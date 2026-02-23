@@ -1,10 +1,13 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
+from fastapi.responses import FileResponse as FileResp
 from sqlalchemy.orm import Session
 from app.database.db import get_db
 
 from app.models.user import User
-from app.services.file_services import guardar_archivo, obtener_archivos_usuario
-from app.models.exceptions import TamañoExcedidoException, IdYaUsadaException
+from app.services.file_services import guardar_archivo, obtener_archivos_usuario, obtener_archivo_id
+from app.models.exceptions import ArchivoNoEncontradoException, TamañoExcedidoException, IdYaUsadaException
 from app.schemas.file_schemas import FileBase, FileResponse
 from app.services.auth_services import get_current_user
 
@@ -55,3 +58,12 @@ def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current
         )
         for archivo_db in archivos
     ]
+
+@file_router.get("/{id_archivo}", response_class=FileResp)
+def download_files(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+    try:
+        archivo: File = obtener_archivo_id(id=id_archivo, usuario=usuario, db=db)
+
+        return FileResp(path=archivo.path, filename=archivo.nombre_original)
+    except ArchivoNoEncontradoException:
+        raise HTTPException(404, detail=f"No se ha encontrado el archivo con id {id_archivo}")
