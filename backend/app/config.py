@@ -13,6 +13,8 @@ class Config(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(60)
 
+    UPLOAD_DIR: str = "uploads"
+
     @computed_field
     @property
     def DATABASE_URL(self) -> str:
