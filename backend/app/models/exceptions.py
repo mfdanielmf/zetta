@@ -32,3 +32,7 @@ class ArchivoNoEncontradoException(Exception):
 # GENERAL
 class IdYaUsadaException(Exception):
     pass
+
+
+class NombreYaUsadoException(Exception):
+    pass
