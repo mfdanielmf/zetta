@@ -3,8 +3,6 @@ import uuid
 
 from pydantic import BaseModel, ConfigDict
 
-from app.models.folder import Folder
-
 class FolderBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
