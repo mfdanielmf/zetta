@@ -8,7 +8,9 @@ from app.models.file import File
 from app.models.user import User
 from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user
 
-UPLOAD_DIR = Path("uploads")
+from app.config import config
+
+UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
 TAMAÑO_LIMITE = 1000 * 1024 * 1024  # Lo limito a 1GB de momento
 
