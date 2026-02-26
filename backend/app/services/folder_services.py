@@ -21,7 +21,7 @@ def crear_carpeta(nombre: str, usuario: User, db: Session) -> Folder:
     folder_path = ruta_usuario / str(id_carpeta)
     folder_path.mkdir()
     
-    carpeta: Folder = Folder(id=id, nombre_original=nombre, path=str(folder_path), id_usuario=usuario.id)
+    carpeta: Folder = Folder(id=id_carpeta, nombre_original=nombre, path=str(folder_path), id_usuario=usuario.id)
     carpeta_db: Folder = add_folder(carpeta=carpeta, db=db)
 
     return carpeta_db
