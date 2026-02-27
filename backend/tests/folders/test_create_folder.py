@@ -66,3 +66,23 @@ def test_carpeta_id_usada():
         "detail"] == f"Ya se ha usado la ID {id_test}. Vuelve a subir la carpeta"
 
     app.dependency_overrides.clear()
+
+
+def test_carpeta_nombre_usado():
+    usuario = override_get_current_user()
+    app.dependency_overrides[get_current_user] = lambda: usuario
+
+    nombre_carpeta = "test"
+
+    with patch("app.routes.folder_routes.crear_carpeta") as mock_crear:
+        mock_crear.side_effect = NombreYaUsadoException(
+            f"Ya has creado una carpeta con el nombre {nombre_carpeta}")
+
+        response = client.post(
+            "/api/folders", json={"nombre_carpeta": nombre_carpeta})
+
+    assert response.status_code == 409
+    assert response.json()[
+        "detail"] == f"Ya has creado una carpeta con el nombre {nombre_carpeta}"
+
+    app.dependency_overrides.clear()
