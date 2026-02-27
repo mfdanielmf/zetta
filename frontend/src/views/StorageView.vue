@@ -25,10 +25,12 @@ import { Download, Ellipsis, FolderPlus, Plus, Upload } from 'lucide-vue-next'
 import { defineAsyncComponent, ref } from 'vue'
 import filesApi from '@/api/files/files.api'
 import { toast } from 'vue-sonner'
+// import { useCreateFolder } from '@/queries/useFoldersQuery'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 
-const { data } = useGetFilesUser()
+const { data: dataFiles } = useGetFilesUser()
+// const {data: dataFolders} = useCreateFolder()
 
 const subirAbierto = ref<boolean>(false)
 
@@ -85,7 +87,7 @@ async function descargarArchivo(id: string, nombre: string) {
     <ArchivoDialog v-model:open="subirAbierto" />
 
     <Table>
-      <TableCaption v-if="data && data.length < 1"
+      <TableCaption v-if="dataFiles && dataFiles.length < 1"
         >Los archivos que subas se mostrarán aquí.</TableCaption
       >
 
@@ -99,8 +101,8 @@ async function descargarArchivo(id: string, nombre: string) {
         </TableRow>
       </TableHeader>
 
-      <TableBody v-if="data && data.length > 0">
-        <TableRow v-for="file in data" :key="file.id">
+      <TableBody v-if="dataFiles && dataFiles.length > 0">
+        <TableRow v-for="file in dataFiles" :key="file.id">
           <TableCell class="font-medium">
             {{ file.nombre_original }}
           </TableCell>
