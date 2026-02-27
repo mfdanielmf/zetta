@@ -25,14 +25,18 @@ import { Download, Ellipsis, FolderPlus, Plus, Upload } from 'lucide-vue-next'
 import { defineAsyncComponent, ref } from 'vue'
 import filesApi from '@/api/files/files.api'
 import { toast } from 'vue-sonner'
-// import { useCreateFolder } from '@/queries/useFoldersQuery'
+import { useCreateFolder } from '@/queries/useFoldersQuery'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
+const CrearCarpetaDialog = defineAsyncComponent(
+  () => import('@/components/folders/CrearCarpetaDialog.vue'),
+)
 
 const { data: dataFiles } = useGetFilesUser()
-// const {data: dataFolders} = useCreateFolder()
+const { mutateAsync: mutateCreate } = useCreateFolder()
 
 const subirAbierto = ref<boolean>(false)
+const crearAbierto = ref<boolean>(false)
 
 async function descargarArchivo(id: string, nombre: string) {
   try {
@@ -68,7 +72,7 @@ async function descargarArchivo(id: string, nombre: string) {
       <DropdownMenuContent class="w-56" align="start">
         <DropdownMenuLabel>Archivos</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem @click="subirAbierto = true" class="hover:cursor-pointer">
+          <DropdownMenuItem class="hover:cursor-pointer" @click="subirAbierto = true">
             <Upload />
             Subir archivos
           </DropdownMenuItem>
@@ -76,7 +80,7 @@ async function descargarArchivo(id: string, nombre: string) {
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Organización</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem class="hover:cursor-pointer">
+          <DropdownMenuItem class="hover:cursor-pointer" @click="crearAbierto = true">
             <FolderPlus />
             Crear carpeta
           </DropdownMenuItem>
@@ -85,6 +89,7 @@ async function descargarArchivo(id: string, nombre: string) {
     </DropdownMenu>
 
     <ArchivoDialog v-model:open="subirAbierto" />
+    <CrearCarpetaDialog v-model:open="crearAbierto" />
 
     <Table>
       <TableCaption v-if="dataFiles && dataFiles.length < 1"
