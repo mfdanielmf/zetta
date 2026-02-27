@@ -7,16 +7,16 @@ from app.models.folder import Folder
 from app.models.user import User
 from app.services.auth_services import get_current_user
 from app.services.folder_services import crear_carpeta
-from app.schemas.folder_schemas import FolderBase, FolderResponse
+from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse
 
 folder_router = APIRouter()
 
 
 @folder_router.post("", response_model=FolderResponse)
-def create_folder(nombre_carpeta: str, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+def create_folder(req: FolderRequest, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
         carpeta: Folder = crear_carpeta(
-            nombre=nombre_carpeta, usuario=usuario, db=db)
+            nombre=req.nombre_carpeta, usuario=usuario, db=db)
 
         return {
             "msg": "Carpeta creada correctamente",

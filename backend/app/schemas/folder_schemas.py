@@ -3,6 +3,11 @@ import uuid
 
 from pydantic import BaseModel, ConfigDict
 
+
+class FolderRequest(BaseModel):
+    nombre_carpeta: str
+
+
 class FolderBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
