@@ -14,6 +14,13 @@ import Input from '../ui/input/Input.vue'
 import * as zod from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useField, useForm } from 'vee-validate'
+import Spinner from '../ui/spinner/Spinner.vue'
+
+const props = defineProps<{
+  pending: boolean
+}>()
+
+const emit = defineEmits(['crearCarpeta'])
 
 const schema = toTypedSchema(
   zod.object({
@@ -26,7 +33,7 @@ const { handleSubmit, errors } = useForm({ validationSchema: schema })
 const { value: nombre } = useField('nombre', undefined, { initialValue: '' })
 
 const onSubmit = handleSubmit((data) => {
-  console.log(data.nombre)
+  emit('crearCarpeta', data.nombre)
 })
 </script>
 
@@ -47,7 +54,10 @@ const onSubmit = handleSubmit((data) => {
       </form>
 
       <DialogFooter>
-        <Button class="hover:cursor-pointer" @click="onSubmit">Crear Carpeta</Button>
+        <Button class="hover:cursor-pointer" @click="onSubmit" :disabled="props.pending">
+          <Spinner v-if="props.pending" />
+          {{ props.pending ? 'Creando carpeta...' : 'Crear carpeta' }}
+        </Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

@@ -33,7 +33,11 @@ const CrearCarpetaDialog = defineAsyncComponent(
 )
 
 const { data: dataFiles } = useGetFilesUser()
-const { mutateAsync: mutateCreate } = useCreateFolder()
+const {
+  mutateAsync: mutateCreate,
+  isSuccess: successCreate,
+  isPending: pendingCreate,
+} = useCreateFolder()
 
 const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
@@ -57,6 +61,12 @@ async function descargarArchivo(id: string, nombre: string) {
   } catch {
     toast.error('Ha ocurrido un error al descargar los archivos')
   }
+}
+
+async function crearCarpeta(nombre: string) {
+  await mutateCreate(nombre)
+
+  if (successCreate) crearAbierto.value = false
 }
 </script>
 
@@ -89,7 +99,11 @@ async function descargarArchivo(id: string, nombre: string) {
     </DropdownMenu>
 
     <ArchivoDialog v-model:open="subirAbierto" />
-    <CrearCarpetaDialog v-model:open="crearAbierto" />
+    <CrearCarpetaDialog
+      v-model:open="crearAbierto"
+      @crear-carpeta="crearCarpeta"
+      :pending="pendingCreate"
+    />
 
     <Table>
       <TableCaption v-if="dataFiles && dataFiles.length < 1"
