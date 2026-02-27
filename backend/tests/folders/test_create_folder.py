@@ -2,6 +2,7 @@ import uuid
 
 from fastapi.testclient import TestClient
 from app.main import app
+from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException
 from app.models.folder import Folder
 from app.services.auth_services import get_current_user
 from tests.util import override_get_current_user
@@ -43,5 +44,25 @@ def test_crear_carpeta_success():
     assert resp_json["carpeta"]["fecha_creacion"] == "2026-01-21T01:44:31.825198"
     assert resp_json["carpeta"]["id_usuario"] == str(usuario.id)
     assert resp_json["carpeta"]["nombre_usuario"] == usuario.nombre
+
+    app.dependency_overrides.clear()
+
+
+def test_carpeta_id_usada():
+    usuario = override_get_current_user()
+    app.dependency_overrides[get_current_user] = lambda: usuario
+
+    id_test = uuid.uuid4()
+
+    with patch("app.routes.folder_routes.crear_carpeta") as mock_crear:
+        mock_crear.side_effect = IdYaUsadaException(
+            f"Ya se ha usado la ID {id_test}. Vuelve a subir la carpeta")
+
+        response = client.post(
+            "/api/folders", json={"nombre_carpeta": "test"})
+
+    assert response.status_code == 409
+    assert response.json()[
+        "detail"] == f"Ya se ha usado la ID {id_test}. Vuelve a subir la carpeta"
 
     app.dependency_overrides.clear()
