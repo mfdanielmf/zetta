@@ -15,12 +15,23 @@ import * as zod from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useField, useForm } from 'vee-validate'
 import Spinner from '../ui/spinner/Spinner.vue'
+import { watch } from 'vue'
 
 const props = defineProps<{
   pending: boolean
+  reset: boolean
 }>()
 
 const emit = defineEmits(['crearCarpeta'])
+
+watch(
+  () => props.reset,
+  (nuevoValor) => {
+    if (nuevoValor === false) {
+      resetForm()
+    }
+  },
+)
 
 const schema = toTypedSchema(
   zod.object({
@@ -28,7 +39,7 @@ const schema = toTypedSchema(
   }),
 )
 
-const { handleSubmit, errors } = useForm({ validationSchema: schema })
+const { handleSubmit, errors, resetForm } = useForm({ validationSchema: schema })
 
 const { value: nombre } = useField('nombre', undefined, { initialValue: '' })
 
@@ -48,7 +59,7 @@ const onSubmit = handleSubmit((data) => {
       <form @submit="onSubmit">
         <Field>
           <FieldLabel for="nombre"> Nombre* </FieldLabel>
-          <Input id="nombre" type="text" placeholder="usuario" v-model="nombre" />
+          <Input id="nombre" type="text" placeholder="Nombre carpeta" v-model="nombre" />
           <FieldError v-if="errors.nombre">{{ errors.nombre }}</FieldError>
         </Field>
       </form>

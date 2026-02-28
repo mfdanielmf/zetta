@@ -103,6 +103,7 @@ async function crearCarpeta(nombre: string) {
       v-model:open="crearAbierto"
       @crear-carpeta="crearCarpeta"
       :pending="pendingCreate"
+      :reset="crearAbierto"
     />
 
     <Table>
