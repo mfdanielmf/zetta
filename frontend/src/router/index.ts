@@ -7,7 +7,7 @@ const AuthLayout = () => import("@/layouts/AuthLayout.vue")
 
 const RegisterView = () => import("@/views/auth/RegisterView.vue")
 const LoginView = () => import("@/views/auth/LoginView.vue")
-const FilesView = () => import("@/views/FilesView.vue")
+const FilesView = () => import("@/views/StorageView.vue")
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,7 +20,7 @@ const router = createRouter({
       redirect: {name: "archivos"},
       children: [
         {
-          path: "/files",
+          path: "/storage",
           name: "archivos",
           component: FilesView
         }

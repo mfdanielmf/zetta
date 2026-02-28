@@ -124,6 +124,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/folders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Folder */
+        post: operations["create_folder_api_folders_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -165,6 +182,41 @@ export interface components {
             msg: string;
             /** Archivos */
             archivos: components["schemas"]["FileBase"][];
+        };
+        /** FolderBase */
+        FolderBase: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Nombre Original */
+            nombre_original: string;
+            /** Path */
+            path: string;
+            /**
+             * Fecha Creacion
+             * Format: date-time
+             */
+            fecha_creacion: string;
+            /**
+             * Id Usuario
+             * Format: uuid
+             */
+            id_usuario: string;
+            /** Nombre Usuario */
+            nombre_usuario: string;
+        };
+        /** FolderRequest */
+        FolderRequest: {
+            /** Nombre Carpeta */
+            nombre_carpeta: string;
+        };
+        /** FolderResponse */
+        FolderResponse: {
+            /** Msg */
+            msg: string;
+            carpeta: components["schemas"]["FolderBase"];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -459,6 +511,41 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_folder_api_folders_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                access_token?: string;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FolderRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FolderResponse"];
+                };
             };
             /** @description Validation Error */
             422: {
