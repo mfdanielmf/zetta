@@ -7,7 +7,7 @@ from app.database.db import get_db
 
 from app.models.user import User
 from app.services.file_services import guardar_archivo, obtener_archivos_usuario, obtener_archivo_id
-from app.models.exceptions import ArchivoNoEncontradoException, TamañoExcedidoException, IdYaUsadaException
+from app.models.exceptions import ArchivoNoEncontradoException, TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException
 from app.schemas.file_schemas import FileBase, FileResponse
 from app.services.auth_services import get_current_user
 
@@ -40,6 +40,8 @@ async def upload_file(file_upload: list[UploadFile] = File(...), db: Session = D
         raise HTTPException(413, str(e1))
     except IdYaUsadaException as e2:
         raise HTTPException(409, str(e2))
+    except NombreYaUsadoException as e3:
+        raise HTTPException(409, str(e3))
 
 
 @file_router.get("", response_model=list[FileBase])
