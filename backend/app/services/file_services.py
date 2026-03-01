@@ -3,16 +3,16 @@ import uuid
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
-from app.models.exceptions import TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException
+from app.models.exceptions import TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
 from app.models.file import File
 from app.models.user import User
-from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user
+from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user, get_file_original_name
 
 from app.config import config
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
-TAMAÑO_LIMITE = 1000 * 1024 * 1024  # Lo limito a 1GB de momento
+TAMAÑO_LIMITE = config.TAMAÑO_LIMITE  # Lo limito a 1GB de momento
 
 
 def obtener_archivo_id(id: uuid.UUID, usuario: User, db: Session) -> File:
@@ -31,7 +31,7 @@ def obtener_archivo_id(id: uuid.UUID, usuario: User, db: Session) -> File:
 
 async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -> File:
     """
-    TamañoExcedidoException, IdYaUsadaException
+    TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException
     """
     data = await file_upload.read()
 
@@ -50,12 +50,16 @@ async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -
 
 def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario: User) -> tuple[File, str]:
     """
-    IdYaUsadaException
+    IdYaUsadaException, NombreYaUsadoException
     """
+    if get_file_original_name(nombre_original=nombre_original, usuario=usuario, db=db):
+        raise NombreYaUsadoException(
+            f"Ya hay un archivo con el nombre '{nombre_original}'. Cambia el nombre")
+
     id: uuid.UUID = uuid.uuid4()
 
     # Por si se genera un UUID ya usado
-    if (get_file_by_id_and_user(id=id, usuario=usuario, db=db)):
+    if get_file_by_id_and_user(id=id, usuario=usuario, db=db):
         raise IdYaUsadaException(
             f"Ya se ha usado la ID {id}. Vuelve a subir el archivo")
 
