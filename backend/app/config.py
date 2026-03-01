@@ -14,6 +14,7 @@ class Config(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(60)
 
     UPLOAD_DIR: str = "uploads"
+    TAMAÑO_LIMITE: int = 1000 * 1024 * 1024  # 1GB
 
     @computed_field
     @property

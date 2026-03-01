@@ -12,7 +12,7 @@ from app.config import config
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
-TAMAÑO_LIMITE = 1000 * 1024 * 1024  # Lo limito a 1GB de momento
+TAMAÑO_LIMITE = config.TAMAÑO_LIMITE  # Lo limito a 1GB de momento
 
 
 def obtener_archivo_id(id: uuid.UUID, usuario: User, db: Session) -> File:
@@ -53,7 +53,8 @@ def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario:
     IdYaUsadaException, NombreYaUsadoException
     """
     if get_file_original_name(nombre_original=nombre_original, usuario=usuario, db=db):
-        raise NombreYaUsadoException(f"Ya hay un archivo con el nombre '{nombre_original}'. Cambia el nombre")
+        raise NombreYaUsadoException(
+            f"Ya hay un archivo con el nombre '{nombre_original}'. Cambia el nombre")
 
     id: uuid.UUID = uuid.uuid4()
 
