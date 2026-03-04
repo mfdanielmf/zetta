@@ -7,7 +7,7 @@ from app.config import config
 from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folder_original_name
+from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folder_original_name, get_folders_user
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -39,3 +39,7 @@ def crear_carpeta(nombre: str, usuario: User, db: Session) -> Folder:
     carpeta_db: Folder = add_folder(carpeta=carpeta, db=db)
 
     return carpeta_db
+
+
+def obtener_carpetas_usuario(usuario: User, db: Session) -> list[Folder]:
+    return get_folders_user(id_usuario=usuario.id, db=db)
