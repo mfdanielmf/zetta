@@ -21,7 +21,7 @@ import {
 
 import { useGetFilesUser } from '@/queries/useFilesQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
-import { Download, Ellipsis, FolderPlus, Plus, Upload } from 'lucide-vue-next'
+import { Download, Ellipsis, Folder, FolderPlus, Plus, Upload } from 'lucide-vue-next'
 import { defineAsyncComponent, ref } from 'vue'
 import filesApi from '@/api/files/files.api'
 import { toast } from 'vue-sonner'
@@ -127,7 +127,10 @@ async function crearCarpeta(nombre: string) {
         <!-- Carpetas -->
         <TableRow v-for="folder in dataFolders" :key="folder.id">
           <TableCell class="font-medium">
-            {{ folder.nombre_original }}
+            <div class="flex items-center gap-2">
+              <Folder :size="20" />
+              {{ folder.nombre_original }}
+            </div>
           </TableCell>
           <TableCell class="font-medium">
             {{ folder.nombre_usuario }}
