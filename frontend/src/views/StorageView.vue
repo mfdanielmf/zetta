@@ -123,7 +123,7 @@ async function crearCarpeta(nombre: string) {
         </TableRow>
       </TableHeader>
 
-      <TableBody v-if="dataFiles && dataFiles.length > 0">
+      <TableBody v-if="dataFolders && dataFolders.length > 0">
         <!-- Carpetas -->
         <TableRow v-for="folder in dataFolders" :key="folder.id">
           <TableCell class="font-medium">

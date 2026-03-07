@@ -23,6 +23,8 @@ export function formatDateService(fecha: string) {
 }
 
 export function formatearTamañoService(bytes: number, decimales: number = 2) {
+  if (!bytes) return '0 B'
+
   const unidades = ['B', 'KB', 'MB', 'GB', 'TB']
   const k = 1024
 
