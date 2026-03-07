@@ -14,4 +14,5 @@ export type GetFilesResponse = components['schemas']['FileBase'][]
 export type PostFilesResponse = components['schemas']['FileResponse']
 
 // FOLDERS
-export type CreateFolderResponse = components["schemas"]["FolderResponse"]
+export type CreateFolderResponse = components['schemas']['FolderResponse']
+export type GetFoldersResponse = components['schemas']['FolderBase'][]
