@@ -21,18 +21,20 @@ import {
 
 import { useGetFilesUser } from '@/queries/useFilesQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
-import { Download, Ellipsis, FolderPlus, Plus, Upload } from 'lucide-vue-next'
+import { Download, Ellipsis, Folder, FolderPlus, Plus, Upload } from 'lucide-vue-next'
 import { defineAsyncComponent, ref } from 'vue'
 import filesApi from '@/api/files/files.api'
 import { toast } from 'vue-sonner'
-import { useCreateFolder } from '@/queries/useFoldersQuery'
+import { useCreateFolder, useGetFoldersUser } from '@/queries/useFoldersQuery'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
   () => import('@/components/folders/CrearCarpetaDialog.vue'),
 )
 
+const { data: dataFolders } = useGetFoldersUser()
 const { data: dataFiles } = useGetFilesUser()
+
 const {
   mutateAsync: mutateCreate,
   isSuccess: successCreate,
@@ -108,7 +110,7 @@ async function crearCarpeta(nombre: string) {
 
     <Table>
       <TableCaption v-if="dataFiles && dataFiles.length < 1"
-        >Los archivos que subas se mostrarán aquí.</TableCaption
+        >Los archivos y carpetas que subas se mostrarán aquí.</TableCaption
       >
 
       <TableHeader class="bg-neutral-100">
@@ -122,6 +124,41 @@ async function crearCarpeta(nombre: string) {
       </TableHeader>
 
       <TableBody v-if="dataFiles && dataFiles.length > 0">
+        <!-- Carpetas -->
+        <TableRow v-for="folder in dataFolders" :key="folder.id">
+          <TableCell class="font-medium">
+            <div class="flex items-center gap-2">
+              <Folder :size="20" />
+              {{ folder.nombre_original }}
+            </div>
+          </TableCell>
+          <TableCell class="font-medium">
+            {{ folder.nombre_usuario }}
+          </TableCell>
+          <TableCell class="font-medium"> - </TableCell>
+          <TableCell class="font-medium">
+            {{ formatDateService(folder.fecha_creacion) }}
+          </TableCell>
+          <TableCell>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="outline" size="icon" class="hover:cursor-pointer">
+                  <Ellipsis />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
+                  <Download />
+                  Descargar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TableCell>
+        </TableRow>
+
+        <!-- Archivos -->
         <TableRow v-for="file in dataFiles" :key="file.id">
           <TableCell class="font-medium">
             {{ file.nombre_original }}
