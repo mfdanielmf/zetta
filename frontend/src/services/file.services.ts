@@ -31,15 +31,7 @@ export function formatearTamañoService(bytes: number, decimales: number = 2) {
 }
 
 export async function insertarFilesService(data: FormData) {
-  try {
-    const req = await filesApi.subirArchivosUsuario(data)
+  const req = await filesApi.subirArchivosUsuario(data)
 
-    toast.success(req.data.msg)
-  } catch (e: unknown) {
-    if (axios.isAxiosError(e)) {
-      toast.error(e.response?.data?.detail || 'Error al subir los archivos')
-    } else {
-      toast.error('Error al subir los archivos')
-    }
-  }
+  return req.data
 }

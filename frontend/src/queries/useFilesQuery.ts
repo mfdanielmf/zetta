@@ -1,6 +1,8 @@
 import { getFilesUserService, insertarFilesService } from '@/services/file.services'
 import { useAuthStore } from '@/stores/auth.store'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import axios from 'axios'
+import { toast } from 'vue-sonner'
 
 export function useGetFilesUser() {
   const authStore = useAuthStore()
@@ -18,7 +20,17 @@ export function useInsertFiles() {
 
   return useMutation({
     mutationFn: (data: FormData) => insertarFilesService(data),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ['archivos', authStore.usuario?.id] }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['archivos', authStore.usuario?.id] })
+
+      toast.success(data?.msg || 'Se han subido los archivos correctamente')
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al subir los archivos')
+      } else {
+        toast.error('Error al subir los archivos')
+      }
+    },
   })
 }
