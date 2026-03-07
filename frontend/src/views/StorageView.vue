@@ -26,6 +26,7 @@ import { defineAsyncComponent, ref } from 'vue'
 import filesApi from '@/api/files/files.api'
 import { toast } from 'vue-sonner'
 import { useCreateFolder, useGetFoldersUser } from '@/queries/useFoldersQuery'
+import getIconExtension from '@/utils/iconMap'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
@@ -123,7 +124,9 @@ async function crearCarpeta(nombre: string) {
         </TableRow>
       </TableHeader>
 
-      <TableBody v-if="dataFolders && dataFolders.length > 0">
+      <TableBody
+        v-if="(dataFiles && dataFiles.length > 0) || (dataFolders && dataFolders.length > 0)"
+      >
         <!-- Carpetas -->
         <TableRow v-for="folder in dataFolders" :key="folder.id">
           <TableCell class="font-medium">
@@ -161,7 +164,10 @@ async function crearCarpeta(nombre: string) {
         <!-- Archivos -->
         <TableRow v-for="file in dataFiles" :key="file.id">
           <TableCell class="font-medium">
-            {{ file.nombre_original }}
+            <div class="flex items-center gap-2">
+              <component :is="getIconExtension(file.nombre_original)" :size="20" />
+              {{ file.nombre_original }}
+            </div>
           </TableCell>
           <TableCell class="font-medium">
             {{ file.nombre_usuario }}
