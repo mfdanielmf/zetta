@@ -29,6 +29,11 @@ class ArchivoNoEncontradoException(Exception):
     pass
 
 
+# CARPETAS
+class CarpetaNoEncontradaException(Exception):
+    pass
+
+
 # GENERAL
 class IdYaUsadaException(Exception):
     pass

@@ -50,3 +50,8 @@ def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current
         )
         for carpeta in carpetas
     ]
+
+
+@folder_router.post("/{id_carpeta}/files")
+def upload_file_to_folder(id_carpeta: str, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+    return id_carpeta
