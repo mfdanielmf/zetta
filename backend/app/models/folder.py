@@ -20,3 +20,5 @@ class Folder(Base):
 
     usuario = relationship(
         "User", back_populates="carpetas", passive_deletes=True)
+    archivos = relationship(
+        "File", back_populates="carpeta", passive_deletes=True)
