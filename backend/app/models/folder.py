@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship
 
 from app.database.db import Base
 
+
 class Folder(Base):
     __tablename__ = "carpetas"
 
@@ -13,6 +14,9 @@ class Folder(Base):
     nombre_original = Column(String(100), nullable=False)
     path = Column(String, nullable=False)
     fecha_creacion = Column(DateTime, default=func.now())
-    id_usuario = Column(UUID(as_uuid=True), ForeignKey("usuarios.id"), nullable=False)
-    
-    usuario = relationship("User", back_populates="carpetas", passive_deletes=True)
+
+    id_usuario = Column(UUID(as_uuid=True), ForeignKey(
+        "usuarios.id"), nullable=False)
+
+    usuario = relationship(
+        "User", back_populates="carpetas", passive_deletes=True)

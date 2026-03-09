@@ -12,8 +12,11 @@ class File(Base):
     path = Column(String, nullable=False)
     tamaño_bytes = Column(BigInteger, nullable=False)
     fecha_creacion = Column(DateTime, default=func.now())
+
     id_usuario = Column(UUID(as_uuid=True), ForeignKey(
         "usuarios.id"), nullable=False)
+    id_carpeta = Column(UUID(as_uuid=True), ForeignKey(
+        "carpetas.id"), nullable=True)
 
     usuario = relationship(
         "User", back_populates="archivos", passive_deletes=True)
