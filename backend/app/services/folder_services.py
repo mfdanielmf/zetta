@@ -62,20 +62,28 @@ def obtener_carpeta_usuario_id(id_carpeta: str, usuario: User, db: Session) -> F
     return carpeta
 
 
-def subir_archivo_carpeta(id_carpeta: str, archivo: File, db: Session, usuario: User):
+def subir_archivo_carpeta_disco(file_path: str, data: bytes):
     """
     CarpetaNoEncontradaException
     """
-    carpeta: Folder = obtener_carpeta_usuario_id(
-        id_carpeta=id_carpeta, db=db, usuario=usuario)
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with file_path.open("wb") as f:
+        f.write(data)
+
+    return
 
 
-async def guardar_archivo_carpeta_disco(id_carpeta: str, file_upload: UploadFile, db: Session, usuario: User):
+async def guardar_archivo_carpeta(id_carpeta: str, file_upload: UploadFile, db: Session, usuario: User) -> File:
     """
     TamañoExcedidoException, CarpetaNoEncontradaException
     """
     carpeta: Folder = obtener_carpeta_usuario_id(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+    if not carpeta:
+        raise CarpetaNoEncontradaException(
+            f"No se ha encontrado la carpeta con id {id_carpeta}")
 
     data = await file_upload.read()
 
@@ -91,10 +99,13 @@ async def guardar_archivo_carpeta_disco(id_carpeta: str, file_upload: UploadFile
     ruta_usuario = UPLOAD_DIR / str(usuario.id)
     ruta_usuario.mkdir(parents=True, exist_ok=True)
 
-    file_path = ruta_usuario / id_carpeta / f"{str(id_file)}.{extension}"
+    file_path = ruta_usuario / str(id_carpeta) / f"{str(id_file)}.{extension}"
 
     archivo: File = File(id=id_file, nombre_original=nombre_original,
-                         path=str(file_path), id_usuario=usuario.id, tamaño_bytes=len(data))
+                         path=str(file_path), id_usuario=usuario.id, tamaño_bytes=len(data), id_carpeta=id_carpeta)
 
-    archivo_guardado: File = subir_archivo_carpeta(
-        id_carpeta=id_carpeta, archivo=archivo, db=db, usuario=usuario)
+    archivo_guardado: File = insert_file_db(archivo=archivo, db=db)
+
+    subir_archivo_carpeta_disco(file_path=file_path, data=data)
+
+    return archivo_guardado
