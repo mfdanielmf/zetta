@@ -32,7 +32,8 @@ async def upload_file(file_upload: list[UploadFile] = File(...), db: Session = D
                     tamaño_bytes=archivo.tamaño_bytes,
                     fecha_creacion=archivo.fecha_creacion,
                     id_usuario=archivo.id_usuario,
-                    nombre_usuario=archivo.usuario.nombre
+                    nombre_usuario=archivo.usuario.nombre,
+                    id_carpeta=archivo.id_carpeta
                 ) for archivo in archivos
             ]
         }
@@ -56,7 +57,8 @@ def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current
             tamaño_bytes=archivo_db.tamaño_bytes,
             fecha_creacion=archivo_db.fecha_creacion,
             id_usuario=archivo_db.id_usuario,
-            nombre_usuario=archivo_db.usuario.nombre
+            nombre_usuario=archivo_db.usuario.nombre,
+            id_carpeta=archivo_db.id_carpeta
         )
         for archivo_db in archivos
     ]
