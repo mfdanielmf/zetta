@@ -10,7 +10,7 @@ from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folder_original_name, get_folders_user
-from app.repositories.file_repo import insert_file_db
+from app.repositories.file_repo import insert_file_db, get_file_by_name_in_folder
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -76,7 +76,7 @@ def subir_archivo_carpeta_disco(file_path: str, data: bytes):
 
 async def guardar_archivo_carpeta(id_carpeta: str, file_upload: UploadFile, db: Session, usuario: User) -> File:
     """
-    TamañoExcedidoException, CarpetaNoEncontradaException
+    TamañoExcedidoException, CarpetaNoEncontradaException, NombreYaUsadoException
     """
     carpeta: Folder = obtener_carpeta_usuario_id(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
@@ -84,6 +84,13 @@ async def guardar_archivo_carpeta(id_carpeta: str, file_upload: UploadFile, db: 
     if not carpeta:
         raise CarpetaNoEncontradaException(
             f"No se ha encontrado la carpeta con id {id_carpeta}")
+
+    file_db: File | None = get_file_by_name_in_folder(
+        nombre_original=file_upload.filename, id_carpeta=carpeta.id, usuario=usuario, db=db)
+
+    if file_db:
+        raise NombreYaUsadoException(
+            f"Ya existe un archivo con el nombre '{file_upload.filename}' en la carpeta '{carpeta.nombre_original}'")
 
     data = await file_upload.read()
 

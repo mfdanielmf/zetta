@@ -79,3 +79,5 @@ async def upload_file_to_folder(id_carpeta: UUID, archivo: UploadFile = FileFA(.
         raise HTTPException(413, str(e1))
     except CarpetaNoEncontradaException as e2:
         raise HTTPException(404, str(e2))
+    except NombreYaUsadoException as e3:
+        raise HTTPException(409, str(e3))

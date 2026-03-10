@@ -16,9 +16,14 @@ def insert_file_db(archivo: File, db: Session) -> File:
 def get_file_by_id_and_user(id: uuid.UUID, usuario: User, db: Session) -> File | None:
     return db.query(File).filter_by(id=id, id_usuario=usuario.id).first()
 
+
 def get_files_user(usuario: User, db: Session) -> list[File]:
     return db.query(File).filter_by(id_usuario=usuario.id).all()
 
 
 def get_file_original_name(nombre_original: str, usuario: User, db: Session) -> File | None:
     return db.query(File).filter_by(nombre_original=nombre_original, id_usuario=usuario.id).first()
+
+
+def get_file_by_name_in_folder(nombre_original: str, id_carpeta: uuid.UUID, usuario: User, db: Session) -> File | None:
+    return db.query(File).filter_by(nombre_original=nombre_original, id_carpeta=id_carpeta, id_usuario=usuario.id).first()
