@@ -1,13 +1,8 @@
-from enum import Enum
 import uuid
 from app.models.file import File
 from sqlalchemy.orm import Session
 
 from app.models.user import User
-
-
-class OpcionesIdCarpeta(Enum):
-    ninguna = None
 
 
 def insert_file_db(archivo: File, db: Session) -> File:
