@@ -15,8 +15,7 @@ client = TestClient(app=app)
 
 
 def test_descargar_archivo_id_formato_incorrecto():
-    usuario = override_get_current_user()
-    app.dependency_overrides[get_current_user] = lambda: usuario
+    app.dependency_overrides[get_current_user] = override_get_current_user
 
     response = client.get("/api/files/idmuyreal")
 
