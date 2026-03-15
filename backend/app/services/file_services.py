@@ -5,10 +5,12 @@ from fastapi import UploadFile
 from sqlalchemy.orm import Session
 from app.models.exceptions import TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
 from app.models.file import File
+from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user, get_file_by_name_in_folder
+from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user, get_file_by_name_in_folder, get_all_files_in_folder
 
 from app.config import config
+from app.services.folder_services import obtener_carpeta_usuario_id
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -83,3 +85,12 @@ def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario:
 
 def obtener_archivos_usuario(usuario: User, db: Session) -> list[File]:
     return get_files_user(usuario=usuario, db=db)
+
+
+def obtener_archivos_carpeta(id_carpeta: uuid.UUID, db: Session, usuario: User) -> list[File]:
+    """
+    CarpetaNoEncontradaException
+    """
+    obtener_carpeta_usuario_id(id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+    return get_all_files_in_folder(db=db, id_carpeta=id_carpeta, usuario=usuario)

@@ -9,11 +9,29 @@ from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.schemas.file_schemas import FileBase
+from app.services.file_services import obtener_archivos_carpeta
 from app.services.auth_services import get_current_user
 from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario, guardar_archivo_carpeta
 from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, UploadFileFolderResponse
 
 folder_router = APIRouter()
+
+
+@folder_router.get("", response_model=list[FolderBase])
+def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+    carpetas: list[Folder] = obtener_carpetas_usuario(usuario=usuario, db=db)
+
+    return [
+        FolderBase(
+            id=carpeta.id,
+            nombre_original=carpeta.nombre_original,
+            path=carpeta.path,
+            fecha_creacion=carpeta.fecha_creacion,
+            id_usuario=carpeta.id_usuario,
+            nombre_usuario=carpeta.usuario.nombre
+        )
+        for carpeta in carpetas
+    ]
 
 
 @folder_router.post("", response_model=FolderResponse)
@@ -39,20 +57,27 @@ def create_folder(req: FolderRequest, db: Session = Depends(get_db), usuario: Us
         raise HTTPException(409, str(e2))
 
 
-@folder_router.get("", response_model=list[FolderBase])
-def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
-    carpetas: list[Folder] = obtener_carpetas_usuario(usuario=usuario, db=db)
+@folder_router.get("/{id_carpeta}/files", response_model=list[FileBase])
+def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+    try:
+        archivos: list[File] = obtener_archivos_carpeta(
+            db=db, id_carpeta=id_carpeta, usuario=usuario)
+    except CarpetaNoEncontradaException:
+        raise HTTPException(
+            404, f"No se ha encontrado la carpeta con id {id_carpeta}")
 
     return [
-        FolderBase(
-            id=carpeta.id,
-            nombre_original=carpeta.nombre_original,
-            path=carpeta.path,
-            fecha_creacion=carpeta.fecha_creacion,
-            id_usuario=carpeta.id_usuario,
-            nombre_usuario=carpeta.usuario.nombre
+        FileBase(
+            id=archivo.id,
+            nombre_original=archivo.nombre_original,
+            path=archivo.path,
+            tamaño_bytes=archivo.tamaño_bytes,
+            fecha_creacion=archivo.fecha_creacion,
+            id_usuario=archivo.id_usuario,
+            nombre_usuario=archivo.usuario.nombre,
+            id_carpeta=archivo.id_carpeta
         )
-        for carpeta in carpetas
+        for archivo in archivos
     ]
 
 
