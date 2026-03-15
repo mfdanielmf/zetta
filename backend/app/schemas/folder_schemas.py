@@ -3,6 +3,8 @@ import uuid
 
 from pydantic import BaseModel, ConfigDict
 
+from app.schemas.file_schemas import FileBase
+
 
 class FolderRequest(BaseModel):
     nombre_carpeta: str
@@ -24,3 +26,10 @@ class FolderResponse(BaseModel):
 
     msg: str
     carpeta: FolderBase
+
+
+class UploadFileFolderResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    msg: str
+    archivo: FileBase

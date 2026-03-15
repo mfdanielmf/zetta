@@ -12,6 +12,7 @@ class FileBase(BaseModel):
     fecha_creacion: datetime
     tamaño_bytes: int
     id_usuario: uuid.UUID
+    id_carpeta: uuid.UUID | None
     nombre_usuario: str
 
 

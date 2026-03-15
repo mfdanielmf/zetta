@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.models.exceptions import TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
 from app.models.file import File
 from app.models.user import User
-from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user, get_file_original_name
+from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user, get_file_by_name_in_folder
 
 from app.config import config
 
@@ -52,7 +52,9 @@ def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario:
     """
     IdYaUsadaException, NombreYaUsadoException
     """
-    if get_file_original_name(nombre_original=nombre_original, usuario=usuario, db=db):
+
+    # Si hay un archivo con el mismo nombre en la raiz (no tiene id_carpeta), salimos
+    if get_file_by_name_in_folder(nombre_original=nombre_original, usuario=usuario, db=db):
         raise NombreYaUsadoException(
             f"Ya hay un archivo con el nombre '{nombre_original}'. Cambia el nombre")
 

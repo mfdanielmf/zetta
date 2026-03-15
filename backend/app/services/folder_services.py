@@ -1,16 +1,20 @@
 from pathlib import Path
 import uuid
 
+from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 from app.config import config
-from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException
+from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException, CarpetaNoEncontradaException, TamañoExcedidoException
+from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folder_original_name, get_folders_user
+from app.repositories.file_repo import insert_file_db, get_file_by_name_in_folder
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
+TAMAÑO_LIMITE = config.TAMAÑO_LIMITE
 
 
 def crear_carpeta(nombre: str, usuario: User, db: Session) -> Folder:
@@ -43,3 +47,72 @@ def crear_carpeta(nombre: str, usuario: User, db: Session) -> Folder:
 
 def obtener_carpetas_usuario(usuario: User, db: Session) -> list[Folder]:
     return get_folders_user(id_usuario=usuario.id, db=db)
+
+
+def obtener_carpeta_usuario_id(id_carpeta: str, usuario: User, db: Session) -> Folder:
+    """
+    CarpetaNoEncontradaException
+    """
+    carpeta: Folder = get_folder_id_user(id=id_carpeta, db=db, usuario=usuario)
+
+    if not carpeta:
+        raise CarpetaNoEncontradaException(
+            f"No se ha encontrado la carpeta con id {id_carpeta}")
+
+    return carpeta
+
+
+def subir_archivo_carpeta_disco(file_path: str, data: bytes):
+    """
+    CarpetaNoEncontradaException
+    """
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with file_path.open("wb") as f:
+        f.write(data)
+
+    return
+
+
+async def guardar_archivo_carpeta(id_carpeta: str, file_upload: UploadFile, db: Session, usuario: User) -> File:
+    """
+    TamañoExcedidoException, CarpetaNoEncontradaException, NombreYaUsadoException
+    """
+    carpeta: Folder = obtener_carpeta_usuario_id(
+        id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+    if not carpeta:
+        raise CarpetaNoEncontradaException(
+            f"No se ha encontrado la carpeta con id {id_carpeta}")
+
+    file_db: File | None = get_file_by_name_in_folder(
+        nombre_original=file_upload.filename, id_carpeta=carpeta.id, usuario=usuario, db=db)
+
+    if file_db:
+        raise NombreYaUsadoException(
+            f"Ya existe un archivo con el nombre '{file_upload.filename}' en la carpeta '{carpeta.nombre_original}'")
+
+    data = await file_upload.read()
+
+    if len(data) > TAMAÑO_LIMITE:
+        raise TamañoExcedidoException(
+            f"Has excedido el tamaño máximo de subida")
+
+    id_file: uuid.UUID = uuid.uuid4()
+    nombre_original = file_upload.filename
+
+    extension = nombre_original.split(".").pop()
+
+    ruta_usuario = UPLOAD_DIR / str(usuario.id)
+    ruta_usuario.mkdir(parents=True, exist_ok=True)
+
+    file_path = ruta_usuario / str(id_carpeta) / f"{str(id_file)}.{extension}"
+
+    archivo: File = File(id=id_file, nombre_original=nombre_original,
+                         path=str(file_path), id_usuario=usuario.id, tamaño_bytes=len(data), id_carpeta=id_carpeta)
+
+    archivo_guardado: File = insert_file_db(archivo=archivo, db=db)
+
+    subir_archivo_carpeta_disco(file_path=file_path, data=data)
+
+    return archivo_guardado
