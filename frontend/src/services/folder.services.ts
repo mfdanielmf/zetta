@@ -21,3 +21,17 @@ export async function obtenerCarpetasService() {
     }
   }
 }
+
+export async function obtenerArchivosCarpetaService(id_carpeta: string) {
+  try {
+    const req = await foldersApi.obtenerArchivosCarpeta(id_carpeta)
+
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.detail || 'Error al obtener los archivos de la carpeta')
+    } else {
+      toast.error('Error al obtener los archivos de la carpeta')
+    }
+  }
+}
