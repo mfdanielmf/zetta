@@ -29,6 +29,5 @@ def get_file_by_name_in_folder(nombre_original: str, usuario: User, db: Session,
     return db.query(File).filter_by(nombre_original=nombre_original, id_carpeta=id_carpeta, id_usuario=usuario.id).first()
 
 
-# # Archivos que el usuario tiene en la raíz del almacenamiento
-# def get_file_id_no_folder(id_archivo: uuid.UUID, usuario: User, db: Session) -> File | None:
-#     return db.query(File).filter_by(id=id_archivo, id_usuario=usuario.id, id_carpeta=None)
+def get_all_files_in_folder(id_carpeta: uuid.UUID, db: Session, usuario: User) -> list[File]:
+    return db.query(File).filter_by(id_carpeta=id_carpeta, id_usuario=usuario.id).all()

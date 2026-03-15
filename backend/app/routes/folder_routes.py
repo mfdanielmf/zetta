@@ -9,6 +9,7 @@ from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.schemas.file_schemas import FileBase
+from app.services.file_services import obtener_archivos_carpeta
 from app.services.auth_services import get_current_user
 from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario, guardar_archivo_carpeta
 from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, UploadFileFolderResponse
@@ -53,6 +54,30 @@ def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current
             nombre_usuario=carpeta.usuario.nombre
         )
         for carpeta in carpetas
+    ]
+
+
+@folder_router.get("/{id_carpeta}/files", response_model=list[FileBase])
+def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+    try:
+        archivos: list[File] = obtener_archivos_carpeta(
+            db=db, id_carpeta=id_carpeta, usuario=usuario)
+    except CarpetaNoEncontradaException:
+        raise HTTPException(
+            404, f"No se ha encontrado la carpeta con id {id_carpeta}")
+
+    return [
+        FileBase(
+            id=archivo.id,
+            nombre_original=archivo.nombre_original,
+            path=archivo.path,
+            tamaño_bytes=archivo.tamaño_bytes,
+            fecha_creacion=archivo.fecha_creacion,
+            id_usuario=archivo.id_usuario,
+            nombre_usuario=archivo.usuario.nombre,
+            id_carpeta=archivo.id_carpeta
+        )
+        for archivo in archivos
     ]
 
 
