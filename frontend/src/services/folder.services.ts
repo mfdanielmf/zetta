@@ -33,5 +33,7 @@ export async function obtenerArchivosCarpetaService(id_carpeta: string) {
     } else {
       toast.error('Error al obtener los archivos de la carpeta')
     }
+
+    throw e
   }
 }

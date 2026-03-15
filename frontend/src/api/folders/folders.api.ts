@@ -15,6 +15,6 @@ export default {
     return api().get<GetFoldersResponse>(URL)
   },
   obtenerArchivosCarpeta(id_carpeta: string) {
-    return api().get<GetFilesFolderResponse>(URL + `/${id_carpeta}`)
+    return api().get<GetFilesFolderResponse>(URL + `/${id_carpeta}/files`)
   },
 }
