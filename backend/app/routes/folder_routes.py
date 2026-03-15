@@ -17,6 +17,23 @@ from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse
 folder_router = APIRouter()
 
 
+@folder_router.get("", response_model=list[FolderBase])
+def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+    carpetas: list[Folder] = obtener_carpetas_usuario(usuario=usuario, db=db)
+
+    return [
+        FolderBase(
+            id=carpeta.id,
+            nombre_original=carpeta.nombre_original,
+            path=carpeta.path,
+            fecha_creacion=carpeta.fecha_creacion,
+            id_usuario=carpeta.id_usuario,
+            nombre_usuario=carpeta.usuario.nombre
+        )
+        for carpeta in carpetas
+    ]
+
+
 @folder_router.post("", response_model=FolderResponse)
 def create_folder(req: FolderRequest, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
@@ -38,23 +55,6 @@ def create_folder(req: FolderRequest, db: Session = Depends(get_db), usuario: Us
         raise HTTPException(409, str(e))
     except NombreYaUsadoException as e2:
         raise HTTPException(409, str(e2))
-
-
-@folder_router.get("", response_model=list[FolderBase])
-def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
-    carpetas: list[Folder] = obtener_carpetas_usuario(usuario=usuario, db=db)
-
-    return [
-        FolderBase(
-            id=carpeta.id,
-            nombre_original=carpeta.nombre_original,
-            path=carpeta.path,
-            fecha_creacion=carpeta.fecha_creacion,
-            id_usuario=carpeta.id_usuario,
-            nombre_usuario=carpeta.usuario.nombre
-        )
-        for carpeta in carpetas
-    ]
 
 
 @folder_router.get("/{id_carpeta}/files", response_model=list[FileBase])

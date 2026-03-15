@@ -14,6 +14,25 @@ from app.services.auth_services import get_current_user
 file_router = APIRouter()
 
 
+@file_router.get("", response_model=list[FileBase])
+def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+    archivos: list[File] = obtener_archivos_usuario(usuario=usuario, db=db)
+
+    return [
+        FileBase(
+            id=archivo_db.id,
+            nombre_original=archivo_db.nombre_original,
+            path=archivo_db.path,
+            tamaño_bytes=archivo_db.tamaño_bytes,
+            fecha_creacion=archivo_db.fecha_creacion,
+            id_usuario=archivo_db.id_usuario,
+            nombre_usuario=archivo_db.usuario.nombre,
+            id_carpeta=archivo_db.id_carpeta
+        )
+        for archivo_db in archivos
+    ]
+
+
 @file_router.post("", response_model=FileResponse)
 async def upload_file(file_upload: list[UploadFile] = File(...), db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
@@ -43,25 +62,6 @@ async def upload_file(file_upload: list[UploadFile] = File(...), db: Session = D
         raise HTTPException(409, str(e2))
     except NombreYaUsadoException as e3:
         raise HTTPException(409, str(e3))
-
-
-@file_router.get("", response_model=list[FileBase])
-def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
-    archivos: list[File] = obtener_archivos_usuario(usuario=usuario, db=db)
-
-    return [
-        FileBase(
-            id=archivo_db.id,
-            nombre_original=archivo_db.nombre_original,
-            path=archivo_db.path,
-            tamaño_bytes=archivo_db.tamaño_bytes,
-            fecha_creacion=archivo_db.fecha_creacion,
-            id_usuario=archivo_db.id_usuario,
-            nombre_usuario=archivo_db.usuario.nombre,
-            id_carpeta=archivo_db.id_carpeta
-        )
-        for archivo_db in archivos
-    ]
 
 
 @file_router.get("/{id_archivo}", response_class=FileResp)
