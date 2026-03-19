@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store'
 import { toast } from 'vue-sonner'
-import foldersApi from '@/api/folders/folders.api'
+import { useQueryClient } from '@tanstack/vue-query'
+import { obtenerArchivosCarpetaService } from '@/services/folder.services'
 
 const MainLayout = () => import('@/layouts/MainLayout.vue')
 const AuthLayout = () => import('@/layouts/AuthLayout.vue')
@@ -55,6 +56,7 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
+  const queryClient = useQueryClient()
 
   if (to.meta.authRequired) {
     if (authStore.logueado) return
@@ -68,10 +70,16 @@ router.beforeEach(async (to) => {
   }
 
   if (to.name === 'carpeta') {
+    const idCarpeta = to.params.id
+
     try {
-      await foldersApi.obtenerArchivosCarpeta(to.params.id as string)
+      await queryClient.fetchQuery({
+        queryKey: ['archivosCarpeta', authStore.usuario?.id, idCarpeta],
+        queryFn: () => obtenerArchivosCarpetaService(idCarpeta as string),
+        retry: false,
+      })
     } catch {
-      return { name: 'archivos' }
+      return { name: 'archivos', replace: true }
     }
   }
 })
