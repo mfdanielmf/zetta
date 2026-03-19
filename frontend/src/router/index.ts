@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth.store'
 import { toast } from 'vue-sonner'
 import { useQueryClient } from '@tanstack/vue-query'
 import { obtenerArchivosCarpetaService } from '@/services/folder.services'
+import { useFolderStore } from '@/stores/folder.store'
 
 const MainLayout = () => import('@/layouts/MainLayout.vue')
 const AuthLayout = () => import('@/layouts/AuthLayout.vue')
@@ -81,6 +82,15 @@ router.beforeEach(async (to) => {
     } catch {
       return { name: 'archivos', replace: true }
     }
+  }
+})
+
+// Resetear breadcrumb al salir de los detalles de la carpeta
+router.afterEach((to) => {
+  const folderStore = useFolderStore()
+
+  if (to.name != 'carpeta') {
+    folderStore.limpiarCarpeta()
   }
 })
 

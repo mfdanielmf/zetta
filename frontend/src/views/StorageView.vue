@@ -27,11 +27,16 @@ import filesApi from '@/api/files/files.api'
 import { toast } from 'vue-sonner'
 import { useCreateFolder, useGetFoldersUser } from '@/queries/useFoldersQuery'
 import getIconExtension from '@/utils/iconMap'
+import { useRouter } from 'vue-router'
+import { useFolderStore } from '@/stores/folder.store'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
   () => import('@/components/folders/CrearCarpetaDialog.vue'),
 )
+
+const router = useRouter()
+const folderStore = useFolderStore()
 
 const { data: dataFolders } = useGetFoldersUser()
 const { data: dataFiles } = useGetFilesUser()
@@ -70,6 +75,12 @@ async function crearCarpeta(nombre: string) {
   await mutateCreate(nombre)
 
   if (successCreate) crearAbierto.value = false
+}
+
+function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
+  folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
+
+  router.push({ name: 'carpeta', params: { id: idCarpeta } })
 }
 </script>
 
@@ -128,7 +139,12 @@ async function crearCarpeta(nombre: string) {
         v-if="(dataFiles && dataFiles.length > 0) || (dataFolders && dataFolders.length > 0)"
       >
         <!-- Carpetas -->
-        <TableRow v-for="folder in dataFolders" :key="folder.id">
+        <TableRow
+          v-for="folder in dataFolders"
+          :key="folder.id"
+          @click="handleNavigationDetallesCarpeta(folder.id, folder.nombre_original)"
+          class="hover:cursor-pointer"
+        >
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
               <Folder :size="20" />
