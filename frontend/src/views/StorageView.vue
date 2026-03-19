@@ -22,7 +22,7 @@ import {
 import { useGetFilesUser } from '@/queries/useFilesQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { Download, Ellipsis, Folder, FolderPlus, Plus, Upload } from 'lucide-vue-next'
-import { defineAsyncComponent, ref } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import filesApi from '@/api/files/files.api'
 import { toast } from 'vue-sonner'
 import { useCreateFolder, useGetFoldersUser } from '@/queries/useFoldersQuery'
@@ -38,8 +38,29 @@ const CrearCarpetaDialog = defineAsyncComponent(
 const router = useRouter()
 const folderStore = useFolderStore()
 
-const { data: dataFolders } = useGetFoldersUser()
-const { data: dataFiles } = useGetFilesUser()
+const { data: dataFolders, isLoading: loadingFolders } = useGetFoldersUser()
+const { data: dataFiles, isLoading: loadingFiles } = useGetFilesUser()
+
+const cargando = computed(() => {
+  if (loadingFiles.value || loadingFolders.value) {
+    return true
+  }
+
+  return false
+})
+
+const noData = computed(() => {
+  if (
+    !dataFiles.value ||
+    dataFiles.value.length < 1 ||
+    !dataFolders.value ||
+    dataFolders.value.length < 1
+  ) {
+    return true
+  }
+
+  return false
+})
 
 const {
   mutateAsync: mutateCreate,
@@ -121,9 +142,9 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
     />
 
     <Table>
-      <TableCaption v-if="dataFiles && dataFiles.length < 1"
-        >Los archivos y carpetas que subas se mostrarán aquí.</TableCaption
-      >
+      <TableCaption v-if="cargando || noData">
+        {{ cargando ? 'Cargando...' : 'Los archivos y carpetas que subas se mostrarán aquí.' }}
+      </TableCaption>
 
       <TableHeader class="bg-neutral-100">
         <TableRow>
@@ -161,7 +182,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
           <TableCell>
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
-                <Button variant="outline" size="icon" class="hover:cursor-pointer">
+                <Button variant="outline" size="icon" class="hover:cursor-pointer" @click.stop>
                   <Ellipsis />
                 </Button>
               </DropdownMenuTrigger>
