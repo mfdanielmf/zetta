@@ -14,7 +14,11 @@ import TableHead from '@/components/ui/table/TableHead.vue'
 import TableHeader from '@/components/ui/table/TableHeader.vue'
 import TableRow from '@/components/ui/table/TableRow.vue'
 import { useGetFilesFolder } from '@/queries/useFoldersQuery'
-import { formatDateService, formatearTamañoService } from '@/services/file.services'
+import {
+  downloadFileService,
+  formatDateService,
+  formatearTamañoService,
+} from '@/services/file.services'
 import getIconExtension from '@/utils/iconMap'
 import { Download, Ellipsis } from 'lucide-vue-next'
 import { computed } from 'vue'
@@ -32,6 +36,10 @@ const noData = computed(() => {
 })
 
 const { data, isLoading } = useGetFilesFolder(route.params.id as string)
+
+async function descargarArchivo(id: string, nombre: string) {
+  await downloadFileService(id, nombre)
+}
 </script>
 
 <template>
@@ -113,7 +121,10 @@ const { data, isLoading } = useGetFilesFolder(route.params.id as string)
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem class="hover:cursor-pointer">
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="descargarArchivo(file.id, file.nombre_original)"
+                >
                   <Download />
                   Descargar
                 </DropdownMenuItem>

@@ -20,11 +20,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import { useGetFilesUser } from '@/queries/useFilesQuery'
-import { formatDateService, formatearTamañoService } from '@/services/file.services'
+import {
+  downloadFileService,
+  formatDateService,
+  formatearTamañoService,
+} from '@/services/file.services'
 import { Download, Ellipsis, Folder, FolderPlus, Plus, Upload } from 'lucide-vue-next'
 import { computed, defineAsyncComponent, ref } from 'vue'
-import filesApi from '@/api/files/files.api'
-import { toast } from 'vue-sonner'
 import { useCreateFolder, useGetFoldersUser } from '@/queries/useFoldersQuery'
 import getIconExtension from '@/utils/iconMap'
 import { useRouter } from 'vue-router'
@@ -72,24 +74,7 @@ const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
 
 async function descargarArchivo(id: string, nombre: string) {
-  try {
-    const req = await filesApi.descargarArchivo(id)
-
-    const blob = new Blob([req.data], {
-      type: req.headers['content-type'],
-    })
-
-    const url = window.URL.createObjectURL(blob)
-
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', nombre)
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-  } catch {
-    toast.error('Ha ocurrido un error al descargar los archivos')
-  }
+  await downloadFileService(id, nombre)
 }
 
 async function crearCarpeta(nombre: string) {
