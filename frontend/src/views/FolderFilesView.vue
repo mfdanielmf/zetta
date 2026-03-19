@@ -1,19 +1,24 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue'
-import DropdownMenu from '@/components/ui/dropdown-menu/DropdownMenu.vue'
-import DropdownMenuContent from '@/components/ui/dropdown-menu/DropdownMenuContent.vue'
-import DropdownMenuItem from '@/components/ui/dropdown-menu/DropdownMenuItem.vue'
-import DropdownMenuLabel from '@/components/ui/dropdown-menu/DropdownMenuLabel.vue'
-import DropdownMenuSeparator from '@/components/ui/dropdown-menu/DropdownMenuSeparator.vue'
-import DropdownMenuTrigger from '@/components/ui/dropdown-menu/DropdownMenuTrigger.vue'
-import Table from '@/components/ui/table/Table.vue'
-import TableBody from '@/components/ui/table/TableBody.vue'
-import TableCaption from '@/components/ui/table/TableCaption.vue'
-import TableCell from '@/components/ui/table/TableCell.vue'
-import TableHead from '@/components/ui/table/TableHead.vue'
-import TableHeader from '@/components/ui/table/TableHeader.vue'
-import TableRow from '@/components/ui/table/TableRow.vue'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { useGetFilesFolder } from '@/queries/useFoldersQuery'
+
 import {
   downloadFileService,
   formatDateService,
@@ -136,13 +141,3 @@ async function descargarArchivo(id: string, nombre: string) {
     </Table>
   </div>
 </template>
-
-<!-- <template>
-  <h1>test</h1>
-
-  <p v-if="isLoading">Cargando...</p>
-
-  <p v-else-if="data?.length">
-    {{ data[0]?.fecha_creacion }}
-  </p>
-</template> -->
