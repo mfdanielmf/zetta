@@ -21,3 +21,10 @@ export async function obtenerCarpetasService() {
     }
   }
 }
+
+export async function obtenerArchivosCarpetaService(id_carpeta: string) {
+  // Try catch manejado en el guard del router
+  const req = await foldersApi.obtenerArchivosCarpeta(id_carpeta)
+
+  return req.data
+}

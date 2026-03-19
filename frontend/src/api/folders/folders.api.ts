@@ -1,5 +1,9 @@
 import api from '../axios.config'
-import type { CreateFolderResponse, GetFoldersResponse } from '../types/types'
+import type {
+  CreateFolderResponse,
+  GetFilesFolderResponse,
+  GetFoldersResponse,
+} from '../types/types'
 
 const URL = '/api/folders'
 
@@ -9,5 +13,8 @@ export default {
   },
   obtenerCarpetasUsuario() {
     return api().get<GetFoldersResponse>(URL)
+  },
+  obtenerArchivosCarpeta(id_carpeta: string) {
+    return api().get<GetFilesFolderResponse>(URL + `/${id_carpeta}/files`)
   },
 }

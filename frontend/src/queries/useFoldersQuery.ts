@@ -1,4 +1,8 @@
-import { crearCarpetasService, obtenerCarpetasService } from '@/services/folder.services'
+import {
+  crearCarpetasService,
+  obtenerArchivosCarpetaService,
+  obtenerCarpetasService,
+} from '@/services/folder.services'
 import { useAuthStore } from '@/stores/auth.store'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import axios from 'axios'
@@ -32,5 +36,15 @@ export function useGetFoldersUser() {
     queryKey: ['carpetas', authStore.usuario?.id],
     queryFn: () => obtenerCarpetasService(),
     enabled: !!authStore.usuario?.id,
+  })
+}
+
+export function useGetFilesFolder(id_carpeta: string) {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['archivosCarpeta', authStore.usuario?.id, id_carpeta],
+    queryFn: () => obtenerArchivosCarpetaService(id_carpeta),
+    enabled: !!authStore.usuario?.id && !!id_carpeta,
   })
 }
