@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { useGetFilesUser } from '@/queries/useFilesQuery'
+import { useGetFilesUser, useInsertFiles } from '@/queries/useFilesQuery'
 import {
   downloadFileService,
   formatDateService,
@@ -42,6 +42,7 @@ const folderStore = useFolderStore()
 
 const { data: dataFolders, isLoading: loadingFolders } = useGetFoldersUser()
 const { data: dataFiles, isLoading: loadingFiles } = useGetFilesUser()
+const mutacionInsertar = useInsertFiles()
 
 const cargando = computed(() => {
   if (loadingFiles.value || loadingFolders.value) {
@@ -118,7 +119,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
       </DropdownMenuContent>
     </DropdownMenu>
 
-    <ArchivoDialog v-model:open="subirAbierto" />
+    <ArchivoDialog v-model:open="subirAbierto" :subir="mutacionInsertar" />
     <CrearCarpetaDialog
       v-model:open="crearAbierto"
       @crear-carpeta="crearCarpeta"

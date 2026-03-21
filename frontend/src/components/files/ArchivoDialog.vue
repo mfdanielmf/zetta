@@ -14,13 +14,15 @@ import { ref, useTemplateRef } from 'vue'
 import { formatearTamañoService } from '@/services/file.services'
 import { X } from 'lucide-vue-next'
 import Button from '../ui/button/Button.vue'
-import { useInsertFiles } from '@/queries/useFilesQuery'
 import ScrollArea from '../ui/scroll-area/ScrollArea.vue'
+import type { UseMutationReturnType } from '@tanstack/vue-query'
+
+const props = defineProps<{
+  subir: UseMutationReturnType<unknown, unknown, FormData, unknown>
+}>()
 
 const fileInput = useTemplateRef('fileInput')
 const archivos = ref<File[]>([])
-
-const { mutateAsync, isSuccess } = useInsertFiles()
 
 function handleChange(e: Event) {
   const target = e.target as HTMLInputElement
@@ -48,11 +50,12 @@ async function subirArchivo() {
   const formData = new FormData()
   archivos.value.forEach((archivo) => formData.append('file_upload', archivo))
 
-  await mutateAsync(formData)
-
-  if (isSuccess) {
+  //Catch vacío porque ya lo controla el onError de la mutación
+  //Para que no salte warning en consola
+  try {
+    await props.subir.mutateAsync(formData)
     eliminarArchivo()
-  }
+  } catch {}
 }
 
 function reiniciarInputArchivos() {
