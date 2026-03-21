@@ -82,10 +82,10 @@ def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario
 
 
 @folder_router.post("/{id_carpeta}/files", response_model=UploadFileFolderResponse)
-async def upload_file_to_folder(id_carpeta: UUID, archivo: UploadFile = FileFA(...), db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+async def upload_file_to_folder(id_carpeta: UUID, file_upload: UploadFile = FileFA(...), db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
         archivo_guardado: File = await guardar_archivo_carpeta(
-            id_carpeta=id_carpeta, file_upload=archivo, db=db, usuario=usuario)
+            id_carpeta=id_carpeta, file_upload=file_upload, db=db, usuario=usuario)
 
         return {
             "msg": "Archivo subido correctamente",

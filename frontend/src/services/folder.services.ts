@@ -28,3 +28,9 @@ export async function obtenerArchivosCarpetaService(id_carpeta: string) {
 
   return req.data
 }
+
+export async function subirArchivoCarpetaService(idCarpeta: string, data: FormData) {
+  const req = await foldersApi.subirArchivosCarpeta(idCarpeta, data)
+
+  return req.data
+}
