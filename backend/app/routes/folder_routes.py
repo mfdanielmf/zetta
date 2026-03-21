@@ -90,7 +90,7 @@ async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] 
             archivos.append(archivo_db)
 
         return {
-            "msg": "Archivo subido correctamente",
+            "msg": "Archivos subidos correctamente",
             "archivos": [
                 FileBase(
                     id=archivo_guardado.id,

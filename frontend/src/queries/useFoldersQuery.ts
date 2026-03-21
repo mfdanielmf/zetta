@@ -57,10 +57,12 @@ export function useUploadFileFolder() {
   return useMutation({
     mutationFn: ({ idCarpeta, data }: { idCarpeta: string; data: FormData }) =>
       subirArchivoCarpetaService(idCarpeta, data),
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['archivosCarpeta', authStore.usuario?.id, variables.idCarpeta],
       })
+
+      toast.success(data?.msg || 'Se han subido los archivos correctamente')
     },
     onError: (e: unknown) => {
       if (axios.isAxiosError(e)) {
