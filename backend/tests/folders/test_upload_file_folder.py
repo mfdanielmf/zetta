@@ -43,7 +43,7 @@ def test_subir_archivo_carpeta():
         response.json())
 
     assert response.status_code == 200
-    assert json_response.msg == "Archivo subido correctamente"
+    assert json_response.msg == "Archivos subidos correctamente"
     assert json_response.archivos[0].id == id_archivo
     assert json_response.archivos[0].id_usuario == usuario.id
     assert json_response.archivos[0].nombre_original == "testing.txt"
