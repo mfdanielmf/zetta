@@ -36,7 +36,7 @@ def test_subir_archivo_carpeta():
         mock_guardar.return_value = archivo_falso
 
         response = client.post(f"/api/folders/{id_carpeta}/files", files={
-            "archivo": ("testing.txt", io.BytesIO(b"Test"), "text/plain")
+            "file_upload": ("testing.txt", io.BytesIO(b"Test"), "text/plain")
         })
 
     json_response: UploadFileFolderResponse = UploadFileFolderResponse.model_validate(
@@ -61,7 +61,7 @@ def test_subir_archivo_carpeta_no_existente():
             f"No se ha encontrado la carpeta con id {id_carpeta}")
 
         response = client.post(f"/api/folders/{id_carpeta}/files", files={
-            "archivo": ("testing.txt", io.BytesIO(b"Test"), "text/plain")
+            "file_upload": ("testing.txt", io.BytesIO(b"Test"), "text/plain")
         })
 
     assert response.status_code == 404
@@ -92,7 +92,7 @@ def test_subir_archivo_carpeta_tamaño_excedido():
             "Has superado el tamaño límite")
 
         response = client.post(f"/api/folders/{id_carpeta}/files", files={
-            "archivo": ("testing.txt", io.BytesIO(b"Test"), "text/plain")
+            "file_upload": ("testing.txt", io.BytesIO(b"Test"), "text/plain")
         })
 
     assert response.status_code == 413
@@ -110,7 +110,7 @@ def test_subir_archivo_nombre_usado():
             "Ya hay un archivo con el nombre 'testing.txt' en la carpeta")
 
         response = client.post(f"/api/folders/{id_carpeta}/files", files={
-            "archivo": ("testing.txt", io.BytesIO(b"Test"), "text/plain")
+            "file_upload": ("testing.txt", io.BytesIO(b"Test"), "text/plain")
         })
 
     assert response.status_code == 409
