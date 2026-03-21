@@ -32,4 +32,4 @@ class UploadFileFolderResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     msg: str
-    archivo: FileBase
+    archivos: list[FileBase]
