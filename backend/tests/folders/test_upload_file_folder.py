@@ -44,10 +44,10 @@ def test_subir_archivo_carpeta():
 
     assert response.status_code == 200
     assert json_response.msg == "Archivo subido correctamente"
-    assert json_response.archivo.id == id_archivo
-    assert json_response.archivo.id_usuario == usuario.id
-    assert json_response.archivo.nombre_original == "testing.txt"
-    assert json_response.archivo.id_carpeta == id_carpeta
+    assert json_response.archivos[0].id == id_archivo
+    assert json_response.archivos[0].id_usuario == usuario.id
+    assert json_response.archivos[0].nombre_original == "testing.txt"
+    assert json_response.archivos[0].id_carpeta == id_carpeta
 
     app.dependency_overrides.clear()
 
