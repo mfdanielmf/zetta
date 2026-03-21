@@ -171,11 +171,8 @@ export interface components {
         };
         /** Body_upload_file_to_folder_api_folders__id_carpeta__files_post */
         Body_upload_file_to_folder_api_folders__id_carpeta__files_post: {
-            /**
-             * Archivo
-             * Format: binary
-             */
-            archivo: string;
+            /** File Upload */
+            file_upload: string[];
         };
         /** FileBase */
         FileBase: {
@@ -284,7 +281,8 @@ export interface components {
         UploadFileFolderResponse: {
             /** Msg */
             msg: string;
-            archivo: components["schemas"]["FileBase"];
+            /** Archivos */
+            archivos: components["schemas"]["FileBase"][];
         };
         /** UserCreate */
         UserCreate: {
