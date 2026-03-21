@@ -118,3 +118,68 @@ def test_subir_archivo_nombre_usado():
         "detail"] == "Ya hay un archivo con el nombre 'testing.txt' en la carpeta"
 
     app.dependency_overrides.clear()
+
+
+def test_subir_sin_archivo():
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+    response = client.post("/api/files")
+
+    assert response.status_code == 422
+
+    app.dependency_overrides.clear()
+
+
+def test_subir_varios_archivos_carpeta():
+    usuario: User = override_get_current_user()
+    app.dependency_overrides[get_current_user] = lambda: usuario
+
+    id_carpeta: uuid.UUID = uuid.uuid4()
+    id_archivo: uuid.UUID = uuid.uuid4()
+    id_archivo2: uuid.UUID = uuid.uuid4()
+
+    archivo_falso: File = File(
+        id=id_archivo,
+        nombre_original="testing.txt",
+        path="uploads/testing.txt",
+        tamaño_bytes=10,
+        fecha_creacion="2026-02-15T10:00:00",
+        id_usuario=usuario.id,
+        id_carpeta=id_carpeta,
+        usuario=usuario
+    )
+
+    archivo_falso2: File = File(
+        id=id_archivo2,
+        nombre_original="test2.txt",
+        tamaño_bytes="100",
+        path=f"uploads/test2.txt",
+        fecha_creacion="2026-01-22T01:44:31.825198",
+        id_usuario=usuario.id,
+        id_carpeta=id_carpeta,
+        usuario=usuario
+    )
+
+    archivos_falsos = [archivo_falso, archivo_falso2]
+
+    with patch("app.routes.folder_routes.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
+        mock_guardar.side_effect = archivos_falsos
+
+        response = client.post(f"/api/folders/{id_carpeta}/files", files=[
+            ("file_upload", ("testing.txt", io.BytesIO(b"Test1"), "text/plain")),
+            ("file_upload", ("test2.txt", io.BytesIO(b"Test2"), "text/plain"))
+        ])
+
+    archivo_response: UploadFileFolderResponse = UploadFileFolderResponse.model_validate(
+        response.json())
+
+    assert response.status_code == 200
+    for i, archivo in enumerate(archivos_falsos):
+        assert archivo_response.archivos[i].id == archivo.id
+        assert archivo_response.archivos[i].nombre_original == archivo.nombre_original
+        assert archivo_response.archivos[i].path == archivo.path
+        assert archivo_response.archivos[i].id_usuario == archivo.id_usuario
+        assert archivo_response.archivos[i].nombre_usuario == usuario.nombre
+        assert archivo_response.archivos[i].id_carpeta == archivo.id_carpeta
+
+    app.dependency_overrides.clear()
