@@ -8,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import DropdownMenuGroup from '@/components/ui/dropdown-menu/DropdownMenuGroup.vue'
 import {
   Table,
   TableBody,
@@ -17,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useGetFilesFolder } from '@/queries/useFoldersQuery'
+import { useGetFilesFolder, useUploadFileFolder } from '@/queries/useFoldersQuery'
 
 import {
   downloadFileService,
@@ -25,9 +26,11 @@ import {
   formatearTamañoService,
 } from '@/services/file.services'
 import getIconExtension from '@/utils/iconMap'
-import { Download, Ellipsis } from 'lucide-vue-next'
-import { computed } from 'vue'
+import { Download, Ellipsis, FolderPlus, Plus, Upload } from 'lucide-vue-next'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
+
+const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 
 const route = useRoute()
 
@@ -41,15 +44,26 @@ const noData = computed(() => {
 })
 
 const { data, isLoading } = useGetFilesFolder(route.params.id as string)
+const mutacionSubir = useUploadFileFolder()
+
+const subirAbierto = ref<boolean>(false)
+const crearAbierto = ref<boolean>(false)
 
 async function descargarArchivo(id: string, nombre: string) {
   await downloadFileService(id, nombre)
+}
+
+function subirArchivo(formData: FormData) {
+  return mutacionSubir.mutateAsync({
+    idCarpeta: route.params.id as string,
+    data: formData,
+  })
 }
 </script>
 
 <template>
   <div class="space-y-2">
-    <!-- <DropdownMenu>
+    <DropdownMenu>
       <DropdownMenuTrigger as-child>
         <Button variant="outline" class="hover:cursor-pointer">
           <Plus />
@@ -73,10 +87,10 @@ async function descargarArchivo(id: string, nombre: string) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
-    </DropdownMenu> -->
+    </DropdownMenu>
 
-    <!-- <ArchivoDialog v-model:open="subirAbierto" />
-    <CrearCarpetaDialog
+    <ArchivoDialog v-model:open="subirAbierto" :subir="subirArchivo" />
+    <!-- <CrearCarpetaDialog
       v-model:open="crearAbierto"
       @crear-carpeta="crearCarpeta"
       :pending="pendingCreate"

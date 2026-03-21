@@ -15,10 +15,9 @@ import { formatearTamañoService } from '@/services/file.services'
 import { X } from 'lucide-vue-next'
 import Button from '../ui/button/Button.vue'
 import ScrollArea from '../ui/scroll-area/ScrollArea.vue'
-import type { UseMutationReturnType } from '@tanstack/vue-query'
 
 const props = defineProps<{
-  subir: UseMutationReturnType<unknown, unknown, FormData, unknown>
+  subir: (formData: FormData) => Promise<unknown>
 }>()
 
 const fileInput = useTemplateRef('fileInput')
@@ -53,7 +52,7 @@ async function subirArchivo() {
   //Catch vacío porque ya lo controla el onError de la mutación
   //Para que no salte warning en consola
   try {
-    await props.subir.mutateAsync(formData)
+    await props.subir(formData)
     eliminarArchivo()
   } catch {}
 }

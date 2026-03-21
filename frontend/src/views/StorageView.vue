@@ -119,7 +119,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
       </DropdownMenuContent>
     </DropdownMenu>
 
-    <ArchivoDialog v-model:open="subirAbierto" :subir="mutacionInsertar" />
+    <ArchivoDialog v-model:open="subirAbierto" :subir="mutacionInsertar.mutateAsync" />
     <CrearCarpetaDialog
       v-model:open="crearAbierto"
       @crear-carpeta="crearCarpeta"

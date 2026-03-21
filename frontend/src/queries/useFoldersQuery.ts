@@ -2,6 +2,7 @@ import {
   crearCarpetasService,
   obtenerArchivosCarpetaService,
   obtenerCarpetasService,
+  subirArchivoCarpetaService,
 } from '@/services/folder.services'
 import { useAuthStore } from '@/stores/auth.store'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
@@ -39,12 +40,34 @@ export function useGetFoldersUser() {
   })
 }
 
-export function useGetFilesFolder(id_carpeta: string) {
+export function useGetFilesFolder(idCarpeta: string) {
   const authStore = useAuthStore()
 
   return useQuery({
-    queryKey: ['archivosCarpeta', authStore.usuario?.id, id_carpeta],
-    queryFn: () => obtenerArchivosCarpetaService(id_carpeta),
-    enabled: !!authStore.usuario?.id && !!id_carpeta,
+    queryKey: ['archivosCarpeta', authStore.usuario?.id, idCarpeta],
+    queryFn: () => obtenerArchivosCarpetaService(idCarpeta),
+    enabled: !!authStore.usuario?.id && !!idCarpeta,
+  })
+}
+
+export function useUploadFileFolder() {
+  const queryClient = useQueryClient()
+  const authStore = useAuthStore()
+
+  return useMutation({
+    mutationFn: ({ idCarpeta, data }: { idCarpeta: string; data: FormData }) =>
+      subirArchivoCarpetaService(idCarpeta, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['archivosCarpeta', authStore.usuario?.id, variables.idCarpeta],
+      })
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al subir los archivos')
+      } else {
+        toast.error('Error al subir los archivos')
+      }
+    },
   })
 }
