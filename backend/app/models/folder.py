@@ -17,6 +17,8 @@ class Folder(Base):
 
     id_usuario = Column(UUID(as_uuid=True), ForeignKey(
         "usuarios.id"), nullable=False)
+    id_carpeta = Column(UUID(as_uuid=True), ForeignKey(
+        "carpetas.id"), nullable=True)
 
     usuario = relationship(
         "User", back_populates="carpetas", passive_deletes=True)
