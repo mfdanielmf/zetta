@@ -82,23 +82,28 @@ def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario
 
 
 @folder_router.post("/{id_carpeta}/files", response_model=UploadFileFolderResponse)
-async def upload_file_to_folder(id_carpeta: UUID, file_upload: UploadFile = FileFA(...), db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] = FileFA(...), db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
-        archivo_guardado: File = await guardar_archivo_carpeta(
-            id_carpeta=id_carpeta, file_upload=file_upload, db=db, usuario=usuario)
+        archivos: list[File] = []
+        for file in file_upload:
+            archivo_db: File = await guardar_archivo_carpeta(id_carpeta=id_carpeta, file_upload=file, db=db, usuario=usuario)
+            archivos.append(archivo_db)
 
         return {
             "msg": "Archivo subido correctamente",
-            "archivo": FileBase(
-                id=archivo_guardado.id,
-                nombre_original=archivo_guardado.nombre_original,
-                path=archivo_guardado.path,
-                tamaño_bytes=archivo_guardado.tamaño_bytes,
-                fecha_creacion=archivo_guardado.fecha_creacion,
-                id_usuario=archivo_guardado.id_usuario,
-                nombre_usuario=archivo_guardado.usuario.nombre,
-                id_carpeta=archivo_guardado.id_carpeta
-            )
+            "archivos": [
+                FileBase(
+                    id=archivo_guardado.id,
+                    nombre_original=archivo_guardado.nombre_original,
+                    path=archivo_guardado.path,
+                    tamaño_bytes=archivo_guardado.tamaño_bytes,
+                    fecha_creacion=archivo_guardado.fecha_creacion,
+                    id_usuario=archivo_guardado.id_usuario,
+                    nombre_usuario=archivo_guardado.usuario.nombre,
+                    id_carpeta=archivo_guardado.id_carpeta
+                )
+                for archivo_guardado in archivos
+            ]
         }
     except TamañoExcedidoException as e1:
         raise HTTPException(413, str(e1))
