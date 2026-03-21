@@ -54,10 +54,8 @@ const cargando = computed(() => {
 
 const noData = computed(() => {
   if (
-    !dataFiles.value ||
-    dataFiles.value.length < 1 ||
-    !dataFolders.value ||
-    dataFolders.value.length < 1
+    (!dataFiles.value || dataFiles.value.length < 1) &&
+    (!dataFolders.value || dataFolders.value.length < 1)
   ) {
     return true
   }
