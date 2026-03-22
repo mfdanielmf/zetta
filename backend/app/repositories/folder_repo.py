@@ -32,3 +32,7 @@ def get_folder_name_anidada(id_carpeta_padre: str, nombre_carpeta: str, usuario:
 
 def get_folder_id(id_carpeta: str, db: Session) -> Folder | None:
     return db.query(Folder).filter_by(id=id_carpeta).first()
+
+
+def get_folders_user_raiz(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
+    return db.query(Folder).filter_by(id_usuario=id_usuario).all()

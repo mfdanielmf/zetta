@@ -11,7 +11,7 @@ from app.models.user import User
 from app.schemas.file_schemas import FileBase
 from app.services.file_services import obtener_archivos_carpeta
 from app.services.auth_services import get_current_user
-from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario, guardar_archivo_carpeta, crear_carpeta_anidada
+from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada
 from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, UploadFileFolderResponse
 
 folder_router = APIRouter()
@@ -19,7 +19,8 @@ folder_router = APIRouter()
 
 @folder_router.get("", response_model=list[FolderBase])
 def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
-    carpetas: list[Folder] = obtener_carpetas_usuario(usuario=usuario, db=db)
+    carpetas: list[Folder] = obtener_carpetas_usuario_raiz(
+        usuario=usuario, db=db)
 
     return [
         FolderBase(
