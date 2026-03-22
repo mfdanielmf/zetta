@@ -35,4 +35,4 @@ def get_folder_id(id_carpeta: str, db: Session) -> Folder | None:
 
 
 def get_folders_user_raiz(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
-    return db.query(Folder).filter_by(id_usuario=id_usuario).all()
+    return db.query(Folder).filter_by(id_usuario=id_usuario, id_carpeta=None).all()

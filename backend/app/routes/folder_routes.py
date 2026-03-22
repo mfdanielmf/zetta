@@ -29,7 +29,8 @@ def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current
             path=carpeta.path,
             fecha_creacion=carpeta.fecha_creacion,
             id_usuario=carpeta.id_usuario,
-            nombre_usuario=carpeta.usuario.nombre
+            nombre_usuario=carpeta.usuario.nombre,
+            id_carpeta=carpeta.id_carpeta
         )
         for carpeta in carpetas
     ]
