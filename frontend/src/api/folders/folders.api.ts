@@ -1,5 +1,6 @@
 import api from '../axios.config'
 import type {
+  CreateFolderAnidadaResponse,
   CreateFolderResponse,
   GetFilesFolderResponse,
   GetFoldersResponse,
@@ -20,5 +21,10 @@ export default {
   },
   subirArchivosCarpeta(idCarpeta: string, data: FormData) {
     return api().post<UploadFileFolderResponse>(URL + `/${idCarpeta}/files`, data)
+  },
+  crearCarpetaAnidada(idCarpetaPadre: string, nombreCarpeta: string) {
+    return api().post<CreateFolderAnidadaResponse>(URL + `/${idCarpetaPadre}/folders`, {
+      nombre_carpeta: nombreCarpeta,
+    })
   },
 }

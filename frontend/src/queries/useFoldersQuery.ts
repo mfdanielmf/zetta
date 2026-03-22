@@ -1,4 +1,5 @@
 import {
+  crearCarpetaAnidadaService,
   crearCarpetasService,
   obtenerArchivosCarpetaService,
   obtenerCarpetasService,
@@ -69,6 +70,35 @@ export function useUploadFileFolder() {
         toast.error(e.response?.data?.detail || 'Error al subir los archivos')
       } else {
         toast.error('Error al subir los archivos')
+      }
+    },
+  })
+}
+
+export function useCreateFolderAnidada() {
+  const queryClient = useQueryClient()
+  const authStore = useAuthStore()
+
+  return useMutation({
+    mutationFn: ({
+      idCarpetaPadre,
+      nombreCarpeta,
+    }: {
+      idCarpetaPadre: string
+      nombreCarpeta: string
+    }) => crearCarpetaAnidadaService(idCarpetaPadre, nombreCarpeta),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['archivosCarpeta', authStore.usuario?.id, variables.idCarpetaPadre],
+      })
+
+      toast.success(data?.msg || 'Carpeta creada correctamente')
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al crear la carpeta')
+      } else {
+        toast.error('Error al crear la carpeta')
       }
     },
   })

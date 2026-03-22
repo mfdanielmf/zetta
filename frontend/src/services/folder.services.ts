@@ -22,15 +22,21 @@ export async function obtenerCarpetasService() {
   }
 }
 
-export async function obtenerArchivosCarpetaService(id_carpeta: string) {
+export async function obtenerArchivosCarpetaService(idCarpeta: string) {
   // Try catch manejado en el guard del router
-  const req = await foldersApi.obtenerArchivosCarpeta(id_carpeta)
+  const req = await foldersApi.obtenerArchivosCarpeta(idCarpeta)
 
   return req.data
 }
 
 export async function subirArchivoCarpetaService(idCarpeta: string, data: FormData) {
   const req = await foldersApi.subirArchivosCarpeta(idCarpeta, data)
+
+  return req.data
+}
+
+export async function crearCarpetaAnidadaService(idCarpetaPadre: string, nombreCarpeta: string) {
+  const req = await foldersApi.crearCarpetaAnidada(idCarpetaPadre, nombreCarpeta)
 
   return req.data
 }
