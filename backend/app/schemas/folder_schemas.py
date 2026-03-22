@@ -19,6 +19,7 @@ class FolderBase(BaseModel):
     fecha_creacion: datetime
     id_usuario: uuid.UUID
     nombre_usuario: str
+    id_carpeta: uuid.UUID | None = None
 
 
 class FolderResponse(BaseModel):

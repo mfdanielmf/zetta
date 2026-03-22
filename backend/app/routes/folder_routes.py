@@ -11,7 +11,7 @@ from app.models.user import User
 from app.schemas.file_schemas import FileBase
 from app.services.file_services import obtener_archivos_carpeta
 from app.services.auth_services import get_current_user
-from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario, guardar_archivo_carpeta
+from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario, guardar_archivo_carpeta, crear_carpeta_anidada
 from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, UploadFileFolderResponse
 
 folder_router = APIRouter()
@@ -111,3 +111,29 @@ async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] 
         raise HTTPException(404, str(e2))
     except NombreYaUsadoException as e3:
         raise HTTPException(409, str(e3))
+
+
+@folder_router.post("/{id_carpeta}/folders", response_model=FolderResponse)
+def upload_file_to_folder(id_carpeta: UUID, req: FolderRequest, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+    try:
+        carpeta: Folder = crear_carpeta_anidada(
+            id_carpeta_padre=id_carpeta, nombre=req.nombre_carpeta, usuario=usuario, db=db)
+
+        return {
+            "msg": "Carpeta creada correctamente",
+            "carpeta": FolderBase(
+                id=carpeta.id,
+                nombre_original=carpeta.nombre_original,
+                path=carpeta.path,
+                fecha_creacion=carpeta.fecha_creacion,
+                id_usuario=carpeta.id_usuario,
+                nombre_usuario=carpeta.usuario.nombre,
+                id_carpeta=id_carpeta
+            )
+        }
+    except IdYaUsadaException as e:
+        raise HTTPException(409, str(e))
+    except NombreYaUsadoException as e2:
+        raise HTTPException(409, str(e2))
+    except CarpetaNoEncontradaException as e3:
+        raise HTTPException(404, str(e3))
