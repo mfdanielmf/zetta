@@ -77,7 +77,9 @@ async function descargarArchivo(id: string, nombre: string) {
 }
 
 async function crearCarpeta(nombre: string) {
-  await mutateCreate(nombre)
+  try {
+    await mutateCreate(nombre)
+  } catch {}
 
   if (successCreate) crearAbierto.value = false
 }

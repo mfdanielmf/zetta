@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CrearCarpetaDialog from '@/components/folders/CrearCarpetaDialog.vue'
 import Button from '@/components/ui/button/Button.vue'
 import {
   DropdownMenu,
@@ -18,7 +19,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useGetFilesFolder, useUploadFileFolder } from '@/queries/useFoldersQuery'
+import {
+  useCreateFolderAnidada,
+  useGetFilesFolder,
+  useUploadFileFolder,
+} from '@/queries/useFoldersQuery'
 
 import {
   downloadFileService,
@@ -45,6 +50,11 @@ const noData = computed(() => {
 
 const { data, isLoading } = useGetFilesFolder(route.params.id as string)
 const mutacionSubir = useUploadFileFolder()
+const {
+  mutateAsync: mutateCreate,
+  isSuccess: successCreate,
+  isPending: pendingCreate,
+} = useCreateFolderAnidada()
 
 const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
@@ -58,6 +68,14 @@ function subirArchivo(formData: FormData) {
     idCarpeta: route.params.id as string,
     data: formData,
   })
+}
+
+async function crearCarpeta(nombreCarpeta: string) {
+  try {
+    await mutateCreate({ idCarpetaPadre: route.params.id as string, nombreCarpeta: nombreCarpeta })
+  } catch {}
+
+  if (successCreate) crearAbierto.value = false
 }
 </script>
 
@@ -90,12 +108,12 @@ function subirArchivo(formData: FormData) {
     </DropdownMenu>
 
     <ArchivoDialog v-model:open="subirAbierto" :subir="subirArchivo" />
-    <!-- <CrearCarpetaDialog
+    <CrearCarpetaDialog
       v-model:open="crearAbierto"
       @crear-carpeta="crearCarpeta"
       :pending="pendingCreate"
       :reset="crearAbierto"
-    /> -->
+    />
 
     <Table>
       <TableCaption v-if="cargando || noData">
