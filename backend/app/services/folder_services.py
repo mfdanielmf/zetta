@@ -27,7 +27,7 @@ def crear_carpeta(nombre: str, usuario: User, db: Session) -> Folder:
 
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    if get_folder_id(id=id_carpeta, db=db) is not None:
+    if get_folder_id(id_carpeta=id_carpeta, db=db) is not None:
         raise IdYaUsadaException(
             f"Ya se ha usado la ID {id}. Vuelve a subir la carpeta")
 
