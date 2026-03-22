@@ -36,14 +36,14 @@ def test_get_archivos_usuario_con_uploads():
 
     carpeta = Folder(
         id=uuid.uuid4(),
-        nombre_original="testing",
+        nombre_original="testing.txt",
         path=f"uploads/{usuario.id}/testing",
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         usuario=usuario
     )
 
-    with patch("app.routes.folder_routes.obtener_carpetas_usuario") as mock_obtener:
+    with patch("app.routes.folder_routes.obtener_carpetas_usuario_raiz") as mock_obtener:
         mock_obtener.return_value = [carpeta]
 
         response = client.get("/api/folders")
@@ -52,7 +52,7 @@ def test_get_archivos_usuario_con_uploads():
     json_response = response.json()
 
     assert len(json_response) == 1
-    assert json_response[0]["nombre_original"] == "testing"
+    assert json_response[0]["nombre_original"] == "testing.txt"
     assert json_response[0]["nombre_usuario"] == usuario.nombre
 
     app.dependency_overrides.clear()
