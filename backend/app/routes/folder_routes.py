@@ -113,11 +113,12 @@ async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] 
         raise HTTPException(404, str(e2))
     except NombreYaUsadoException as e3:
         raise HTTPException(409, str(e3))
-    
+
 
 @folder_router.get("/{id_carpeta}/folders", response_model=list[FolderBase])
 def get_folders_of_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    carpetas: list[Folder] = obtener_carpetas_dentro_carpeta(id_carpeta_padre=id_carpeta, usuario=usuario, db=db)
+    carpetas: list[Folder] = obtener_carpetas_dentro_carpeta(
+        id_carpeta_padre=id_carpeta, usuario=usuario, db=db)
 
     return [
         FolderBase(

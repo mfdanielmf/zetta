@@ -52,6 +52,7 @@ def obtener_carpetas_usuario(usuario: User, db: Session) -> list[Folder]:
 def obtener_carpetas_usuario_raiz(usuario: User, db: Session) -> list[Folder]:
     return get_folders_user_raiz(id_usuario=usuario.id, db=db)
 
+
 def obtener_carpetas_dentro_carpeta(id_carpeta_padre: uuid.UUID, usuario: User, db: Session) -> list[Folder]:
     return get_folders_inside_folder(id_carpeta=id_carpeta_padre, id_usuario=usuario.id, db=db)
 
