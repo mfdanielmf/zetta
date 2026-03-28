@@ -22,6 +22,7 @@ import {
 import {
   useCreateFolderAnidada,
   useGetFilesFolder,
+  useGetFoldersAnidadas,
   useUploadFileFolder,
 } from '@/queries/useFoldersQuery'
 
@@ -30,25 +31,42 @@ import {
   formatDateService,
   formatearTamañoService,
 } from '@/services/file.services'
+import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
-import { Download, Ellipsis, FolderPlus, Plus, Upload } from 'lucide-vue-next'
+import { Download, Ellipsis, Folder, FolderPlus, Plus, Upload } from 'lucide-vue-next'
 import { computed, defineAsyncComponent, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 
 const route = useRoute()
+const router = useRouter()
+const folderStore = useFolderStore()
 
-const cargando = computed(() => isLoading.value)
-const noData = computed(() => {
-  if (!data.value || data.value?.length < 1) {
+const idCarpeta = computed(() => route.params.id as string)
+
+const cargando = computed(() => {
+  if (loadingArchivos.value || loadingCarpetasAnidadas.value) {
     return true
   }
 
   return false
 })
 
-const { data, isLoading } = useGetFilesFolder(route.params.id as string)
+const noData = computed(() => {
+  if (
+    (!dataArchivos.value || dataArchivos.value?.length < 1) &&
+    (!dataCarpetasAnidadas.value || dataCarpetasAnidadas.value?.length < 1)
+  ) {
+    return true
+  }
+
+  return false
+})
+
+const { data: dataArchivos, isLoading: loadingArchivos } = useGetFilesFolder(idCarpeta)
+const { data: dataCarpetasAnidadas, isLoading: loadingCarpetasAnidadas } =
+  useGetFoldersAnidadas(idCarpeta)
 const mutacionSubir = useUploadFileFolder()
 const {
   mutateAsync: mutateCreate,
@@ -65,17 +83,23 @@ async function descargarArchivo(id: string, nombre: string) {
 
 function subirArchivo(formData: FormData) {
   return mutacionSubir.mutateAsync({
-    idCarpeta: route.params.id as string,
+    idCarpeta: idCarpeta.value,
     data: formData,
   })
 }
 
 async function crearCarpeta(nombreCarpeta: string) {
   try {
-    await mutateCreate({ idCarpetaPadre: route.params.id as string, nombreCarpeta: nombreCarpeta })
+    await mutateCreate({ idCarpetaPadre: idCarpeta.value, nombreCarpeta: nombreCarpeta })
   } catch {}
 
   if (successCreate) crearAbierto.value = false
+}
+
+function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
+  folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
+
+  router.push({ name: 'carpeta', params: { id: idCarpeta } })
 }
 </script>
 
@@ -130,9 +154,48 @@ async function crearCarpeta(nombreCarpeta: string) {
         </TableRow>
       </TableHeader>
 
-      <TableBody v-if="data && data.length > 0">
+      <TableBody v-if="!noData">
+        <!-- Carpetas -->
+        <TableRow
+          v-for="folder in dataCarpetasAnidadas"
+          :key="folder.id"
+          class="hover:cursor-pointer"
+          @click="handleNavigationDetallesCarpeta(folder.id, folder.nombre_original)"
+        >
+          <TableCell class="font-medium">
+            <div class="flex items-center gap-2">
+              <Folder :size="20" />
+              {{ folder.nombre_original }}
+            </div>
+          </TableCell>
+          <TableCell class="font-medium">
+            {{ folder.nombre_usuario }}
+          </TableCell>
+          <TableCell class="font-medium"> - </TableCell>
+          <TableCell class="font-medium">
+            {{ formatDateService(folder.fecha_creacion) }}
+          </TableCell>
+          <TableCell>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="outline" size="icon" class="hover:cursor-pointer" @click.stop>
+                  <Ellipsis />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
+                  <Download />
+                  Descargar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TableCell>
+        </TableRow>
+
         <!-- Archivos -->
-        <TableRow v-for="file in data" :key="file.id">
+        <TableRow v-for="file in dataArchivos" :key="file.id">
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
               <component :is="getIconExtension(file.nombre_original)" :size="20" />

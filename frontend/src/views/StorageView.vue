@@ -142,9 +142,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
         </TableRow>
       </TableHeader>
 
-      <TableBody
-        v-if="(dataFiles && dataFiles.length > 0) || (dataFolders && dataFolders.length > 0)"
-      >
+      <TableBody v-if="!noData">
         <!-- Carpetas -->
         <TableRow
           v-for="folder in dataFolders"

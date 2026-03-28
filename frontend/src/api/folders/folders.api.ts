@@ -3,6 +3,7 @@ import type {
   CreateFolderAnidadaResponse,
   CreateFolderResponse,
   GetFilesFolderResponse,
+  GetFoldersAnidada,
   GetFoldersResponse,
   UploadFileFolderResponse,
 } from '../types/types'
@@ -26,5 +27,8 @@ export default {
     return api().post<CreateFolderAnidadaResponse>(URL + `/${idCarpetaPadre}/folders`, {
       nombre_carpeta: nombreCarpeta,
     })
+  },
+  obtenerCarpetasAnidadas(idCarpeta: string) {
+    return api().get<GetFoldersAnidada>(URL + `/${idCarpeta}/folders`)
   },
 }
