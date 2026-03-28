@@ -18,7 +18,7 @@ def test_crear_carpeta_success():
     app.dependency_overrides[get_current_user] = lambda: usuario
 
     id_test: uuid.UUID = uuid.uuid4()
-    nombre_carpeta = "test"
+    nombre_carpeta: str = "test"
 
     carpeta_falsa: Folder = Folder(
         id=id_test,
@@ -52,7 +52,7 @@ def test_carpeta_id_usada():
     usuario = override_get_current_user()
     app.dependency_overrides[get_current_user] = lambda: usuario
 
-    id_test = uuid.uuid4()
+    id_test: uuid.UUID = uuid.uuid4()
 
     with patch("app.routes.folder_routes.crear_carpeta") as mock_crear:
         mock_crear.side_effect = IdYaUsadaException(
@@ -72,7 +72,7 @@ def test_carpeta_nombre_usado():
     usuario = override_get_current_user()
     app.dependency_overrides[get_current_user] = lambda: usuario
 
-    nombre_carpeta = "test"
+    nombre_carpeta: str = "test"
 
     with patch("app.routes.folder_routes.crear_carpeta") as mock_crear:
         mock_crear.side_effect = NombreYaUsadoException(

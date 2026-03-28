@@ -6,7 +6,6 @@ from app.main import app
 from app.models.exceptions import CarpetaNoEncontradaException
 from app.models.file import File
 from app.models.user import User
-from app.schemas.file_schemas import FileBase
 from app.services.auth_services import get_current_user
 from tests.util import override_get_current_user
 
