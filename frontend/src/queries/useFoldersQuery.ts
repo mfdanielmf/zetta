@@ -1,12 +1,15 @@
 import {
+  crearCarpetaAnidadaService,
   crearCarpetasService,
   obtenerArchivosCarpetaService,
+  obtenerCarpetasAnidadasService,
   obtenerCarpetasService,
   subirArchivoCarpetaService,
 } from '@/services/folder.services'
 import { useAuthStore } from '@/stores/auth.store'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import axios from 'axios'
+import { computed, toValue, type ComputedRef } from 'vue'
 import { toast } from 'vue-sonner'
 
 export function useCreateFolder() {
@@ -40,13 +43,13 @@ export function useGetFoldersUser() {
   })
 }
 
-export function useGetFilesFolder(idCarpeta: string) {
+export function useGetFilesFolder(idCarpeta: ComputedRef<string>) {
   const authStore = useAuthStore()
 
   return useQuery({
-    queryKey: ['archivosCarpeta', authStore.usuario?.id, idCarpeta],
-    queryFn: () => obtenerArchivosCarpetaService(idCarpeta),
-    enabled: !!authStore.usuario?.id && !!idCarpeta,
+    queryKey: ['archivosCarpeta', authStore.usuario?.id, () => toValue(idCarpeta)],
+    queryFn: () => obtenerArchivosCarpetaService(toValue(idCarpeta)),
+    enabled: computed(() => !!authStore.usuario?.id && !!toValue(idCarpeta)),
   })
 }
 
@@ -71,5 +74,44 @@ export function useUploadFileFolder() {
         toast.error('Error al subir los archivos')
       }
     },
+  })
+}
+
+export function useCreateFolderAnidada() {
+  const queryClient = useQueryClient()
+  const authStore = useAuthStore()
+
+  return useMutation({
+    mutationFn: ({
+      idCarpetaPadre,
+      nombreCarpeta,
+    }: {
+      idCarpetaPadre: string
+      nombreCarpeta: string
+    }) => crearCarpetaAnidadaService(idCarpetaPadre, nombreCarpeta),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['carpetasAnidadas', authStore.usuario?.id, variables.idCarpetaPadre],
+      })
+
+      toast.success(data?.msg || 'Carpeta creada correctamente')
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al crear la carpeta')
+      } else {
+        toast.error('Error al crear la carpeta')
+      }
+    },
+  })
+}
+
+export function useGetFoldersAnidadas(idCarpeta: ComputedRef<string>) {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['carpetasAnidadas', authStore.usuario?.id, () => toValue(idCarpeta)],
+    queryFn: () => obtenerCarpetasAnidadasService(toValue(idCarpeta)),
+    enabled: computed(() => !!authStore.usuario?.id && !!toValue(idCarpeta)),
   })
 }

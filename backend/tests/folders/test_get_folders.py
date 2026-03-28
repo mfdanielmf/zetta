@@ -30,7 +30,7 @@ def test_get_carpetas_usuario_sin_uploads():
     app.dependency_overrides.clear()
 
 
-def test_get_archivos_usuario_con_uploads():
+def test_get_carpetas_usuario_con_uploads():
     usuario = override_get_current_user()
     app.dependency_overrides[get_current_user] = lambda: usuario
 

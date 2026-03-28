@@ -77,7 +77,9 @@ async function descargarArchivo(id: string, nombre: string) {
 }
 
 async function crearCarpeta(nombre: string) {
-  await mutateCreate(nombre)
+  try {
+    await mutateCreate(nombre)
+  } catch {}
 
   if (successCreate) crearAbierto.value = false
 }
@@ -140,9 +142,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
         </TableRow>
       </TableHeader>
 
-      <TableBody
-        v-if="(dataFiles && dataFiles.length > 0) || (dataFolders && dataFolders.length > 0)"
-      >
+      <TableBody v-if="!noData">
         <!-- Carpetas -->
         <TableRow
           v-for="folder in dataFolders"

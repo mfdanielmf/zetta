@@ -9,7 +9,7 @@ from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException, Ca
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folder_original_name, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz
+from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folder_original_name, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz, get_folders_inside_folder
 from app.repositories.file_repo import insert_file_db, get_file_by_name_in_folder
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
@@ -27,7 +27,7 @@ def crear_carpeta(nombre: str, usuario: User, db: Session) -> Folder:
 
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    if get_folder_id(id=id_carpeta, db=db) is not None:
+    if get_folder_id(id_carpeta=id_carpeta, db=db) is not None:
         raise IdYaUsadaException(
             f"Ya se ha usado la ID {id}. Vuelve a subir la carpeta")
 
@@ -51,6 +51,10 @@ def obtener_carpetas_usuario(usuario: User, db: Session) -> list[Folder]:
 
 def obtener_carpetas_usuario_raiz(usuario: User, db: Session) -> list[Folder]:
     return get_folders_user_raiz(id_usuario=usuario.id, db=db)
+
+
+def obtener_carpetas_dentro_carpeta(id_carpeta_padre: uuid.UUID, usuario: User, db: Session) -> list[Folder]:
+    return get_folders_inside_folder(id_carpeta=id_carpeta_padre, id_usuario=usuario.id, db=db)
 
 
 def obtener_carpeta_usuario_id(id_carpeta: str, usuario: User, db: Session) -> Folder:

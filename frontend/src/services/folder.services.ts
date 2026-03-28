@@ -17,14 +17,14 @@ export async function obtenerCarpetasService() {
     if (axios.isAxiosError(e)) {
       toast.error(e.response?.data?.detail || 'Error al obtener las carpetas')
     } else {
-      toast.error('Error al obtener los archivos')
+      toast.error('Error al obtener las carpetas')
     }
   }
 }
 
-export async function obtenerArchivosCarpetaService(id_carpeta: string) {
+export async function obtenerArchivosCarpetaService(idCarpeta: string) {
   // Try catch manejado en el guard del router
-  const req = await foldersApi.obtenerArchivosCarpeta(id_carpeta)
+  const req = await foldersApi.obtenerArchivosCarpeta(idCarpeta)
 
   return req.data
 }
@@ -33,4 +33,24 @@ export async function subirArchivoCarpetaService(idCarpeta: string, data: FormDa
   const req = await foldersApi.subirArchivosCarpeta(idCarpeta, data)
 
   return req.data
+}
+
+export async function crearCarpetaAnidadaService(idCarpetaPadre: string, nombreCarpeta: string) {
+  const req = await foldersApi.crearCarpetaAnidada(idCarpetaPadre, nombreCarpeta)
+
+  return req.data
+}
+
+export async function obtenerCarpetasAnidadasService(idCarpeta: string) {
+  try {
+    const req = await foldersApi.obtenerCarpetasAnidadas(idCarpeta)
+
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.detail || 'Error al obtener las carpetas')
+    } else {
+      toast.error('Error al obtener los carpetas')
+    }
+  }
 }

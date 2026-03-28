@@ -131,8 +131,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Files */
-        get: operations["get_files_api_folders_get"];
+        /** Get Folders */
+        get: operations["get_folders_api_folders_get"];
         put?: never;
         /** Create Folder */
         post: operations["create_folder_api_folders_post"];
@@ -154,6 +154,24 @@ export interface paths {
         put?: never;
         /** Upload File To Folder */
         post: operations["upload_file_to_folder_api_folders__id_carpeta__files_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/folders/{id_carpeta}/folders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Folders Of Folder */
+        get: operations["get_folders_of_folder_api_folders__id_carpeta__folders_get"];
+        put?: never;
+        /** Create Folder In Folder */
+        post: operations["create_folder_in_folder_api_folders__id_carpeta__folders_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -232,6 +250,8 @@ export interface components {
             id_usuario: string;
             /** Nombre Usuario */
             nombre_usuario: string;
+            /** Id Carpeta */
+            id_carpeta?: string | null;
         };
         /** FolderRequest */
         FolderRequest: {
@@ -556,7 +576,7 @@ export interface operations {
             };
         };
     };
-    get_files_api_folders_get: {
+    get_folders_api_folders_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -679,6 +699,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UploadFileFolderResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_folders_of_folder_api_folders__id_carpeta__folders_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id_carpeta: string;
+            };
+            cookie?: {
+                access_token?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FolderBase"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_folder_in_folder_api_folders__id_carpeta__folders_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id_carpeta: string;
+            };
+            cookie?: {
+                access_token?: string;
+            };
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FolderRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FolderResponse"];
                 };
             };
             /** @description Validation Error */
