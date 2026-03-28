@@ -142,14 +142,14 @@ def crear_carpeta_anidada(id_carpeta_padre: str, nombre: str, usuario: User, db:
 
     if get_folder_id(id_carpeta=id_carpeta_nueva, db=db) is not None:
         raise IdYaUsadaException(
-            f"Ya se ha usado la ID {id}. Vuelve a crear la carpeta")
+            f"Ya se ha usado el ID {id_carpeta_nueva}. Vuelve a crear la carpeta")
 
     # Crear el almacén del usuario si no existe
     ruta_usuario = UPLOAD_DIR / str(usuario.id)
     ruta_usuario.mkdir(parents=True, exist_ok=True)
 
     folder_path = ruta_usuario / str(id_carpeta_padre) / str(id_carpeta_nueva)
-    folder_path.mkdir()
+    folder_path.mkdir(parents=True, exist_ok=True)
 
     carpeta: Folder = Folder(id=id_carpeta_nueva, nombre_original=nombre, path=str(
         folder_path), id_usuario=usuario.id, id_carpeta=id_carpeta_padre)
