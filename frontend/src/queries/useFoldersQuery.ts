@@ -2,6 +2,7 @@ import {
   crearCarpetaAnidadaService,
   crearCarpetasService,
   obtenerArchivosCarpetaService,
+  obtenerCarpetasAnidadasService,
   obtenerCarpetasService,
   subirArchivoCarpetaService,
 } from '@/services/folder.services'
@@ -89,7 +90,7 @@ export function useCreateFolderAnidada() {
     }) => crearCarpetaAnidadaService(idCarpetaPadre, nombreCarpeta),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['archivosCarpeta', authStore.usuario?.id, variables.idCarpetaPadre],
+        queryKey: ['carpetasAnidadas', authStore.usuario?.id, variables.idCarpetaPadre],
       })
 
       toast.success(data?.msg || 'Carpeta creada correctamente')
@@ -101,5 +102,15 @@ export function useCreateFolderAnidada() {
         toast.error('Error al crear la carpeta')
       }
     },
+  })
+}
+
+export function useGetFoldersAnidadas(idCarpeta: string) {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['carpetasAnidadas', authStore.usuario?.id, idCarpeta],
+    queryFn: () => obtenerCarpetasAnidadasService(idCarpeta),
+    enabled: !!authStore.usuario?.id && !!idCarpeta,
   })
 }
