@@ -9,6 +9,7 @@ import {
 import { useAuthStore } from '@/stores/auth.store'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import axios from 'axios'
+import { computed, toValue, type ComputedRef } from 'vue'
 import { toast } from 'vue-sonner'
 
 export function useCreateFolder() {
@@ -42,13 +43,13 @@ export function useGetFoldersUser() {
   })
 }
 
-export function useGetFilesFolder(idCarpeta: string) {
+export function useGetFilesFolder(idCarpeta: ComputedRef<string>) {
   const authStore = useAuthStore()
 
   return useQuery({
-    queryKey: ['archivosCarpeta', authStore.usuario?.id, idCarpeta],
-    queryFn: () => obtenerArchivosCarpetaService(idCarpeta),
-    enabled: !!authStore.usuario?.id && !!idCarpeta,
+    queryKey: ['archivosCarpeta', authStore.usuario?.id, () => toValue(idCarpeta)],
+    queryFn: () => obtenerArchivosCarpetaService(toValue(idCarpeta)),
+    enabled: computed(() => !!authStore.usuario?.id && !!toValue(idCarpeta)),
   })
 }
 
@@ -105,12 +106,12 @@ export function useCreateFolderAnidada() {
   })
 }
 
-export function useGetFoldersAnidadas(idCarpeta: string) {
+export function useGetFoldersAnidadas(idCarpeta: ComputedRef<string>) {
   const authStore = useAuthStore()
 
   return useQuery({
-    queryKey: ['carpetasAnidadas', authStore.usuario?.id, idCarpeta],
-    queryFn: () => obtenerCarpetasAnidadasService(idCarpeta),
-    enabled: !!authStore.usuario?.id && !!idCarpeta,
+    queryKey: ['carpetasAnidadas', authStore.usuario?.id, () => toValue(idCarpeta)],
+    queryFn: () => obtenerCarpetasAnidadasService(toValue(idCarpeta)),
+    enabled: computed(() => !!authStore.usuario?.id && !!toValue(idCarpeta)),
   })
 }

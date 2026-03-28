@@ -31,14 +31,19 @@ import {
   formatDateService,
   formatearTamañoService,
 } from '@/services/file.services'
+import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
 import { Download, Ellipsis, Folder, FolderPlus, Plus, Upload } from 'lucide-vue-next'
 import { computed, defineAsyncComponent, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 
 const route = useRoute()
+const router = useRouter()
+const folderStore = useFolderStore()
+
+const idCarpeta = computed(() => route.params.id as string)
 
 const cargando = computed(() => {
   if (loadingArchivos.value || loadingCarpetasAnidadas.value) {
@@ -59,12 +64,9 @@ const noData = computed(() => {
   return false
 })
 
-const { data: dataArchivos, isLoading: loadingArchivos } = useGetFilesFolder(
-  route.params.id as string,
-)
-const { data: dataCarpetasAnidadas, isLoading: loadingCarpetasAnidadas } = useGetFoldersAnidadas(
-  route.params.id as string,
-)
+const { data: dataArchivos, isLoading: loadingArchivos } = useGetFilesFolder(idCarpeta)
+const { data: dataCarpetasAnidadas, isLoading: loadingCarpetasAnidadas } =
+  useGetFoldersAnidadas(idCarpeta)
 const mutacionSubir = useUploadFileFolder()
 const {
   mutateAsync: mutateCreate,
@@ -81,17 +83,23 @@ async function descargarArchivo(id: string, nombre: string) {
 
 function subirArchivo(formData: FormData) {
   return mutacionSubir.mutateAsync({
-    idCarpeta: route.params.id as string,
+    idCarpeta: idCarpeta.value,
     data: formData,
   })
 }
 
 async function crearCarpeta(nombreCarpeta: string) {
   try {
-    await mutateCreate({ idCarpetaPadre: route.params.id as string, nombreCarpeta: nombreCarpeta })
+    await mutateCreate({ idCarpetaPadre: idCarpeta.value, nombreCarpeta: nombreCarpeta })
   } catch {}
 
   if (successCreate) crearAbierto.value = false
+}
+
+function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
+  folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
+
+  router.push({ name: 'carpeta', params: { id: idCarpeta } })
 }
 </script>
 
@@ -152,6 +160,7 @@ async function crearCarpeta(nombreCarpeta: string) {
           v-for="folder in dataCarpetasAnidadas"
           :key="folder.id"
           class="hover:cursor-pointer"
+          @click="handleNavigationDetallesCarpeta(folder.id, folder.nombre_original)"
         >
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
