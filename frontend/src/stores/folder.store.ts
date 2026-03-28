@@ -2,20 +2,30 @@ import { useLocalStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
 
+interface Carpeta {
+  id: string
+  nombre: string
+}
+
 export const useFolderStore = defineStore('carpetas', () => {
-  const carpetaActiva = useLocalStorage<{
-    id: string
-    nombre: string
-  }>('carpeta-activa', { id: '', nombre: '' })
+  const carpetaActiva = useLocalStorage<Carpeta[]>('carpeta-activa', [])
+
   const hayCarpeta = computed(() => !!carpetaActiva.value)
 
   function setCarpetaActiva(id: string, nombre: string) {
-    carpetaActiva.value = { id: id, nombre: nombre }
+    const index = carpetaActiva.value.findIndex((carpeta) => carpeta.id === id)
+
+    //Si la carpeta ya existe, volvió atrás y cortamos el array hasta la posición
+    if (index !== -1) {
+      carpetaActiva.value = carpetaActiva.value.slice(0, index + 1)
+    } else {
+      carpetaActiva.value.push({ id, nombre })
+    }
   }
 
-  function limpiarCarpeta() {
-    carpetaActiva.value = { id: '', nombre: '' }
+  function limpiarCarpetas() {
+    carpetaActiva.value = []
   }
 
-  return { carpetaActiva, hayCarpeta, setCarpetaActiva, limpiarCarpeta }
+  return { carpetaActiva, hayCarpeta, setCarpetaActiva, limpiarCarpetas }
 })

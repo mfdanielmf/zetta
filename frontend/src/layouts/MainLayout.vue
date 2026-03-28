@@ -10,23 +10,8 @@ import BreadcrumbSeparator from '@/components/ui/breadcrumb/BreadcrumbSeparator.
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { useFolderStore } from '@/stores/folder.store'
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
 
 const carpetasStore = useFolderStore()
-const route = useRoute()
-
-const nombreCarpeta = computed(() => {
-  // Si no hay carpeta o si el id de la guardada no coinicde con el actual usamos el id, si no el nombre
-  if (
-    !carpetasStore.hayCarpeta ||
-    (carpetasStore.hayCarpeta && carpetasStore.carpetaActiva?.id != route.params.id)
-  ) {
-    return route.params.id
-  }
-
-  return carpetasStore.carpetaActiva?.nombre
-})
 </script>
 
 <template>
@@ -46,12 +31,24 @@ const nombreCarpeta = computed(() => {
                   <RouterLink :to="{ name: 'archivos' }">Mis Archivos</RouterLink>
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator v-if="nombreCarpeta" />
-              <BreadcrumbItem v-if="nombreCarpeta">
-                <BreadcrumbLink as-child>
-                  {{ nombreCarpeta }}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
+
+              <template v-for="(carpeta, index) in carpetasStore.carpetaActiva" :key="carpeta.id">
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink as-child>
+                    <RouterLink
+                      :to="{ name: 'carpeta', params: { id: carpeta.id } }"
+                      :class="{
+                        'font-bold text-black pointer-events-none':
+                          index === carpetasStore.carpetaActiva.length - 1,
+                      }"
+                      @click="carpetasStore.setCarpetaActiva(carpeta.id, carpeta.nombre)"
+                    >
+                      {{ carpeta.nombre }}
+                    </RouterLink>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </template>
             </BreadcrumbList>
           </Breadcrumb>
         </div>

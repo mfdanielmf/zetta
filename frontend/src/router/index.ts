@@ -90,7 +90,7 @@ router.afterEach((to) => {
   const folderStore = useFolderStore()
 
   if (to.name != 'carpeta') {
-    folderStore.limpiarCarpeta()
+    folderStore.limpiarCarpetas()
   }
 })
 
