@@ -131,8 +131,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Files */
-        get: operations["get_files_api_folders_get"];
+        /** Get Folders */
+        get: operations["get_folders_api_folders_get"];
         put?: never;
         /** Create Folder */
         post: operations["create_folder_api_folders_post"];
@@ -167,10 +167,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get Folders Of Folder */
+        get: operations["get_folders_of_folder_api_folders__id_carpeta__folders_get"];
         put?: never;
-        /** Upload File To Folder */
-        post: operations["upload_file_to_folder_api_folders__id_carpeta__folders_post"];
+        /** Create Folder In Folder */
+        post: operations["create_folder_in_folder_api_folders__id_carpeta__folders_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -575,7 +576,7 @@ export interface operations {
             };
         };
     };
-    get_files_api_folders_get: {
+    get_folders_api_folders_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -711,7 +712,40 @@ export interface operations {
             };
         };
     };
-    upload_file_to_folder_api_folders__id_carpeta__folders_post: {
+    get_folders_of_folder_api_folders__id_carpeta__folders_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id_carpeta: string;
+            };
+            cookie?: {
+                access_token?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FolderBase"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_folder_in_folder_api_folders__id_carpeta__folders_post: {
         parameters: {
             query?: never;
             header?: never;
