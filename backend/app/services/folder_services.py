@@ -9,7 +9,7 @@ from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException, Ca
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folder_original_name, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz, get_folders_inside_folder
+from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz, get_folders_inside_folder, get_folder_nombre_raiz
 from app.repositories.file_repo import insert_file_db, get_file_by_name_in_folder
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
@@ -21,7 +21,7 @@ def crear_carpeta(nombre: str, usuario: User, db: Session) -> Folder:
     """
     IdYaUsadaException, NombreYaUsadoException
     """
-    if get_folder_original_name(nombre_original=nombre, usuario=usuario, db=db) is not None:
+    if get_folder_nombre_raiz(nombre_carpeta=nombre, id_usuario=usuario.id, db=db) is not None:
         raise NombreYaUsadoException(
             f"Ya has creado una carpeta con el nombre {nombre}")
 
