@@ -22,6 +22,10 @@ class FileResponse(BaseModel):
     archivos: list[FileBase]
 
 
-class AddTrashResponse(BaseModel):
+class AddFileTrashResponse(BaseModel):
     msg: str
     archivo: FileBase
+
+
+class RestoreFileResponse(AddFileTrashResponse):
+    pass

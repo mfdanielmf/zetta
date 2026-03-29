@@ -38,3 +38,7 @@ def get_file_by_name_in_folder(nombre_original: str, usuario: User, db: Session,
 
 def get_all_files_in_folder(id_carpeta: uuid.UUID, db: Session, usuario: User) -> list[File]:
     return db.query(File).filter_by(id_carpeta=id_carpeta, id_usuario=usuario.id).all()
+
+
+def get_file_trash(id_archivo: uuid.UUID, id_usuario: uuid.UUID, db: Session) -> File | None:
+    return db.query(File).filter(File.id == id_archivo, File.id_usuario == id_usuario, File.fecha_eliminacion != None).first()

@@ -6,9 +6,9 @@ from sqlalchemy.orm import Session
 from app.database.db import get_db
 
 from app.models.user import User
-from app.services.file_services import guardar_archivo, obtener_archivos_usuario, obtener_archivo_id, añadir_archivo_papelera
+from app.services.file_services import guardar_archivo, obtener_archivos_usuario, obtener_archivo_id, añadir_archivo_papelera, restaurar_archivo_papelera
 from app.models.exceptions import ArchivoNoEncontradoException, TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException
-from app.schemas.file_schemas import AddTrashResponse, FileBase, FileResponse
+from app.schemas.file_schemas import AddFileTrashResponse, FileBase, FileResponse, RestoreFileResponse
 from app.services.auth_services import get_current_user
 
 file_router = APIRouter()
@@ -78,7 +78,33 @@ def download_files(id_archivo: UUID, db: Session = Depends(get_db), usuario: Use
             404, detail=f"No se ha encontrado el archivo con id {id_archivo}")
 
 
-@file_router.delete("/{id_archivo}", response_model=AddTrashResponse)
+@file_router.put("/{id_archivo}/restaurar", response_model=RestoreFileResponse)
+def restore_file_from_trash(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+    try:
+        archivo: File = restaurar_archivo_papelera(
+            id_archivo=id_archivo, db=db, usuario=usuario)
+
+        return {
+            "msg": "Archivo restaurado correctamente",
+            "archivo": FileBase(
+                id=archivo.id,
+                nombre_original=archivo.nombre_original,
+                path=archivo.path,
+                tamaño_bytes=archivo.tamaño_bytes,
+                fecha_creacion=archivo.fecha_creacion,
+                id_usuario=archivo.id_usuario,
+                nombre_usuario=archivo.usuario.nombre,
+                id_carpeta=archivo.id_carpeta,
+                fecha_eliminacion=archivo.fecha_eliminacion
+            )
+        }
+
+    except ArchivoNoEncontradoException:
+        raise HTTPException(
+            404, detail=f"No se ha encontrado el archivo con ID {id_archivo} en la papelera")
+
+
+@file_router.delete("/{id_archivo}", response_model=AddFileTrashResponse)
 def add_file_to_trash(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
         archivo: File = añadir_archivo_papelera(
