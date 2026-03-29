@@ -12,6 +12,7 @@ class File(Base):
     path = Column(String, nullable=False)
     tamaño_bytes = Column(BigInteger, nullable=False)
     fecha_creacion = Column(DateTime, default=func.now())
+    fecha_eliminacion = Column(DateTime, nullable=True)
 
     id_usuario = Column(UUID(as_uuid=True), ForeignKey(
         "usuarios.id"), nullable=False)

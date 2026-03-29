@@ -14,6 +14,7 @@ class Folder(Base):
     nombre_original = Column(String(100), nullable=False)
     path = Column(String, nullable=False)
     fecha_creacion = Column(DateTime, default=func.now())
+    fecha_eliminacion = Column(DateTime, nullable=True)
 
     id_usuario = Column(UUID(as_uuid=True), ForeignKey(
         "usuarios.id"), nullable=False)
