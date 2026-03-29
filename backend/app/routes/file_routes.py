@@ -7,7 +7,7 @@ from app.database.db import get_db
 
 from app.models.user import User
 from app.services.file_services import guardar_archivo, obtener_archivos_usuario, obtener_archivo_id, añadir_archivo_papelera, restaurar_archivo_papelera
-from app.models.exceptions import ArchivoNoEncontradoException, TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException
+from app.models.exceptions import ArchivoNoEncontradoException, TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException, ArchivoPapeleraException
 from app.schemas.file_schemas import AddFileTrashResponse, FileBase, FileResponse, RestoreFileResponse
 from app.services.auth_services import get_current_user
 
@@ -128,3 +128,6 @@ def add_file_to_trash(id_archivo: UUID, db: Session = Depends(get_db), usuario: 
     except ArchivoNoEncontradoException:
         raise HTTPException(
             404, detail=f"No se ha encontrado el archivo con ID {id_archivo}")
+    except ArchivoPapeleraException:
+        raise HTTPException(
+            409, detail="El archivo seleccionado ya está en la papelera")

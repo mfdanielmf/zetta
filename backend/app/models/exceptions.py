@@ -29,6 +29,10 @@ class ArchivoNoEncontradoException(Exception):
     pass
 
 
+class ArchivoPapeleraException(Exception):
+    pass
+
+
 # CARPETAS
 class CarpetaNoEncontradaException(Exception):
     pass

@@ -4,7 +4,7 @@ import uuid
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
-from app.models.exceptions import TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
+from app.models.exceptions import ArchivoPapeleraException, TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
 from app.models.file import File
 from app.models.user import User
 from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user, get_file_by_name_in_folder, get_all_files_in_folder, update_file, get_file_trash
@@ -114,6 +114,9 @@ def añadir_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session) 
     """
     ArchivoNoEncontradoException
     """
+    if get_file_trash(id_archivo=id_archivo, id_usuario=usuario.id, db=db):
+        raise ArchivoPapeleraException()
+
     archivo: File = obtener_archivo_id(id=id_archivo, db=db, usuario=usuario)
     archivo.fecha_eliminacion = datetime.now(timezone.utc)
 
