@@ -1,15 +1,17 @@
 from pathlib import Path
+from datetime import datetime, timezone
 import uuid
 
 from fastapi import UploadFile
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.config import config
-from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException, CarpetaNoEncontradaException, TamañoExcedidoException
+from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException, CarpetaNoEncontradaException, TamañoExcedidoException, CarpetaPapeleraException
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz, get_folders_inside_folder, get_folder_nombre_raiz
+from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz, get_folders_inside_folder, get_folder_nombre_raiz, get_folder_trash, update_folder
 from app.repositories.file_repo import insert_file_db, get_file_by_name_in_folder
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
@@ -150,3 +152,42 @@ def crear_carpeta_anidada(id_carpeta_padre: str, nombre: str, usuario: User, db:
     carpeta_db: Folder = add_folder(carpeta=carpeta, db=db)
 
     return carpeta_db
+
+
+def añadir_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) -> Folder:
+    """
+    CarpetaPapeleraException, CarpetaNoEncontradaException
+    """
+    if get_folder_trash(id_carpeta=id_carpeta, id_usuario=usuario.id, db=db):
+        raise CarpetaPapeleraException()
+
+    carpeta: Folder = obtener_carpeta_usuario_id(
+        id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+    fecha_actual = datetime.now(timezone.utc)
+    path_padre: str = carpeta.path
+
+    carpeta.fecha_eliminacion = fecha_actual
+
+    # Actualizar todas las carpetas con el path del padre
+    db.query(Folder).filter(
+        Folder.id_usuario == usuario.id,
+        or_(
+            Folder.path == path_padre,
+            Folder.path.like(f"{path_padre}/%")
+        )
+    ).update(
+        {Folder.fecha_eliminacion: fecha_actual},
+        synchronize_session=False
+    )
+
+    # Actualizar todos los archivos con el path del padre
+    db.query(File).filter(
+        File.id_usuario == usuario.id,
+        File.path.like(f"{path_padre}/%")
+    ).update(
+        {File.fecha_eliminacion: fecha_actual},
+        synchronize_session=False
+    )
+
+    return update_folder(carpeta=carpeta, db=db)

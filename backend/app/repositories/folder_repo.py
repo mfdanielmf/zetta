@@ -14,6 +14,13 @@ def add_folder(carpeta: Folder, db: Session) -> Folder:
     return carpeta
 
 
+def update_folder(carpeta: Folder, db: Session) -> Folder:
+    db.commit()
+    db.flush(carpeta)
+
+    return carpeta
+
+
 def get_folder_id_user(id: uuid.UUID, usuario: User, db: Session) -> Folder | None:
     return db.query(Folder).filter_by(id=id, id_usuario=usuario.id).first()
 
@@ -44,3 +51,7 @@ def get_folder_nombre_raiz(nombre_carpeta: str, id_usuario: uuid.UUID, db: Sessi
 
 def get_folders_inside_folder(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session) -> list[Folder]:
     return db.query(Folder).filter_by(id_carpeta=id_carpeta, id_usuario=id_usuario).all()
+
+
+def get_folder_trash(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session) -> Folder | None:
+    return db.query(Folder).filter(Folder.id == id_carpeta, Folder.id_usuario == id_usuario, Folder.fecha_eliminacion != None).first()

@@ -4,15 +4,15 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File as FileF
 from sqlalchemy.orm import Session
 
 from app.database.db import get_db
-from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException, TamañoExcedidoException, CarpetaNoEncontradaException
+from app.models.exceptions import CarpetaPapeleraException, IdYaUsadaException, NombreYaUsadoException, TamañoExcedidoException, CarpetaNoEncontradaException
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.schemas.file_schemas import FileBase
 from app.services.file_services import obtener_archivos_carpeta
 from app.services.auth_services import get_current_user
-from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta
-from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, UploadFileFolderResponse
+from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera
+from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, UploadFileFolderResponse, AddFolderTrashResponse
 
 folder_router = APIRouter()
 
@@ -30,7 +30,8 @@ def get_folders(db: Session = Depends(get_db), usuario: User = Depends(get_curre
             fecha_creacion=carpeta.fecha_creacion,
             id_usuario=carpeta.id_usuario,
             nombre_usuario=carpeta.usuario.nombre,
-            id_carpeta=carpeta.id_carpeta
+            id_carpeta=carpeta.id_carpeta,
+            fecha_eliminacion=carpeta.fecha_eliminacion
         )
         for carpeta in carpetas
     ]
@@ -50,13 +51,37 @@ def create_folder(req: FolderRequest, db: Session = Depends(get_db), usuario: Us
                 path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
-                nombre_usuario=carpeta.usuario.nombre
+                nombre_usuario=carpeta.usuario.nombre,
+                fecha_eliminacion=carpeta.fecha_eliminacion
             )
         }
     except IdYaUsadaException as e:
         raise HTTPException(409, str(e))
     except NombreYaUsadoException as e2:
         raise HTTPException(409, str(e2))
+
+
+@folder_router.delete("/{id_carpeta}", response_model=AddFolderTrashResponse)
+def add_folder_to_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        carpeta: Folder = añadir_carpeta_papelera(
+            id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+        return {
+            "msg": "Carpeta enviada a la papelera con éxito",
+            "carpeta": FolderBase(
+                id=carpeta.id,
+                nombre_original=carpeta.nombre_original,
+                path=carpeta.path,
+                fecha_creacion=carpeta.fecha_creacion,
+                id_usuario=carpeta.id_usuario,
+                nombre_usuario=carpeta.usuario.nombre,
+                fecha_eliminacion=carpeta.fecha_eliminacion
+            )
+        }
+    except CarpetaPapeleraException:
+        raise HTTPException(
+            409, detail="La carpeta seleccionada ya está en la papelera")
 
 
 @folder_router.get("/{id_carpeta}/files", response_model=list[FileBase])
@@ -77,7 +102,8 @@ def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario
             fecha_creacion=archivo.fecha_creacion,
             id_usuario=archivo.id_usuario,
             nombre_usuario=archivo.usuario.nombre,
-            id_carpeta=archivo.id_carpeta
+            id_carpeta=archivo.id_carpeta,
+            fecha_eliminacion=archivo.fecha_eliminacion
         )
         for archivo in archivos
     ]
@@ -129,7 +155,8 @@ def get_folders_of_folder(id_carpeta: UUID, usuario: User = Depends(get_current_
             fecha_creacion=carpeta.fecha_creacion,
             id_usuario=carpeta.id_usuario,
             nombre_usuario=carpeta.usuario.nombre,
-            id_carpeta=carpeta.id_carpeta
+            id_carpeta=carpeta.id_carpeta,
+            fecha_eliminacion=carpeta.fecha_eliminacion
         )
         for carpeta in carpetas
     ]
@@ -150,7 +177,8 @@ def create_folder_in_folder(id_carpeta: UUID, req: FolderRequest, db: Session = 
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
-                id_carpeta=id_carpeta
+                id_carpeta=id_carpeta,
+                fecha_eliminacion=carpeta.fecha_eliminacion
             )
         }
     except IdYaUsadaException as e:

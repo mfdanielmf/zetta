@@ -20,6 +20,7 @@ class FolderBase(BaseModel):
     id_usuario: uuid.UUID
     nombre_usuario: str
     id_carpeta: uuid.UUID | None = None
+    fecha_eliminacion: datetime | None = None
 
 
 class FolderResponse(BaseModel):
@@ -34,3 +35,7 @@ class UploadFileFolderResponse(BaseModel):
 
     msg: str
     archivos: list[FileBase]
+
+
+class AddFolderTrashResponse(FolderResponse):
+    pass
