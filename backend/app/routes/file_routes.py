@@ -79,13 +79,13 @@ def download_files(id_archivo: UUID, db: Session = Depends(get_db), usuario: Use
 
 
 @file_router.delete("/{id_archivo}", response_model=AddTrashResponse)
-def add_to_trash(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+def add_file_to_trash(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
         archivo: File = añadir_archivo_papelera(
             id_archivo=id_archivo, db=db, usuario=usuario)
 
         return {
-            "msg": "Archivo añadido a la papelera con éxito",
+            "msg": "Archivo enviado a la papelera con éxito",
             "archivo": FileBase(
                 id=archivo.id,
                 nombre_original=archivo.nombre_original,
