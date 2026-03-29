@@ -5,7 +5,7 @@ from app.main import app
 from app.models.file import File
 from app.models.user import User
 from app.services.auth_services import get_current_user
-from app.models.exceptions import ArchivoNoEncontradoException
+from app.models.exceptions import ArchivoNoEncontradoException, ArchivoPapeleraException
 from tests.util import override_get_current_user
 
 client = TestClient(app)
@@ -41,9 +41,8 @@ def test_añadir_archivo_papelera_success():
     app.dependency_overrides.clear()
 
 
-def test_add_file_to_trash_file_not_found():
-    usuario: User = override_get_current_user()
-    app.dependency_overrides[get_current_user] = lambda: usuario
+def test_añadir_papelera_archivo_no_encontrado():
+    app.dependency_overrides[get_current_user] = override_get_current_user
 
     id_test: uuid.UUID = uuid.uuid4()
 
@@ -55,6 +54,24 @@ def test_add_file_to_trash_file_not_found():
     assert response.status_code == 404
     assert response.json() == {
         "detail": f"No se ha encontrado el archivo con ID {id_test}"
+    }
+
+    app.dependency_overrides.clear()
+
+
+def test_añadir_papelera_archivo_que_ya_estaba():
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+    id_test: uuid.UUID = uuid.uuid4()
+
+    with patch("app.routes.file_routes.añadir_archivo_papelera") as mock_añadir:
+        mock_añadir.side_effect = ArchivoPapeleraException()
+
+        response = client.delete(f"/api/files/{id_test}")
+
+    assert response.status_code == 409
+    assert response.json() == {
+        "detail": "El archivo seleccionado ya está en la papelera"
     }
 
     app.dependency_overrides.clear()
