@@ -13,6 +13,13 @@ def insert_file_db(archivo: File, db: Session) -> File:
     return archivo
 
 
+def update_file(archivo: File, db: Session) -> File:
+    db.commit()
+    db.flush(archivo)
+
+    return archivo
+
+
 def get_file_by_id_and_user(id: uuid.UUID, usuario: User, db: Session) -> File | None:
     return db.query(File).filter_by(id=id, id_usuario=usuario.id).first()
 

@@ -102,7 +102,8 @@ async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] 
                     fecha_creacion=archivo_guardado.fecha_creacion,
                     id_usuario=archivo_guardado.id_usuario,
                     nombre_usuario=archivo_guardado.usuario.nombre,
-                    id_carpeta=archivo_guardado.id_carpeta
+                    id_carpeta=archivo_guardado.id_carpeta,
+                    fecha_eliminacion=archivo_guardado.fecha_eliminacion
                 )
                 for archivo_guardado in archivos
             ]

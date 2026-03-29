@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from pathlib import Path
 import uuid
 
@@ -6,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.models.exceptions import TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
 from app.models.file import File
 from app.models.user import User
-from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user, get_file_by_name_in_folder, get_all_files_in_folder
+from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user, get_file_by_name_in_folder, get_all_files_in_folder, update_file
 
 from app.config import config
 from app.services.folder_services import obtener_carpeta_usuario_id
@@ -93,3 +94,13 @@ def obtener_archivos_carpeta(id_carpeta: uuid.UUID, db: Session, usuario: User) 
     obtener_carpeta_usuario_id(id_carpeta=id_carpeta, usuario=usuario, db=db)
 
     return get_all_files_in_folder(db=db, id_carpeta=id_carpeta, usuario=usuario)
+
+
+def añadir_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session) -> File:
+    """
+    ArchivoNoEncontradoException
+    """
+    archivo: File = obtener_archivo_id(id=id_archivo, db=db, usuario=usuario)
+    archivo.fecha_eliminacion = datetime.now(timezone.utc)
+
+    return update_file(archivo=archivo, db=db)
