@@ -39,3 +39,7 @@ class UploadFileFolderResponse(BaseModel):
 
 class AddFolderTrashResponse(FolderResponse):
     pass
+
+
+class RestoreFolderResponse(FolderResponse):
+    pass

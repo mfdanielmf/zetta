@@ -11,8 +11,8 @@ from app.models.user import User
 from app.schemas.file_schemas import FileBase
 from app.services.file_services import obtener_archivos_carpeta
 from app.services.auth_services import get_current_user
-from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera
-from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, UploadFileFolderResponse, AddFolderTrashResponse
+from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_palelera
+from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, RestoreFolderResponse, UploadFileFolderResponse, AddFolderTrashResponse
 
 folder_router = APIRouter()
 
@@ -85,6 +85,28 @@ def add_folder_to_trash(id_carpeta: UUID, usuario: User = Depends(get_current_us
     except CarpetaNoEncontradaException:
         raise HTTPException(
             404, detail=f"No se ha encontrado la carpeta con ID {id_carpeta}")
+
+
+@folder_router.put("/{id_carpeta}/restaurar", response_model=RestoreFolderResponse)
+def restore_folder_from_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        carpeta: Folder = restaurar_carpeta_palelera(
+            id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+        return {
+            "msg": "Carpeta restaurada correctamente",
+            "carpeta": FolderBase(
+                id=carpeta.id,
+                nombre_original=carpeta.nombre_original,
+                path=carpeta.path,
+                fecha_creacion=carpeta.fecha_creacion,
+                id_usuario=carpeta.id_usuario,
+                nombre_usuario=carpeta.usuario.nombre,
+                fecha_eliminacion=carpeta.fecha_eliminacion
+            )
+        }
+    except CarpetaNoEncontradaException as e1:
+        raise HTTPException(404, str(e1))
 
 
 @folder_router.get("/{id_carpeta}/files", response_model=list[FileBase])

@@ -72,6 +72,20 @@ def obtener_carpeta_usuario_id(id_carpeta: str, usuario: User, db: Session) -> F
     return carpeta
 
 
+def obtener_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) -> Folder:
+    """
+    CarpetaNoEncontradaException
+    """
+    carpeta: Folder = get_folder_trash(
+        id_carpeta=id_carpeta, id_usuario=usuario.id, db=db)
+
+    if not carpeta:
+        raise CarpetaNoEncontradaException(
+            f"No se ha encontrado la carpeta con ID {id_carpeta}")
+
+    return carpeta
+
+
 def subir_archivo_carpeta_disco(file_path: str, data: bytes):
     """
     CarpetaNoEncontradaException
@@ -187,6 +201,40 @@ def añadir_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) 
         File.path.like(f"{path_padre}/%")
     ).update(
         {File.fecha_eliminacion: fecha_actual},
+        synchronize_session=False
+    )
+
+    return update_folder(carpeta=carpeta, db=db)
+
+
+def restaurar_carpeta_palelera(id_carpeta: uuid.UUID, usuario: User, db: Session):
+    """
+    CarpetaNoEncontradaException
+    """
+    carpeta: Folder = obtener_carpeta_papelera(
+        id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+    carpeta.fecha_eliminacion = None
+    path_padre: str = carpeta.path
+
+    # Actualizar todas las carpetas con el path del padre
+    db.query(Folder).filter(
+        Folder.id_usuario == usuario.id,
+        or_(
+            Folder.path == path_padre,
+            Folder.path.like(f"{path_padre}/%")
+        )
+    ).update(
+        {Folder.fecha_eliminacion: None},
+        synchronize_session=False
+    )
+
+    # Actualizar todos los archivos con el path del padre
+    db.query(File).filter(
+        File.id_usuario == usuario.id,
+        File.path.like(f"{path_padre}/%")
+    ).update(
+        {File.fecha_eliminacion: None},
         synchronize_session=False
     )
 
