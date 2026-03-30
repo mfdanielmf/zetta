@@ -40,6 +40,7 @@ def test_restaurar_archivo():
     assert archivo_response["nombre_original"] == archivo_fake.nombre_original
     assert archivo_response["path"] == archivo_fake.path
     assert archivo_response["id_usuario"] == str(archivo_fake.id_usuario)
+    assert archivo_response["fecha_eliminacion"] == None
 
     app.dependency_overrides.clear()
 

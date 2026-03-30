@@ -38,6 +38,10 @@ class CarpetaNoEncontradaException(Exception):
     pass
 
 
+class CarpetaPapeleraException(Exception):
+    pass
+
+
 # GENERAL
 class IdYaUsadaException(Exception):
     pass

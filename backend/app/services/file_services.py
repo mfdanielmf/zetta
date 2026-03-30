@@ -112,7 +112,7 @@ def obtener_archivos_carpeta(id_carpeta: uuid.UUID, db: Session, usuario: User) 
 
 def añadir_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session) -> File:
     """
-    ArchivoNoEncontradoException
+    ArchivoNoEncontradoException, ArchivoPapeleraException
     """
     if get_file_trash(id_archivo=id_archivo, id_usuario=usuario.id, db=db):
         raise ArchivoPapeleraException()
