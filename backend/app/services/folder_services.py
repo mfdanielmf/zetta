@@ -81,7 +81,7 @@ def obtener_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) 
 
     if not carpeta:
         raise CarpetaNoEncontradaException(
-            f"No se ha encontrado la carpeta con ID {id_carpeta}")
+            f"No se ha encontrado la carpeta con ID {id_carpeta} en la papelera")
 
     return carpeta
 
