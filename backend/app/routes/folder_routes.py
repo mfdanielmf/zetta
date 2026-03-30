@@ -82,6 +82,9 @@ def add_folder_to_trash(id_carpeta: UUID, usuario: User = Depends(get_current_us
     except CarpetaPapeleraException:
         raise HTTPException(
             409, detail="La carpeta seleccionada ya está en la papelera")
+    except CarpetaNoEncontradaException:
+        raise HTTPException(
+            404, detail=f"No se ha encontrado la carpeta con ID {id_carpeta}")
 
 
 @folder_router.get("/{id_carpeta}/files", response_model=list[FileBase])
