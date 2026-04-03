@@ -6,11 +6,12 @@ from fastapi import UploadFile
 from sqlalchemy.orm import Session
 from app.models.exceptions import ArchivoPapeleraException, TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
 from app.models.file import File
+from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user, get_file_by_name_in_folder, get_all_files_in_folder, update_file, get_file_trash
+from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user, get_file_by_name_in_folder, get_all_files_in_folder, update_file, get_file_trash, get_all_files_trash_raiz
 
 from app.config import config
-from app.services.folder_services import obtener_carpeta_usuario_id
+from app.services.folder_services import obtener_carpeta_usuario_id, obtener_carpeta_papelera
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -43,6 +44,10 @@ def obtener_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session) 
             f"No se ha encontrado el archivo con id {id}")
 
     return archivo
+
+
+def obtener_archivos_papelera_raiz(usuario: User, db: Session) -> list[File]:
+    return get_all_files_trash_raiz(id_usuario=usuario.id, db=db)
 
 
 async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -> File:
@@ -132,3 +137,13 @@ def restaurar_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session
     archivo.fecha_eliminacion = None
 
     return update_file(archivo=archivo, db=db)
+
+
+def obtener_archivos_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) -> list[File]:
+    """
+    CarpetaNoEncontradaException
+    """
+    carpeta: Folder = obtener_carpeta_papelera(
+        id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+    return carpeta.archivos

@@ -13,39 +13,39 @@ from app.config import config
 client = TestClient(app=app)
 
 
-def test_get_anidadas_carpeta_no_existente():
+def test_get_anidadas_carpeta_que_no_esta_en_papelera():
     app.dependency_overrides[get_current_user] = override_get_current_user
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.obtener_carpetas_dentro_carpeta") as mock_obtener:
+    with patch("app.routes.folder_routes.obtener_carpetas_carpeta_papelera") as mock_obtener:
         mock_obtener.side_effect = CarpetaNoEncontradaException()
 
-        response = client.get(f"/api/folders/{id_carpeta}/folders")
+        response = client.get(f"/api/folders/trash/{id_carpeta}/folders")
 
     assert response.status_code == 404
     assert response.json()[
-        "detail"] == f"No se ha encontrado la carpeta con id {id_carpeta}"
+        "detail"] == f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera"
 
     app.dependency_overrides.clear()
 
 
-def test_get_anidadas_sin_carpetas():
+def test_get_anidadas_papelera_sin_carpetas():
     app.dependency_overrides[get_current_user] = override_get_current_user
 
     random_id: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.obtener_carpetas_dentro_carpeta") as mock_obtener:
+    with patch("app.routes.folder_routes.obtener_carpetas_carpeta_papelera") as mock_obtener:
         mock_obtener.return_value = []
 
-        response = client.get(f"/api/folders/{random_id}/folders")
+        response = client.get(f"/api/folders/trash/{random_id}/folders")
 
     assert response.status_code == 200
-    assert response.json() == []
+    assert len(response.json()) == 0
 
     app.dependency_overrides.clear()
 
 
-def test_get_anidadas_con_una_carpeta():
+def test_get_anidadas_papelera_con_una_carpeta():
     usuario: User = override_get_current_user()
     app.dependency_overrides[get_current_user] = lambda: usuario
 
@@ -60,26 +60,29 @@ def test_get_anidadas_con_una_carpeta():
         fecha_creacion="2026-01-21T01:44:31.825198",
         id_usuario=usuario.id,
         usuario=usuario,
+        fecha_eliminacion="2026-01-21T01:44:31.825198",
         id_carpeta=random_id
     )
 
-    with patch("app.routes.folder_routes.obtener_carpetas_dentro_carpeta") as mock_obtener:
+    with patch("app.routes.folder_routes.obtener_carpetas_carpeta_papelera") as mock_obtener:
         mock_obtener.return_value = [carpeta_falsa]
 
-        response = client.get(f"/api/folders/{random_id}/folders")
+        response = client.get(f"/api/folders/trash/{random_id}/folders")
 
     json_response = response.json()
 
     assert response.status_code == 200
     assert len(json_response) == 1
+    assert json_response[0]["id"] == str(carpeta_falsa.id)
     assert json_response[0]["nombre_original"] == nombre_carpeta
     assert json_response[0]["nombre_usuario"] == usuario.nombre
     assert json_response[0]["id_carpeta"] == str(random_id)
+    assert json_response[0]["fecha_eliminacion"] == carpeta_falsa.fecha_eliminacion
 
     app.dependency_overrides.clear()
 
 
-def test_get_anidadas_con_varias_carpetas():
+def test_get_anidadas_con_varias_carpetas_papelera():
     usuario: User = override_get_current_user()
     app.dependency_overrides[get_current_user] = lambda: usuario
 
@@ -96,6 +99,7 @@ def test_get_anidadas_con_varias_carpetas():
         fecha_creacion="2026-01-21T01:44:31.825198",
         id_usuario=usuario.id,
         usuario=usuario,
+        fecha_eliminacion="2026-01-21T01:44:31.825198",
         id_carpeta=random_id
     )
 
@@ -106,15 +110,16 @@ def test_get_anidadas_con_varias_carpetas():
         fecha_creacion="2026-01-21T01:44:31.825198",
         id_usuario=usuario.id,
         usuario=usuario,
+        fecha_eliminacion="2026-01-21T01:44:31.825198",
         id_carpeta=random_id
     )
 
     carpetas_falsas = [carpeta_falsa, carpeta_falsa2]
 
-    with patch("app.routes.folder_routes.obtener_carpetas_dentro_carpeta") as mock_obtener:
+    with patch("app.routes.folder_routes.obtener_carpetas_carpeta_papelera") as mock_obtener:
         mock_obtener.return_value = carpetas_falsas
 
-        response = client.get(f"/api/folders/{random_id}/folders")
+        response = client.get(f"/api/folders/trash/{random_id}/folders")
 
     json_response = response.json()
 
@@ -127,5 +132,6 @@ def test_get_anidadas_con_varias_carpetas():
         assert json_response[i]["id_usuario"] == str(carpeta.id_usuario)
         assert json_response[i]["nombre_usuario"] == usuario.nombre
         assert json_response[i]["id_carpeta"] == str(carpeta.id_carpeta)
+        assert json_response[i]["fecha_eliminacion"] == carpeta.fecha_eliminacion
 
     app.dependency_overrides.clear()
