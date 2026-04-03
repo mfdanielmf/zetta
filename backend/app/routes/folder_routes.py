@@ -9,7 +9,7 @@ from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.schemas.file_schemas import FileBase
-from app.services.file_services import obtener_archivos_carpeta
+from app.services.file_services import obtener_archivos_carpeta, obtener_archivos_carpeta_papelera
 from app.services.auth_services import get_current_user
 from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_palelera, obtener_carpetas_papelera_raiz
 from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, RestoreFolderResponse, UploadFileFolderResponse, AddFolderTrashResponse
@@ -61,7 +61,7 @@ def create_folder(req: FolderRequest, db: Session = Depends(get_db), usuario: Us
         raise HTTPException(409, str(e2))
 
 
-@folder_router.get("/trash")
+@folder_router.get("/trash", response_model=list[FolderBase])
 def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     carpetas: list[Folder] = obtener_carpetas_papelera_raiz(
         usuario=usuario, db=db)
@@ -79,6 +79,31 @@ def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = D
         )
         for carpeta in carpetas
     ]
+
+
+@folder_router.get("/trash/{id_carpeta}/files")
+def get_folders_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        archivos: list[File] = obtener_archivos_carpeta_papelera(
+            db=db, id_carpeta=id_carpeta, usuario=usuario)
+
+        return [
+            FileBase(
+                id=archivo.id,
+                nombre_original=archivo.nombre_original,
+                path=archivo.path,
+                tamaño_bytes=archivo.tamaño_bytes,
+                fecha_creacion=archivo.fecha_creacion,
+                id_usuario=archivo.id_usuario,
+                nombre_usuario=archivo.usuario.nombre,
+                id_carpeta=archivo.id_carpeta,
+                fecha_eliminacion=archivo.fecha_eliminacion
+            )
+            for archivo in archivos
+        ]
+    except CarpetaNoEncontradaException:
+        raise HTTPException(
+            404, f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera")
 
 
 @folder_router.delete("/{id_carpeta}", response_model=AddFolderTrashResponse)
@@ -134,24 +159,24 @@ def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario
     try:
         archivos: list[File] = obtener_archivos_carpeta(
             db=db, id_carpeta=id_carpeta, usuario=usuario)
+
+        return [
+            FileBase(
+                id=archivo.id,
+                nombre_original=archivo.nombre_original,
+                path=archivo.path,
+                tamaño_bytes=archivo.tamaño_bytes,
+                fecha_creacion=archivo.fecha_creacion,
+                id_usuario=archivo.id_usuario,
+                nombre_usuario=archivo.usuario.nombre,
+                id_carpeta=archivo.id_carpeta,
+                fecha_eliminacion=archivo.fecha_eliminacion
+            )
+            for archivo in archivos
+        ]
     except CarpetaNoEncontradaException:
         raise HTTPException(
             404, f"No se ha encontrado la carpeta con id {id_carpeta}")
-
-    return [
-        FileBase(
-            id=archivo.id,
-            nombre_original=archivo.nombre_original,
-            path=archivo.path,
-            tamaño_bytes=archivo.tamaño_bytes,
-            fecha_creacion=archivo.fecha_creacion,
-            id_usuario=archivo.id_usuario,
-            nombre_usuario=archivo.usuario.nombre,
-            id_carpeta=archivo.id_carpeta,
-            fecha_eliminacion=archivo.fecha_eliminacion
-        )
-        for archivo in archivos
-    ]
 
 
 @folder_router.post("/{id_carpeta}/files", response_model=UploadFileFolderResponse)
