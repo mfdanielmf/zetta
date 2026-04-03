@@ -106,7 +106,7 @@ def get_files_of_folder_on_trash(id_carpeta: UUID, usuario: User = Depends(get_c
             404, f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera")
 
 
-@folder_router.get("/trash/{id_carpeta}/folders")
+@folder_router.get("/trash/{id_carpeta}/folders", response_model=list[FolderBase])
 def get_folders_inside_folder_on_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         carpetas: list[Folder] = obtener_carpetas_carpeta_papelera(
