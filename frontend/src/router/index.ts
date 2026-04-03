@@ -24,12 +24,12 @@ const router = createRouter({
       redirect: { name: 'archivos' },
       children: [
         {
-          path: '/storage',
+          path: 'storage',
           name: 'archivos',
           component: FilesView,
         },
         {
-          path: '/storage/:id',
+          path: 'storage/:id',
           name: 'carpeta',
           component: FolderFilesView,
         },
