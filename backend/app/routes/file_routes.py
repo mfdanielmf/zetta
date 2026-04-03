@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.database.db import get_db
 
 from app.models.user import User
-from app.services.file_services import guardar_archivo, obtener_archivos_usuario, obtener_archivo_id, añadir_archivo_papelera, restaurar_archivo_papelera
+from app.services.file_services import guardar_archivo, obtener_archivos_usuario, obtener_archivo_id, añadir_archivo_papelera, restaurar_archivo_papelera, obtener_archivos_papelera_raiz
 from app.models.exceptions import ArchivoNoEncontradoException, TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException, ArchivoPapeleraException
 from app.schemas.file_schemas import AddFileTrashResponse, FileBase, FileResponse, RestoreFileResponse
 from app.services.auth_services import get_current_user
@@ -64,6 +64,26 @@ async def upload_file(file_upload: list[UploadFile] = File(...), db: Session = D
         raise HTTPException(409, str(e2))
     except NombreYaUsadoException as e3:
         raise HTTPException(409, str(e3))
+
+
+@file_router.get("/trash", response_model=list[FileBase])
+def get_files_trash(usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    archivos: list[File] = obtener_archivos_papelera_raiz(
+        usuario=usuario, db=db)
+
+    return [
+        FileBase(
+            id=archivo.id,
+            nombre_original=archivo.nombre_original,
+            path=archivo.path,
+            tamaño_bytes=archivo.tamaño_bytes,
+            fecha_creacion=archivo.fecha_creacion,
+            id_usuario=archivo.id_usuario,
+            nombre_usuario=archivo.usuario.nombre,
+            id_carpeta=archivo.id_carpeta,
+            fecha_eliminacion=archivo.fecha_eliminacion
+        ) for archivo in archivos
+    ]
 
 
 @file_router.get("/{id_archivo}", response_class=FileResp)
