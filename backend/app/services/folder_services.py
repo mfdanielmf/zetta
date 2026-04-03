@@ -249,3 +249,13 @@ def restaurar_carpeta_palelera(id_carpeta: uuid.UUID, usuario: User, db: Session
     )
 
     return update_folder(carpeta=carpeta, db=db)
+
+
+def obtener_carpetas_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) -> list[Folder]:
+    """
+    CarpetaNoEncontradaException
+    """
+    carpeta: Folder = obtener_carpeta_papelera(
+        id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+    return get_folders_inside_folder(id_carpeta=carpeta.id, id_usuario=usuario.id, db=db)

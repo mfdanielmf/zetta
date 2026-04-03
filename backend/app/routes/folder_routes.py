@@ -11,7 +11,7 @@ from app.models.user import User
 from app.schemas.file_schemas import FileBase
 from app.services.file_services import obtener_archivos_carpeta, obtener_archivos_carpeta_papelera
 from app.services.auth_services import get_current_user
-from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_palelera, obtener_carpetas_papelera_raiz
+from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_palelera, obtener_carpetas_papelera_raiz, obtener_carpetas_carpeta_papelera
 from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, RestoreFolderResponse, UploadFileFolderResponse, AddFolderTrashResponse
 
 folder_router = APIRouter()
@@ -82,7 +82,7 @@ def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = D
 
 
 @folder_router.get("/trash/{id_carpeta}/files", response_model=list[FileBase])
-def get_folders_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_files_of_folder_on_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         archivos: list[File] = obtener_archivos_carpeta_papelera(
             db=db, id_carpeta=id_carpeta, usuario=usuario)
@@ -100,6 +100,30 @@ def get_folders_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user
                 fecha_eliminacion=archivo.fecha_eliminacion
             )
             for archivo in archivos
+        ]
+    except CarpetaNoEncontradaException:
+        raise HTTPException(
+            404, f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera")
+
+
+@folder_router.get("/trash/{id_carpeta}/folders")
+def get_folders_inside_folder_on_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        carpetas: list[Folder] = obtener_carpetas_carpeta_papelera(
+            id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+        return [
+            FolderBase(
+                id=carpeta.id,
+                nombre_original=carpeta.nombre_original,
+                path=carpeta.path,
+                fecha_creacion=carpeta.fecha_creacion,
+                id_usuario=carpeta.id_usuario,
+                nombre_usuario=carpeta.usuario.nombre,
+                id_carpeta=carpeta.id_carpeta,
+                fecha_eliminacion=carpeta.fecha_eliminacion
+            )
+            for carpeta in carpetas
         ]
     except CarpetaNoEncontradaException:
         raise HTTPException(
