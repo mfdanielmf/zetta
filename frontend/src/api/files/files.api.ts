@@ -1,5 +1,5 @@
 import api from '../axios.config'
-import type { GetFilesResponse, PostFilesResponse } from '../types/types'
+import type { GetFilesResponse, PostFilesResponse, SendFileTrashResponse } from '../types/types'
 
 const URL = '/api/files'
 
@@ -12,5 +12,8 @@ export default {
   },
   descargarArchivo(id: string) {
     return api().get(URL + `/${id}`, { responseType: 'blob' })
+  },
+  mandarArchivoPapelera(idArchivo: string) {
+    return api().delete<SendFileTrashResponse>(URL + `/${idArchivo}`)
   },
 }

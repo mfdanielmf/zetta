@@ -19,13 +19,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { useGetFilesUser, useInsertFiles } from '@/queries/useFilesQuery'
+import { useGetFilesUser, useInsertFiles, useMoveFileTrash } from '@/queries/useFilesQuery'
 import {
   downloadFileService,
   formatDateService,
   formatearTamañoService,
 } from '@/services/file.services'
-import { Download, Ellipsis, Folder, FolderPlus, Plus, Upload } from 'lucide-vue-next'
+import { Download, Ellipsis, Folder, FolderPlus, Plus, Trash2, Upload } from 'lucide-vue-next'
 import { computed, defineAsyncComponent, ref } from 'vue'
 import { useCreateFolder, useGetFoldersUser } from '@/queries/useFoldersQuery'
 import getIconExtension from '@/utils/iconMap'
@@ -43,6 +43,7 @@ const folderStore = useFolderStore()
 const { data: dataFolders, isLoading: loadingFolders } = useGetFoldersUser()
 const { data: dataFiles, isLoading: loadingFiles } = useGetFilesUser()
 const mutacionInsertar = useInsertFiles()
+const { mutateAsync: mutateArchivoPapelera } = useMoveFileTrash()
 
 const cargando = computed(() => {
   if (loadingFiles.value || loadingFolders.value) {
@@ -82,6 +83,12 @@ async function crearCarpeta(nombre: string) {
   } catch {}
 
   if (successCreate) crearAbierto.value = false
+}
+
+async function mandarArchivoPapelera(idArchivo: string) {
+  try {
+    await mutateArchivoPapelera(idArchivo)
+  } catch {}
 }
 
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
@@ -177,6 +184,10 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
                   <Download />
                   Descargar
                 </DropdownMenuItem>
+                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
+                  <Trash2 />
+                  Eliminar
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </TableCell>
@@ -215,6 +226,13 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
                 >
                   <Download />
                   Descargar
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="mandarArchivoPapelera(file.id)"
+                >
+                  <Trash2 />
+                  Eliminar
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

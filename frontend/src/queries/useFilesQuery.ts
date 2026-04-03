@@ -1,4 +1,8 @@
-import { getFilesUserService, insertarFilesService } from '@/services/file.services'
+import {
+  getFilesUserService,
+  insertarFilesService,
+  sendFileTrashService,
+} from '@/services/file.services'
 import { useAuthStore } from '@/stores/auth.store'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import axios from 'axios'
@@ -30,6 +34,24 @@ export function useInsertFiles() {
         toast.error(e.response?.data?.detail || 'Error al subir los archivos')
       } else {
         toast.error('Error al subir los archivos')
+      }
+    },
+  })
+}
+
+//DEVNOTES:
+//Acordarme de invalidar queries cuando tenga hecha la lógica de que solo se muestren archivos no eliminados y demás
+export function useMoveFileTrash() {
+  return useMutation({
+    mutationFn: (idArchivo: string) => sendFileTrashService(idArchivo),
+    onSuccess: (data) => {
+      toast.success(data?.msg || 'Archivo eliminado correctamente. Puedes verlo en la papelera')
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al eliminar el archivo')
+      } else {
+        toast.error('Error al eliminar el archivo')
       }
     },
   })
