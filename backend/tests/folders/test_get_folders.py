@@ -4,6 +4,7 @@ import uuid
 from fastapi.testclient import TestClient
 from app.main import app
 from app.models.folder import Folder
+from app.models.user import User
 from app.services.auth_services import get_current_user
 from tests.util import override_get_current_user
 
@@ -31,12 +32,12 @@ def test_get_carpetas_usuario_sin_uploads():
 
 
 def test_get_carpetas_usuario_con_uploads():
-    usuario = override_get_current_user()
+    usuario: User = override_get_current_user()
     app.dependency_overrides[get_current_user] = lambda: usuario
 
-    carpeta = Folder(
+    carpeta: Folder = Folder(
         id=uuid.uuid4(),
-        nombre_original="testing.txt",
+        nombre_original="testing",
         path=f"uploads/{usuario.id}/testing",
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
@@ -52,7 +53,7 @@ def test_get_carpetas_usuario_con_uploads():
     json_response = response.json()
 
     assert len(json_response) == 1
-    assert json_response[0]["nombre_original"] == "testing.txt"
+    assert json_response[0]["nombre_original"] == carpeta.nombre_original
     assert json_response[0]["nombre_usuario"] == usuario.nombre
 
     app.dependency_overrides.clear()
