@@ -12,26 +12,36 @@ const RegisterView = () => import('@/views/auth/RegisterView.vue')
 const LoginView = () => import('@/views/auth/LoginView.vue')
 const FilesView = () => import('@/views/StorageView.vue')
 const FolderFilesView = () => import('@/views/FolderFilesView.vue')
+const PapeleraView = () => import('@/views/PapeleraView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'dashboard',
       component: MainLayout,
       meta: { authRequired: true },
       redirect: { name: 'archivos' },
       children: [
         {
           path: 'storage',
-          name: 'archivos',
-          component: FilesView,
+          children: [
+            {
+              path: '',
+              name: 'archivos',
+              component: FilesView,
+            },
+            {
+              path: ':id',
+              name: 'carpeta',
+              component: FolderFilesView,
+            },
+          ],
         },
         {
-          path: 'storage/:id',
-          name: 'carpeta',
-          component: FolderFilesView,
+          path: 'trash',
+          name: 'papelera',
+          component: PapeleraView,
         },
       ],
     },
