@@ -11,7 +11,7 @@ from app.models.user import User
 from app.schemas.file_schemas import FileBase
 from app.services.file_services import obtener_archivos_carpeta
 from app.services.auth_services import get_current_user
-from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_palelera
+from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_palelera, obtener_carpetas_papelera_raiz
 from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, RestoreFolderResponse, UploadFileFolderResponse, AddFolderTrashResponse
 
 folder_router = APIRouter()
@@ -59,6 +59,26 @@ def create_folder(req: FolderRequest, db: Session = Depends(get_db), usuario: Us
         raise HTTPException(409, str(e))
     except NombreYaUsadoException as e2:
         raise HTTPException(409, str(e2))
+
+
+@folder_router.get("/trash")
+def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    carpetas: list[Folder] = obtener_carpetas_papelera_raiz(
+        usuario=usuario, db=db)
+
+    return [
+        FolderBase(
+            id=carpeta.id,
+            nombre_original=carpeta.nombre_original,
+            path=carpeta.path,
+            fecha_creacion=carpeta.fecha_creacion,
+            id_usuario=carpeta.id_usuario,
+            nombre_usuario=carpeta.usuario.nombre,
+            id_carpeta=carpeta.id_carpeta,
+            fecha_eliminacion=carpeta.fecha_eliminacion
+        )
+        for carpeta in carpetas
+    ]
 
 
 @folder_router.delete("/{id_carpeta}", response_model=AddFolderTrashResponse)

@@ -11,7 +11,7 @@ from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException, Ca
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz, get_folders_inside_folder, get_folder_nombre_raiz, get_folder_trash, update_folder
+from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz, get_folders_inside_folder, get_folder_nombre_raiz, get_folder_trash, update_folder, get_all_folders_trash_raiz
 from app.repositories.file_repo import insert_file_db, get_file_by_name_in_folder
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
@@ -84,6 +84,10 @@ def obtener_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) 
             f"No se ha encontrado la carpeta con ID {id_carpeta} en la papelera")
 
     return carpeta
+
+
+def obtener_carpetas_papelera_raiz(usuario: User, db: Session) -> list[Folder]:
+    return get_all_folders_trash_raiz(id_usuario=usuario.id, db=db)
 
 
 def subir_archivo_carpeta_disco(file_path: str, data: bytes):
