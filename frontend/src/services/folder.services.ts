@@ -54,3 +54,9 @@ export async function obtenerCarpetasAnidadasService(idCarpeta: string) {
     }
   }
 }
+
+export async function sendFolderTrashService(idCarpeta: string) {
+  const req = await foldersApi.mandarCarpetaPapelera(idCarpeta)
+
+  return req.data
+}

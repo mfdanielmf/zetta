@@ -4,6 +4,7 @@ import {
   obtenerArchivosCarpetaService,
   obtenerCarpetasAnidadasService,
   obtenerCarpetasService,
+  sendFolderTrashService,
   subirArchivoCarpetaService,
 } from '@/services/folder.services'
 import { useAuthStore } from '@/stores/auth.store'
@@ -113,5 +114,23 @@ export function useGetFoldersAnidadas(idCarpeta: ComputedRef<string>) {
     queryKey: ['carpetasAnidadas', authStore.usuario?.id, () => toValue(idCarpeta)],
     queryFn: () => obtenerCarpetasAnidadasService(toValue(idCarpeta)),
     enabled: computed(() => !!authStore.usuario?.id && !!toValue(idCarpeta)),
+  })
+}
+
+//DEVNOTES:
+//Acordarme de invalidar queries cuando tenga hecha la lógica de que solo se muestren archivos no eliminados y demás
+export function useMoveFolderTrash() {
+  return useMutation({
+    mutationFn: (idCarpeta: string) => sendFolderTrashService(idCarpeta),
+    onSuccess: (data) => {
+      toast.success(data?.msg || 'Carpeta eliminada correctamente. Puedes verla en la papelera')
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al eliminar la carpeta')
+      } else {
+        toast.error('Error al eliminar la carpeta')
+      }
+    },
   })
 }

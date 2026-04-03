@@ -27,7 +27,7 @@ import {
 } from '@/services/file.services'
 import { Download, Ellipsis, Folder, FolderPlus, Plus, Trash2, Upload } from 'lucide-vue-next'
 import { computed, defineAsyncComponent, ref } from 'vue'
-import { useCreateFolder, useGetFoldersUser } from '@/queries/useFoldersQuery'
+import { useCreateFolder, useGetFoldersUser, useMoveFolderTrash } from '@/queries/useFoldersQuery'
 import getIconExtension from '@/utils/iconMap'
 import { useRouter } from 'vue-router'
 import { useFolderStore } from '@/stores/folder.store'
@@ -44,6 +44,7 @@ const { data: dataFolders, isLoading: loadingFolders } = useGetFoldersUser()
 const { data: dataFiles, isLoading: loadingFiles } = useGetFilesUser()
 const mutacionInsertar = useInsertFiles()
 const { mutateAsync: mutateArchivoPapelera } = useMoveFileTrash()
+const { mutateAsync: mutateCarpetaPapelera } = useMoveFolderTrash()
 
 const cargando = computed(() => {
   if (loadingFiles.value || loadingFolders.value) {
@@ -88,6 +89,12 @@ async function crearCarpeta(nombre: string) {
 async function mandarArchivoPapelera(idArchivo: string) {
   try {
     await mutateArchivoPapelera(idArchivo)
+  } catch {}
+}
+
+async function mandarCarpetaPapelera(idCarpeta: string) {
+  try {
+    await mutateCarpetaPapelera(idCarpeta)
   } catch {}
 }
 
@@ -184,7 +191,10 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
                   <Download />
                   Descargar
                 </DropdownMenuItem>
-                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="mandarCarpetaPapelera(folder.id)"
+                >
                   <Trash2 />
                   Eliminar
                 </DropdownMenuItem>
