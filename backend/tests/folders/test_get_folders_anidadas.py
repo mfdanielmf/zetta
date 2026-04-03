@@ -2,6 +2,7 @@ import uuid
 
 from fastapi.testclient import TestClient
 from app.main import app
+from app.models.exceptions import CarpetaNoEncontradaException
 from app.models.folder import Folder
 from app.models.user import User
 from app.services.auth_services import get_current_user
@@ -10,6 +11,22 @@ from unittest.mock import patch
 from app.config import config
 
 client = TestClient(app=app)
+
+
+def test_get_anidadas_carpeta_no_existente():
+    app.dependency_overrides[get_current_user] = override_get_current_user
+    id_carpeta: uuid.UUID = uuid.uuid4()
+
+    with patch("app.routes.folder_routes.obtener_carpetas_dentro_carpeta") as mock_obtener:
+        mock_obtener.side_effect = CarpetaNoEncontradaException()
+
+        response = client.get(f"/api/folders/{id_carpeta}/folders")
+
+    assert response.status_code == 404
+    assert response.json()[
+        "detail"] == f"No se ha encontrado la carpeta con id {id_carpeta}"
+
+    app.dependency_overrides.clear()
 
 
 def test_get_anidadas_sin_carpetas():

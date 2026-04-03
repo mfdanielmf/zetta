@@ -214,22 +214,26 @@ async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] 
 
 @folder_router.get("/{id_carpeta}/folders", response_model=list[FolderBase])
 def get_folders_of_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    carpetas: list[Folder] = obtener_carpetas_dentro_carpeta(
-        id_carpeta_padre=id_carpeta, usuario=usuario, db=db)
+    try:
+        carpetas: list[Folder] = obtener_carpetas_dentro_carpeta(
+            id_carpeta_padre=id_carpeta, usuario=usuario, db=db)
 
-    return [
-        FolderBase(
-            id=carpeta.id,
-            nombre_original=carpeta.nombre_original,
-            path=carpeta.path,
-            fecha_creacion=carpeta.fecha_creacion,
-            id_usuario=carpeta.id_usuario,
-            nombre_usuario=carpeta.usuario.nombre,
-            id_carpeta=carpeta.id_carpeta,
-            fecha_eliminacion=carpeta.fecha_eliminacion
-        )
-        for carpeta in carpetas
-    ]
+        return [
+            FolderBase(
+                id=carpeta.id,
+                nombre_original=carpeta.nombre_original,
+                path=carpeta.path,
+                fecha_creacion=carpeta.fecha_creacion,
+                id_usuario=carpeta.id_usuario,
+                nombre_usuario=carpeta.usuario.nombre,
+                id_carpeta=carpeta.id_carpeta,
+                fecha_eliminacion=carpeta.fecha_eliminacion
+            )
+            for carpeta in carpetas
+        ]
+    except CarpetaNoEncontradaException:
+        raise HTTPException(
+            404, f"No se ha encontrado la carpeta con id {id_carpeta}")
 
 
 @folder_router.post("/{id_carpeta}/folders", response_model=FolderResponse)
