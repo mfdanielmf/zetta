@@ -81,7 +81,7 @@ def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = D
     ]
 
 
-@folder_router.get("/trash/{id_carpeta}/files")
+@folder_router.get("/trash/{id_carpeta}/files", response_model=list[FileBase])
 def get_folders_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         archivos: list[File] = obtener_archivos_carpeta_papelera(
