@@ -1,4 +1,5 @@
 import {
+  getFilesTrashService,
   getFilesUserService,
   insertarFilesService,
   sendFileTrashService,
@@ -39,12 +40,22 @@ export function useInsertFiles() {
   })
 }
 
-//DEVNOTES:
-//Acordarme de invalidar queries cuando tenga hecha la lógica de que solo se muestren archivos no eliminados y demás
 export function useMoveFileTrash() {
+  const queryClient = useQueryClient()
+  const authStore = useAuthStore()
+
   return useMutation({
     mutationFn: (idArchivo: string) => sendFileTrashService(idArchivo),
     onSuccess: (data) => {
+      //Invalidar archivos del almacenamiento y archivos de la papelera
+      queryClient.invalidateQueries({
+        queryKey: ['archivos', authStore.usuario?.id]
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['archivosPapelera', authStore.usuario?.id]
+      })
+
       toast.success(data?.msg || 'Archivo eliminado correctamente. Puedes verlo en la papelera')
     },
     onError: (e: unknown) => {
@@ -54,5 +65,15 @@ export function useMoveFileTrash() {
         toast.error('Error al eliminar el archivo')
       }
     },
+  })
+}
+
+export function useGetFilesTrash() {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['archivosPapelera', authStore.usuario?.id],
+    queryFn: () => getFilesTrashService(),
+    enabled: !!authStore.usuario?.id,
   })
 }

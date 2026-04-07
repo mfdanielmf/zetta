@@ -5,6 +5,7 @@ import type {
   GetFilesFolderResponse,
   GetFoldersAnidada,
   GetFoldersResponse,
+  GetFoldersTrashResponse,
   SendFolderTrashResponse,
   UploadFileFolderResponse,
 } from '../types/types'
@@ -35,4 +36,7 @@ export default {
   mandarCarpetaPapelera(idCarpeta: string) {
     return api().delete<SendFolderTrashResponse>(URL + `/${idCarpeta}`)
   },
+  obtenerCarpetasPapelera(){
+    return api().get<GetFoldersTrashResponse>(URL + "/trash")
+  }
 }

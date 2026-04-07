@@ -13,6 +13,7 @@ const LoginView = () => import('@/views/auth/LoginView.vue')
 const FilesView = () => import('@/views/StorageView.vue')
 const FolderFilesView = () => import('@/views/FolderFilesView.vue')
 const PapeleraView = () => import('@/views/PapeleraView.vue')
+const FolderFilesPapeleraView = () => import('@/views/FolderFilesPapeleraView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,8 +41,18 @@ const router = createRouter({
         },
         {
           path: 'trash',
-          name: 'papelera',
-          component: PapeleraView,
+          children: [
+            {
+              path: '',
+              name: 'papelera',
+              component: PapeleraView,
+            },
+            {
+              path: ':id',
+              name: 'carpetaPapelera',
+              component: FolderFilesPapeleraView,
+            },
+          ],
         },
       ],
     },

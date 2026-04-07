@@ -60,3 +60,17 @@ export async function sendFolderTrashService(idCarpeta: string) {
 
   return req.data
 }
+
+export async function obtenerCarpetasPapeleraService() {
+  try {
+    const req = await foldersApi.obtenerCarpetasPapelera()
+
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.detail || 'Error al obtener las carpetas')
+    } else {
+      toast.error('Error al obtener las carpetas')
+    }
+  }
+}

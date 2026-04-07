@@ -64,3 +64,17 @@ export async function sendFileTrashService(idArchivo: string) {
 
   return req.data
 }
+
+export async function getFilesTrashService() {
+  try {
+    const req = await filesApi.obtenerArchivosPapelera()
+
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.detail || 'Error al obtener los archivos')
+    } else {
+      toast.error('Error al obtener los archivos')
+    }
+  }
+}
