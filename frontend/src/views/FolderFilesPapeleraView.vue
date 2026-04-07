@@ -73,7 +73,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
         <TableRow
           v-for="folder in dataCarpetasAnidadas"
           :key="folder.id"
-          class="hover:cursor-pointer"
+          class="hover:cursor-pointer h-13.25"
           @click="handleNavigationDetallesCarpeta(folder.id, folder.nombre_original)"
         >
           <TableCell class="font-medium">
@@ -92,7 +92,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
         </TableRow>
 
         <!-- Archivos -->
-        <TableRow v-for="file in dataArchivos" :key="file.id">
+        <TableRow v-for="file in dataArchivos" :key="file.id" class="h-13.25">
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
               <component :is="getIconExtension(file.nombre_original)" :size="20" />

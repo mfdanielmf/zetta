@@ -118,8 +118,6 @@ export function useGetFoldersAnidadas(idCarpeta: ComputedRef<string>) {
   })
 }
 
-//DEVNOTES:
-//Acordarme de invalidar queries cuando tenga hecha la lógica de que solo se muestren archivos no eliminados y demás
 export function useMoveFolderTrash() {
   const queryClient = useQueryClient()
   const authStore = useAuthStore()
