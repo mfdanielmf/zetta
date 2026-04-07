@@ -147,7 +147,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
             {{ formatearTamañoService(file.tamaño_bytes) }}
           </TableCell>
           <TableCell class="font-medium">
-            {{ formatDateService(file.fecha_creacion) }}
+            {{ file.fecha_eliminacion ? formatDateService(file.fecha_eliminacion) : '-' }}
           </TableCell>
           <TableCell>
             <DropdownMenu>

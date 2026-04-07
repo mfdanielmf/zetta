@@ -110,7 +110,7 @@ router.beforeEach(async (to) => {
 router.afterEach((to) => {
   const folderStore = useFolderStore()
 
-  if (to.name != 'carpeta') {
+  if (to.name != 'carpeta' && to.name != 'carpetaPapelera') {
     folderStore.limpiarCarpetas()
   }
 })

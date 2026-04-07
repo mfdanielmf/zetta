@@ -56,7 +56,10 @@ const mainBreadcrumb = computed(() => {
                 <BreadcrumbItem>
                   <BreadcrumbLink as-child>
                     <RouterLink
-                      :to="{ name: 'carpeta', params: { id: carpeta.id } }"
+                      :to="{
+                        name: mainBreadcrumb.name === 'carpeta' ? 'carpeta' : 'carpetaPapelera',
+                        params: { id: carpeta.id },
+                      }"
                       :class="{
                         'font-bold text-black pointer-events-none':
                           index === carpetasStore.carpetaActiva.length - 1,

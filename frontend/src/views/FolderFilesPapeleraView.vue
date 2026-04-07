@@ -65,7 +65,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
           <TableHead>Nombre</TableHead>
           <TableHead>Propietario</TableHead>
           <TableHead>Tamaño</TableHead>
-          <TableHead>Fecha Subida</TableHead>
+          <TableHead>Fecha Eliminación</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody v-if="!noData">
@@ -87,7 +87,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
           </TableCell>
           <TableCell class="font-medium"> - </TableCell>
           <TableCell class="font-medium">
-            {{ formatDateService(folder.fecha_creacion) }}
+            {{ folder.fecha_eliminacion ? formatDateService(folder.fecha_eliminacion) : '-' }}
           </TableCell>
         </TableRow>
 
@@ -106,7 +106,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
             {{ formatearTamañoService(file.tamaño_bytes) }}
           </TableCell>
           <TableCell class="font-medium">
-            {{ formatDateService(file.fecha_creacion) }}
+            {{ file.fecha_eliminacion ? formatDateService(file.fecha_eliminacion) : '-' }}
           </TableCell>
         </TableRow>
       </TableBody>
