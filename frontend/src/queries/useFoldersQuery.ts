@@ -5,6 +5,7 @@ import {
   obtenerCarpetasAnidadasService,
   obtenerCarpetasPapeleraService,
   obtenerCarpetasService,
+  restoreFolderService,
   sendFolderTrashService,
   subirArchivoCarpetaService,
 } from '@/services/folder.services'
@@ -160,5 +161,40 @@ export function useGetFoldersTrash() {
     queryKey: ['carpetasPapelera', authStore.usuario?.id],
     queryFn: () => obtenerCarpetasPapeleraService(),
     enabled: !!authStore.usuario?.id,
+  })
+}
+
+export function useRestoreFolder() {
+  const authStore = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (idCarpeta: string) => restoreFolderService(idCarpeta),
+    onSuccess: (data, idCarpeta) => {
+      queryClient.invalidateQueries({
+        queryKey: ['carpetas', authStore.usuario?.id],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['carpetasPapelera', authStore.usuario?.id],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['archivosCarpeta', authStore.usuario?.id, idCarpeta],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['carpetasAnidadas', authStore.usuario?.id, idCarpeta],
+      })
+
+      toast.success(data?.msg || 'Carpeta restaurada correctamente')
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al restaurar la carpeta')
+      } else {
+        toast.error('Error al restaurar la carpeta')
+      }
+    },
   })
 }

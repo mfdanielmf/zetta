@@ -78,3 +78,9 @@ export async function getFilesTrashService() {
     }
   }
 }
+
+export async function restoreFileService(idArchivo: string) {
+  const req = await filesApi.restaurarArchivoPapelera(idArchivo)
+
+  return req.data
+}

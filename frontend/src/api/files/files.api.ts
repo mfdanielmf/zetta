@@ -1,5 +1,11 @@
 import api from '../axios.config'
-import type { GetFilesResponse, GetFilesTrashResponse, PostFilesResponse, SendFileTrashResponse } from '../types/types'
+import type {
+  GetFilesResponse,
+  GetFilesTrashResponse,
+  PostFilesResponse,
+  RestoreFileResponse,
+  SendFileTrashResponse,
+} from '../types/types'
 
 const URL = '/api/files'
 
@@ -16,7 +22,10 @@ export default {
   mandarArchivoPapelera(idArchivo: string) {
     return api().delete<SendFileTrashResponse>(URL + `/${idArchivo}`)
   },
-  obtenerArchivosPapelera(){
-    return api().get<GetFilesTrashResponse>(URL + "/trash")
-  }
+  obtenerArchivosPapelera() {
+    return api().get<GetFilesTrashResponse>(URL + '/trash')
+  },
+  restaurarArchivoPapelera(idArchivo: string) {
+    return api().put<RestoreFileResponse>(URL + `/${idArchivo}/restaurar`)
+  },
 }
