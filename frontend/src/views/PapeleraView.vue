@@ -18,15 +18,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { useGetFilesTrash } from '@/queries/useFilesQuery'
-import {
-  downloadFileService,
-  formatDateService,
-  formatearTamañoService,
-} from '@/services/file.services'
+import { useGetFilesTrash, useRestoreFile } from '@/queries/useFilesQuery'
+import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { Ellipsis, Folder, RefreshCcw, Trash2 } from 'lucide-vue-next'
 import { computed } from 'vue'
-import { useGetFoldersTrash } from '@/queries/useFoldersQuery'
+import { useGetFoldersTrash, useRestoreFolder } from '@/queries/useFoldersQuery'
 import getIconExtension from '@/utils/iconMap'
 import { useRouter } from 'vue-router'
 import { useFolderStore } from '@/stores/folder.store'
@@ -36,6 +32,8 @@ const folderStore = useFolderStore()
 
 const { data: dataFolders, isLoading: loadingFolders } = useGetFoldersTrash()
 const { data: dataFiles, isLoading: loadingFiles } = useGetFilesTrash()
+const { mutateAsync: mutateRestoreFile } = useRestoreFile()
+const { mutateAsync: mutateRestoreFolder } = useRestoreFolder()
 
 const cargando = computed(() => {
   if (loadingFiles.value || loadingFolders.value) {
@@ -56,14 +54,22 @@ const noData = computed(() => {
   return false
 })
 
-async function descargarArchivo(id: string, nombre: string) {
-  await downloadFileService(id, nombre)
-}
-
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
 
   router.push({ name: 'carpetaPapelera', params: { id: idCarpeta } })
+}
+
+async function restaurarArchivo(idArchivo: string) {
+  try {
+    await mutateRestoreFile(idArchivo)
+  } catch {}
+}
+
+async function restaurarCarpeta(idCarpeta: string) {
+  try {
+    await mutateRestoreFolder(idCarpeta)
+  } catch {}
 }
 </script>
 
@@ -119,7 +125,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
+                <DropdownMenuItem class="hover:cursor-pointer" @click="restaurarCarpeta(folder.id)">
                   <RefreshCcw />
                   Restaurar
                 </DropdownMenuItem>
@@ -159,10 +165,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  class="hover:cursor-pointer"
-                  @click="descargarArchivo(file.id, file.nombre_original)"
-                >
+                <DropdownMenuItem class="hover:cursor-pointer" @click="restaurarArchivo(file.id)">
                   <RefreshCcw />
                   Restaurar
                 </DropdownMenuItem>

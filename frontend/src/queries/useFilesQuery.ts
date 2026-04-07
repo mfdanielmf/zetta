@@ -2,6 +2,7 @@ import {
   getFilesTrashService,
   getFilesUserService,
   insertarFilesService,
+  restoreFileService,
   sendFileTrashService,
 } from '@/services/file.services'
 import { useAuthStore } from '@/stores/auth.store'
@@ -49,11 +50,11 @@ export function useMoveFileTrash() {
     onSuccess: (data) => {
       //Invalidar archivos del almacenamiento y archivos de la papelera
       queryClient.invalidateQueries({
-        queryKey: ['archivos', authStore.usuario?.id]
+        queryKey: ['archivos', authStore.usuario?.id],
       })
 
       queryClient.invalidateQueries({
-        queryKey: ['archivosPapelera', authStore.usuario?.id]
+        queryKey: ['archivosPapelera', authStore.usuario?.id],
       })
 
       toast.success(data?.msg || 'Archivo eliminado correctamente. Puedes verlo en la papelera')
@@ -75,5 +76,33 @@ export function useGetFilesTrash() {
     queryKey: ['archivosPapelera', authStore.usuario?.id],
     queryFn: () => getFilesTrashService(),
     enabled: !!authStore.usuario?.id,
+  })
+}
+
+export function useRestoreFile() {
+  const authStore = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (idArchivo: string) => restoreFileService(idArchivo),
+    onSuccess: (data) => {
+      //Invalidar archivos del almacenamiento y archivos de la papelera
+      queryClient.invalidateQueries({
+        queryKey: ['archivos', authStore.usuario?.id],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['archivosPapelera', authStore.usuario?.id],
+      })
+
+      toast.success(data?.msg || 'Archivo restaurado correctamente')
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al restaurar el archivo')
+      } else {
+        toast.error('Error al restaurar el archivo')
+      }
+    },
   })
 }

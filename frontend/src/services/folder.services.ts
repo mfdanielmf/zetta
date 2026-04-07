@@ -74,3 +74,9 @@ export async function obtenerCarpetasPapeleraService() {
     }
   }
 }
+
+export async function restoreFolderService(idCarpeta: string) {
+  const req = await foldersApi.restaurarCarpetaPapelera(idCarpeta)
+
+  return req.data
+}
