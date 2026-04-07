@@ -12,26 +12,47 @@ const RegisterView = () => import('@/views/auth/RegisterView.vue')
 const LoginView = () => import('@/views/auth/LoginView.vue')
 const FilesView = () => import('@/views/StorageView.vue')
 const FolderFilesView = () => import('@/views/FolderFilesView.vue')
+const PapeleraView = () => import('@/views/PapeleraView.vue')
+const FolderFilesPapeleraView = () => import('@/views/FolderFilesPapeleraView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'dashboard',
       component: MainLayout,
       meta: { authRequired: true },
       redirect: { name: 'archivos' },
       children: [
         {
-          path: '/storage',
-          name: 'archivos',
-          component: FilesView,
+          path: 'storage',
+          children: [
+            {
+              path: '',
+              name: 'archivos',
+              component: FilesView,
+            },
+            {
+              path: ':id',
+              name: 'carpeta',
+              component: FolderFilesView,
+            },
+          ],
         },
         {
-          path: '/storage/:id',
-          name: 'carpeta',
-          component: FolderFilesView,
+          path: 'trash',
+          children: [
+            {
+              path: '',
+              name: 'papelera',
+              component: PapeleraView,
+            },
+            {
+              path: ':id',
+              name: 'carpetaPapelera',
+              component: FolderFilesPapeleraView,
+            },
+          ],
         },
       ],
     },
@@ -89,7 +110,7 @@ router.beforeEach(async (to) => {
 router.afterEach((to) => {
   const folderStore = useFolderStore()
 
-  if (to.name != 'carpeta') {
+  if (to.name != 'carpeta' && to.name != 'carpetaPapelera') {
     folderStore.limpiarCarpetas()
   }
 })

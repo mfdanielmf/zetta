@@ -3,7 +3,9 @@ import {
   crearCarpetasService,
   obtenerArchivosCarpetaService,
   obtenerCarpetasAnidadasService,
+  obtenerCarpetasPapeleraService,
   obtenerCarpetasService,
+  sendFolderTrashService,
   subirArchivoCarpetaService,
 } from '@/services/folder.services'
 import { useAuthStore } from '@/stores/auth.store'
@@ -113,5 +115,50 @@ export function useGetFoldersAnidadas(idCarpeta: ComputedRef<string>) {
     queryKey: ['carpetasAnidadas', authStore.usuario?.id, () => toValue(idCarpeta)],
     queryFn: () => obtenerCarpetasAnidadasService(toValue(idCarpeta)),
     enabled: computed(() => !!authStore.usuario?.id && !!toValue(idCarpeta)),
+  })
+}
+
+export function useMoveFolderTrash() {
+  const queryClient = useQueryClient()
+  const authStore = useAuthStore()
+
+  return useMutation({
+    mutationFn: (idCarpeta: string) => sendFolderTrashService(idCarpeta),
+    onSuccess: (data, idCarpeta) => {
+      queryClient.invalidateQueries({
+        queryKey: ['carpetas', authStore.usuario?.id],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['carpetasPapelera', authStore.usuario?.id],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['archivosCarpeta', authStore.usuario?.id, idCarpeta],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['carpetasAnidadas', authStore.usuario?.id, idCarpeta],
+      })
+
+      toast.success(data?.msg || 'Carpeta eliminada correctamente. Puedes verla en la papelera')
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al eliminar la carpeta')
+      } else {
+        toast.error('Error al eliminar la carpeta')
+      }
+    },
+  })
+}
+
+export function useGetFoldersTrash() {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['carpetasPapelera', authStore.usuario?.id],
+    queryFn: () => obtenerCarpetasPapeleraService(),
+    enabled: !!authStore.usuario?.id,
   })
 }

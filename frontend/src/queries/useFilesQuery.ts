@@ -1,4 +1,9 @@
-import { getFilesUserService, insertarFilesService } from '@/services/file.services'
+import {
+  getFilesTrashService,
+  getFilesUserService,
+  insertarFilesService,
+  sendFileTrashService,
+} from '@/services/file.services'
 import { useAuthStore } from '@/stores/auth.store'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import axios from 'axios'
@@ -32,5 +37,43 @@ export function useInsertFiles() {
         toast.error('Error al subir los archivos')
       }
     },
+  })
+}
+
+export function useMoveFileTrash() {
+  const queryClient = useQueryClient()
+  const authStore = useAuthStore()
+
+  return useMutation({
+    mutationFn: (idArchivo: string) => sendFileTrashService(idArchivo),
+    onSuccess: (data) => {
+      //Invalidar archivos del almacenamiento y archivos de la papelera
+      queryClient.invalidateQueries({
+        queryKey: ['archivos', authStore.usuario?.id]
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['archivosPapelera', authStore.usuario?.id]
+      })
+
+      toast.success(data?.msg || 'Archivo eliminado correctamente. Puedes verlo en la papelera')
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al eliminar el archivo')
+      } else {
+        toast.error('Error al eliminar el archivo')
+      }
+    },
+  })
+}
+
+export function useGetFilesTrash() {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['archivosPapelera', authStore.usuario?.id],
+    queryFn: () => getFilesTrashService(),
+    enabled: !!authStore.usuario?.id,
   })
 }

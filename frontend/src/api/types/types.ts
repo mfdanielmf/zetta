@@ -12,6 +12,8 @@ export type LogoutResponse = components['schemas']['LogoutResponse']
 // FILES
 export type GetFilesResponse = components['schemas']['FileBase'][]
 export type PostFilesResponse = components['schemas']['FileResponse']
+export type SendFileTrashResponse = components['schemas']['AddFileTrashResponse']
+export type GetFilesTrashResponse = components["schemas"]["FileBase"][]
 
 // FOLDERS
 export type CreateFolderResponse = components['schemas']['FolderResponse']
@@ -20,3 +22,5 @@ export type GetFilesFolderResponse = components['schemas']['FileBase'][]
 export type UploadFileFolderResponse = components['schemas']['UploadFileFolderResponse']
 export type CreateFolderAnidadaResponse = components['schemas']['FolderResponse']
 export type GetFoldersAnidada = components['schemas']['FolderBase'][]
+export type SendFolderTrashResponse = components['schemas']['AddFolderTrashResponse']
+export type GetFoldersTrashResponse = components["schemas"]["FolderBase"][]

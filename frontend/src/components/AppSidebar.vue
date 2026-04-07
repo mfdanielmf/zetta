@@ -54,22 +54,18 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Mi Unidad",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Almacenamiento",
+          url: "/storage"
         },
         {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
+          title: "Papelera",
+          url: "/trash"
         },
       ],
     },

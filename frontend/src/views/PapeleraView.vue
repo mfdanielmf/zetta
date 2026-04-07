@@ -12,39 +12,30 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { useGetFilesUser, useInsertFiles, useMoveFileTrash } from '@/queries/useFilesQuery'
+import { useGetFilesTrash } from '@/queries/useFilesQuery'
 import {
   downloadFileService,
   formatDateService,
   formatearTamañoService,
 } from '@/services/file.services'
-import { Download, Ellipsis, Folder, FolderPlus, Plus, Trash2, Upload } from 'lucide-vue-next'
-import { computed, defineAsyncComponent, ref } from 'vue'
-import { useCreateFolder, useGetFoldersUser, useMoveFolderTrash } from '@/queries/useFoldersQuery'
+import { Ellipsis, Folder, RefreshCcw, Trash2 } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { useGetFoldersTrash } from '@/queries/useFoldersQuery'
 import getIconExtension from '@/utils/iconMap'
 import { useRouter } from 'vue-router'
 import { useFolderStore } from '@/stores/folder.store'
 
-const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
-const CrearCarpetaDialog = defineAsyncComponent(
-  () => import('@/components/folders/CrearCarpetaDialog.vue'),
-)
-
 const router = useRouter()
 const folderStore = useFolderStore()
 
-const { data: dataFolders, isLoading: loadingFolders } = useGetFoldersUser()
-const { data: dataFiles, isLoading: loadingFiles } = useGetFilesUser()
-const mutacionInsertar = useInsertFiles()
-const { mutateAsync: mutateArchivoPapelera } = useMoveFileTrash()
-const { mutateAsync: mutateCarpetaPapelera } = useMoveFolderTrash()
+const { data: dataFolders, isLoading: loadingFolders } = useGetFoldersTrash()
+const { data: dataFiles, isLoading: loadingFiles } = useGetFilesTrash()
 
 const cargando = computed(() => {
   if (loadingFiles.value || loadingFolders.value) {
@@ -65,85 +56,26 @@ const noData = computed(() => {
   return false
 })
 
-const {
-  mutateAsync: mutateCreate,
-  isSuccess: successCreate,
-  isPending: pendingCreate,
-} = useCreateFolder()
-
-const subirAbierto = ref<boolean>(false)
-const crearAbierto = ref<boolean>(false)
-
 async function descargarArchivo(id: string, nombre: string) {
   await downloadFileService(id, nombre)
-}
-
-async function crearCarpeta(nombre: string) {
-  try {
-    await mutateCreate(nombre)
-  } catch {}
-
-  if (successCreate) crearAbierto.value = false
-}
-
-async function mandarArchivoPapelera(idArchivo: string) {
-  try {
-    await mutateArchivoPapelera(idArchivo)
-  } catch {}
-}
-
-async function mandarCarpetaPapelera(idCarpeta: string) {
-  try {
-    await mutateCarpetaPapelera(idCarpeta)
-  } catch {}
 }
 
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
 
-  router.push({ name: 'carpeta', params: { id: idCarpeta } })
+  router.push({ name: 'carpetaPapelera', params: { id: idCarpeta } })
 }
 </script>
 
 <template>
   <div class="space-y-2">
-    <DropdownMenu>
-      <DropdownMenuTrigger as-child>
-        <Button variant="outline" class="hover:cursor-pointer">
-          <Plus />
-          Añadir
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent class="w-56" align="start">
-        <DropdownMenuLabel>Archivos</DropdownMenuLabel>
-        <DropdownMenuGroup>
-          <DropdownMenuItem class="hover:cursor-pointer" @click="subirAbierto = true">
-            <Upload />
-            Subir archivos
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel>Organización</DropdownMenuLabel>
-        <DropdownMenuGroup>
-          <DropdownMenuItem class="hover:cursor-pointer" @click="crearAbierto = true">
-            <FolderPlus />
-            Crear carpeta
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-
-    <ArchivoDialog v-model:open="subirAbierto" :subir="mutacionInsertar.mutateAsync" />
-    <CrearCarpetaDialog
-      v-model:open="crearAbierto"
-      @crear-carpeta="crearCarpeta"
-      :pending="pendingCreate"
-      :reset="crearAbierto"
-    />
-
     <Table>
       <TableCaption v-if="cargando || noData">
-        {{ cargando ? 'Cargando...' : 'Los archivos y carpetas que subas se mostrarán aquí.' }}
+        {{
+          cargando
+            ? 'Cargando...'
+            : 'Los archivos y carpetas que mandes a la papelera se mostrarán aquí.'
+        }}
       </TableCaption>
 
       <TableHeader class="bg-neutral-100">
@@ -151,7 +83,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
           <TableHead>Nombre</TableHead>
           <TableHead>Propietario</TableHead>
           <TableHead>Tamaño</TableHead>
-          <TableHead>Fecha Subida</TableHead>
+          <TableHead>Fecha Eliminación</TableHead>
           <TableHead>Acciones</TableHead>
         </TableRow>
       </TableHeader>
@@ -175,7 +107,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
           </TableCell>
           <TableCell class="font-medium"> - </TableCell>
           <TableCell class="font-medium">
-            {{ formatDateService(folder.fecha_creacion) }}
+            {{ folder.fecha_eliminacion ? formatDateService(folder.fecha_eliminacion) : '-' }}
           </TableCell>
           <TableCell>
             <DropdownMenu>
@@ -188,15 +120,12 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
-                  <Download />
-                  Descargar
+                  <RefreshCcw />
+                  Restaurar
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  class="hover:cursor-pointer"
-                  @click="mandarCarpetaPapelera(folder.id)"
-                >
+                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
                   <Trash2 />
-                  Eliminar
+                  Eliminar definitivamente
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -218,7 +147,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
             {{ formatearTamañoService(file.tamaño_bytes) }}
           </TableCell>
           <TableCell class="font-medium">
-            {{ formatDateService(file.fecha_creacion) }}
+            {{ file.fecha_eliminacion ? formatDateService(file.fecha_eliminacion) : '-' }}
           </TableCell>
           <TableCell>
             <DropdownMenu>
@@ -234,15 +163,12 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
                   class="hover:cursor-pointer"
                   @click="descargarArchivo(file.id, file.nombre_original)"
                 >
-                  <Download />
-                  Descargar
+                  <RefreshCcw />
+                  Restaurar
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  class="hover:cursor-pointer"
-                  @click="mandarArchivoPapelera(file.id)"
-                >
+                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
                   <Trash2 />
-                  Eliminar
+                  Eliminar definitivamente
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

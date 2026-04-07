@@ -10,8 +10,25 @@ import BreadcrumbSeparator from '@/components/ui/breadcrumb/BreadcrumbSeparator.
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { useFolderStore } from '@/stores/folder.store'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const carpetasStore = useFolderStore()
+
+const mainBreadcrumb = computed(() => {
+  if (route.name === 'papelera' || route.path.startsWith('/trash')) {
+    return {
+      name: 'papelera',
+      titulo: 'Papelera',
+    }
+  } else {
+    return {
+      name: 'archivos',
+      titulo: 'Mis Archivos',
+    }
+  }
+})
 </script>
 
 <template>
@@ -28,7 +45,9 @@ const carpetasStore = useFolderStore()
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink as-child>
-                  <RouterLink :to="{ name: 'archivos' }">Mis Archivos</RouterLink>
+                  <RouterLink :to="{ name: mainBreadcrumb.name }">
+                    {{ mainBreadcrumb.titulo }}
+                  </RouterLink>
                 </BreadcrumbLink>
               </BreadcrumbItem>
 
@@ -37,7 +56,10 @@ const carpetasStore = useFolderStore()
                 <BreadcrumbItem>
                   <BreadcrumbLink as-child>
                     <RouterLink
-                      :to="{ name: 'carpeta', params: { id: carpeta.id } }"
+                      :to="{
+                        name: mainBreadcrumb.name === 'carpeta' ? 'carpeta' : 'carpetaPapelera',
+                        params: { id: carpeta.id },
+                      }"
                       :class="{
                         'font-bold text-black pointer-events-none':
                           index === carpetasStore.carpetaActiva.length - 1,

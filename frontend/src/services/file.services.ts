@@ -58,3 +58,23 @@ export async function downloadFileService(id: string, nombre: string) {
     toast.error('Ha ocurrido un error al descargar los archivos')
   }
 }
+
+export async function sendFileTrashService(idArchivo: string) {
+  const req = await filesApi.mandarArchivoPapelera(idArchivo)
+
+  return req.data
+}
+
+export async function getFilesTrashService() {
+  try {
+    const req = await filesApi.obtenerArchivosPapelera()
+
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.detail || 'Error al obtener los archivos')
+    } else {
+      toast.error('Error al obtener los archivos')
+    }
+  }
+}

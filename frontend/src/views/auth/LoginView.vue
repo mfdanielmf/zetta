@@ -42,7 +42,7 @@ const onSubmit = handleSubmit(async (data: LoginRequest) => {
   const success = await authStore.iniciarSesion(data)
 
   if (success) {
-    router.push({ name: 'dashboard' })
+    router.push({ name: 'archivos' })
   }
 })
 </script>
