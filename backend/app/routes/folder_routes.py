@@ -11,7 +11,7 @@ from app.models.user import User
 from app.schemas.file_schemas import FileBase
 from app.services.file_services import obtener_archivos_carpeta, obtener_archivos_carpeta_papelera
 from app.services.auth_services import get_current_user
-from app.services.folder_services import crear_carpeta, eliminar_carpeta_permanente, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_palelera, obtener_carpetas_papelera_raiz, obtener_carpetas_carpeta_papelera
+from app.services.folder_services import crear_carpeta, eliminar_carpeta_permanente, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_papelera, obtener_carpetas_papelera_raiz, obtener_carpetas_carpeta_papelera
 from app.schemas.folder_schemas import DeleteFolderPermanentResponse, FolderBase, FolderRequest, FolderResponse, RestoreFolderResponse, UploadFileFolderResponse, AddFolderTrashResponse
 
 folder_router = APIRouter()
@@ -175,7 +175,7 @@ def add_folder_to_trash(id_carpeta: UUID, usuario: User = Depends(get_current_us
 @folder_router.put("/{id_carpeta}/restaurar", response_model=RestoreFolderResponse)
 def restore_folder_from_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
-        carpeta: Folder = restaurar_carpeta_palelera(
+        carpeta: Folder = restaurar_carpeta_papelera(
             id_carpeta=id_carpeta, usuario=usuario, db=db)
 
         return {

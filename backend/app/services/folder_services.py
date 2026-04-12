@@ -219,7 +219,7 @@ def añadir_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) 
     return update_folder(carpeta=carpeta, db=db)
 
 
-def restaurar_carpeta_palelera(id_carpeta: uuid.UUID, usuario: User, db: Session):
+def restaurar_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session):
     """
     CarpetaNoEncontradaException
     """
