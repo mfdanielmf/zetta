@@ -1,4 +1,5 @@
 import {
+  deleteFilePermanentService,
   getFilesTrashService,
   getFilesUserService,
   insertarFilesService,
@@ -102,6 +103,29 @@ export function useRestoreFile() {
         toast.error(e.response?.data?.detail || 'Error al restaurar el archivo')
       } else {
         toast.error('Error al restaurar el archivo')
+      }
+    },
+  })
+}
+
+export function useDeleteFilePermanent() {
+  const queryClient = useQueryClient()
+  const authStore = useAuthStore()
+
+  return useMutation({
+    mutationFn: (idArchivo: string) => deleteFilePermanentService(idArchivo),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['archivosPapelera', authStore.usuario?.id],
+      })
+
+      toast.success(data?.msg || 'Archivo eliminado correctamente')
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al eliminar el archivo')
+      } else {
+        toast.error('Error al eliminar el archivo')
       }
     },
   })

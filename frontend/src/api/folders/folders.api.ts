@@ -2,6 +2,7 @@ import api from '../axios.config'
 import type {
   CreateFolderAnidadaResponse,
   CreateFolderResponse,
+  DeleteFolderPermanentResponse,
   GetFilesFolderResponse,
   GetFoldersAnidada,
   GetFoldersResponse,
@@ -42,5 +43,8 @@ export default {
   },
   restaurarCarpetaPapelera(idCarpeta: string) {
     return api().put<RestoreFolderResponse>(URL + `/${idCarpeta}/restaurar`)
+  },
+  eliminarCarpetaPermanente(idCarpeta: string) {
+    return api().delete<DeleteFolderPermanentResponse>(URL + `/trash/${idCarpeta}`)
   },
 }

@@ -1,5 +1,6 @@
 import api from '../axios.config'
 import type {
+  DeleteFilePermanentResponse,
   GetFilesResponse,
   GetFilesTrashResponse,
   PostFilesResponse,
@@ -27,5 +28,8 @@ export default {
   },
   restaurarArchivoPapelera(idArchivo: string) {
     return api().put<RestoreFileResponse>(URL + `/${idArchivo}/restaurar`)
+  },
+  eliminarArchivoPermanente(idArchivo: string) {
+    return api().delete<DeleteFilePermanentResponse>(URL + `/trash/${idArchivo}`)
   },
 }

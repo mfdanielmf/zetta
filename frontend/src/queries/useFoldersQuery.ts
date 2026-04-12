@@ -1,6 +1,7 @@
 import {
   crearCarpetaAnidadaService,
   crearCarpetasService,
+  deleteFolderPermanentService,
   obtenerArchivosCarpetaService,
   obtenerCarpetasAnidadasService,
   obtenerCarpetasPapeleraService,
@@ -194,6 +195,29 @@ export function useRestoreFolder() {
         toast.error(e.response?.data?.detail || 'Error al restaurar la carpeta')
       } else {
         toast.error('Error al restaurar la carpeta')
+      }
+    },
+  })
+}
+
+export function useDeleteFolderPermanent() {
+  const queryClient = useQueryClient()
+  const authStore = useAuthStore()
+
+  return useMutation({
+    mutationFn: (idCarpeta: string) => deleteFolderPermanentService(idCarpeta),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['carpetasPapelera', authStore.usuario?.id],
+      })
+
+      toast.success(data?.msg || 'Carpeta eliminada correctamente')
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al eliminar la carpeta')
+      } else {
+        toast.error('Error al eliminar la carpeta')
       }
     },
   })

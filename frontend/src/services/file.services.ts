@@ -84,3 +84,9 @@ export async function restoreFileService(idArchivo: string) {
 
   return req.data
 }
+
+export async function deleteFilePermanentService(idArchivo: string) {
+  const req = await filesApi.eliminarArchivoPermanente(idArchivo)
+
+  return req.data
+}
