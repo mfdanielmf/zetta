@@ -5,7 +5,7 @@ import uuid
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
-from app.models.exceptions import ArchivoPapeleraException, TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
+from app.models.exceptions import ArchivoPapeleraException, EliminarDiscoException, TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
@@ -152,7 +152,7 @@ def obtener_archivos_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: 
 
 def eliminar_archivo_permanente(id_archivo: uuid.UUID, usuario: User, db: Session):
     """
-    ArchivoNoEncontradoException, Exception
+    ArchivoNoEncontradoException, EliminarDiscoException
     """
     archivo: File = obtener_archivo_papelera(
         id_archivo=id_archivo, usuario=usuario, db=db)
@@ -163,6 +163,6 @@ def eliminar_archivo_permanente(id_archivo: uuid.UUID, usuario: User, db: Sessio
         if os.path.exists(path):
             os.remove(path)
     except Exception:
-        raise Exception(f"Error al eliminar el archivo del disco")
+        raise EliminarDiscoException("Error al eliminar el archivo del disco")
 
     delete_file(archivo=archivo, db=db)

@@ -49,3 +49,7 @@ class IdYaUsadaException(Exception):
 
 class NombreYaUsadoException(Exception):
     pass
+
+
+class EliminarDiscoException(Exception):
+    pass
