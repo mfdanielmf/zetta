@@ -8,14 +8,14 @@ from app.models.user import User
 def insert_file_db(archivo: File, db: Session) -> File:
     db.add(archivo)
     db.commit()
-    db.flush(archivo)
+    db.refresh(archivo)
 
     return archivo
 
 
 def update_file(archivo: File, db: Session) -> File:
     db.commit()
-    db.flush(archivo)
+    db.refresh(archivo)
 
     return archivo
 
@@ -46,3 +46,11 @@ def get_file_trash(id_archivo: uuid.UUID, id_usuario: uuid.UUID, db: Session) ->
 
 def get_all_files_trash_raiz(id_usuario: uuid.UUID, db: Session) -> list[File]:
     return db.query(File).filter(File.id_usuario == id_usuario, File.fecha_eliminacion != None, File.id_carpeta == None).all()
+
+def get_files_raiz(id_usuario: uuid.UUID, db: Session) -> list[File]:
+    return db.query(File).filter(File.id_usuario == id_usuario, File.id_carpeta == None).all()
+
+def delete_file(archivo: File, db: Session):
+    db.delete(archivo)
+    db.commit()
+    

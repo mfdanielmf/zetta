@@ -26,7 +26,7 @@ def test_restaurar_carpeta():
         fecha_eliminacion=None
     )
 
-    with patch("app.routes.folder_routes.restaurar_carpeta_palelera") as mock_restaurar:
+    with patch("app.routes.folder_routes.restaurar_carpeta_papelera") as mock_restaurar:
         mock_restaurar.return_value = carpeta
 
         response = client.put(f"/api/folders/{carpeta.id}/restaurar")

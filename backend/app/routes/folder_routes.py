@@ -4,15 +4,15 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File as FileF
 from sqlalchemy.orm import Session
 
 from app.database.db import get_db
-from app.models.exceptions import CarpetaPapeleraException, IdYaUsadaException, NombreYaUsadoException, TamañoExcedidoException, CarpetaNoEncontradaException
+from app.models.exceptions import CarpetaPapeleraException, EliminarDiscoException, IdYaUsadaException, NombreYaUsadoException, TamañoExcedidoException, CarpetaNoEncontradaException
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.schemas.file_schemas import FileBase
 from app.services.file_services import obtener_archivos_carpeta, obtener_archivos_carpeta_papelera
 from app.services.auth_services import get_current_user
-from app.services.folder_services import crear_carpeta, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_palelera, obtener_carpetas_papelera_raiz, obtener_carpetas_carpeta_papelera
-from app.schemas.folder_schemas import FolderBase, FolderRequest, FolderResponse, RestoreFolderResponse, UploadFileFolderResponse, AddFolderTrashResponse
+from app.services.folder_services import crear_carpeta, eliminar_carpeta_permanente, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_papelera, obtener_carpetas_papelera_raiz, obtener_carpetas_carpeta_papelera
+from app.schemas.folder_schemas import DeleteFolderPermanentResponse, FolderBase, FolderRequest, FolderResponse, RestoreFolderResponse, UploadFileFolderResponse, AddFolderTrashResponse
 
 folder_router = APIRouter()
 
@@ -79,6 +79,22 @@ def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = D
         )
         for carpeta in carpetas
     ]
+
+
+@folder_router.delete("/trash/{id_carpeta}", response_model=DeleteFolderPermanentResponse)
+def delete_folder_permanent(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        eliminar_carpeta_permanente(
+            id_carpeta=id_carpeta, db=db, usuario=usuario)
+
+        return {
+            "msg": "Carpeta eliminada correctamente"
+        }
+    except CarpetaNoEncontradaException:
+        raise HTTPException(
+            404, detail="No se ha encontrado la carpeta en la papelera")
+    except EliminarDiscoException as e2:
+        raise HTTPException(500, detail=str(e2))
 
 
 @folder_router.get("/trash/{id_carpeta}/files", response_model=list[FileBase])
@@ -159,7 +175,7 @@ def add_folder_to_trash(id_carpeta: UUID, usuario: User = Depends(get_current_us
 @folder_router.put("/{id_carpeta}/restaurar", response_model=RestoreFolderResponse)
 def restore_folder_from_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
-        carpeta: Folder = restaurar_carpeta_palelera(
+        carpeta: Folder = restaurar_carpeta_papelera(
             id_carpeta=id_carpeta, usuario=usuario, db=db)
 
         return {

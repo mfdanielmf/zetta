@@ -80,3 +80,9 @@ export async function restoreFolderService(idCarpeta: string) {
 
   return req.data
 }
+
+export async function deleteFolderPermanentService(idCarpeta: string) {
+  const req = await foldersApi.eliminarCarpetaPermanente(idCarpeta)
+
+  return req.data
+}

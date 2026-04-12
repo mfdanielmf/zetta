@@ -43,3 +43,7 @@ class AddFolderTrashResponse(FolderResponse):
 
 class RestoreFolderResponse(FolderResponse):
     pass
+
+
+class DeleteFolderPermanentResponse(BaseModel):
+    msg: str = "Carpeta eliminada correctamente"

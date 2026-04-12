@@ -18,11 +18,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { useGetFilesTrash, useRestoreFile } from '@/queries/useFilesQuery'
+import { useDeleteFilePermanent, useGetFilesTrash, useRestoreFile } from '@/queries/useFilesQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { Ellipsis, Folder, RefreshCcw, Trash2 } from 'lucide-vue-next'
 import { computed } from 'vue'
-import { useGetFoldersTrash, useRestoreFolder } from '@/queries/useFoldersQuery'
+import {
+  useDeleteFolderPermanent,
+  useGetFoldersTrash,
+  useRestoreFolder,
+} from '@/queries/useFoldersQuery'
 import getIconExtension from '@/utils/iconMap'
 import { useRouter } from 'vue-router'
 import { useFolderStore } from '@/stores/folder.store'
@@ -34,6 +38,8 @@ const { data: dataFolders, isLoading: loadingFolders } = useGetFoldersTrash()
 const { data: dataFiles, isLoading: loadingFiles } = useGetFilesTrash()
 const { mutateAsync: mutateRestoreFile } = useRestoreFile()
 const { mutateAsync: mutateRestoreFolder } = useRestoreFolder()
+const { mutateAsync: mutateDeleteFilePermanent } = useDeleteFilePermanent()
+const { mutateAsync: mutateDeleteFolderPermanent } = useDeleteFolderPermanent()
 
 const cargando = computed(() => {
   if (loadingFiles.value || loadingFolders.value) {
@@ -69,6 +75,18 @@ async function restaurarArchivo(idArchivo: string) {
 async function restaurarCarpeta(idCarpeta: string) {
   try {
     await mutateRestoreFolder(idCarpeta)
+  } catch {}
+}
+
+async function eliminarArchivoPermanente(idArchivo: string) {
+  try {
+    await mutateDeleteFilePermanent(idArchivo)
+  } catch {}
+}
+
+async function eliminarCarpetaPermanente(idCarpeta: string) {
+  try {
+    await mutateDeleteFolderPermanent(idCarpeta)
   } catch {}
 }
 </script>
@@ -129,7 +147,10 @@ async function restaurarCarpeta(idCarpeta: string) {
                   <RefreshCcw />
                   Restaurar
                 </DropdownMenuItem>
-                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="eliminarCarpetaPermanente(folder.id)"
+                >
                   <Trash2 />
                   Eliminar definitivamente
                 </DropdownMenuItem>
@@ -169,7 +190,10 @@ async function restaurarCarpeta(idCarpeta: string) {
                   <RefreshCcw />
                   Restaurar
                 </DropdownMenuItem>
-                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="eliminarArchivoPermanente(file.id)"
+                >
                   <Trash2 />
                   Eliminar definitivamente
                 </DropdownMenuItem>
