@@ -59,3 +59,8 @@ def get_folder_trash(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session) 
 
 def get_all_folders_trash_raiz(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
     return db.query(Folder).filter(Folder.id_usuario == id_usuario, Folder.fecha_eliminacion != None, Folder.id_carpeta == None).all()
+
+
+def delete_folder(carpeta: Folder, db: Session):
+    db.delete(carpeta)
+    db.commit()

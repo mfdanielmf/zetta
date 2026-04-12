@@ -8,7 +8,7 @@ from app.database.db import get_db
 from app.models.user import User
 from app.services.file_services import eliminar_archivo_permanente, guardar_archivo, obtener_archivos_usuario, obtener_archivo_id, añadir_archivo_papelera, restaurar_archivo_papelera, obtener_archivos_papelera_raiz
 from app.models.exceptions import ArchivoNoEncontradoException, EliminarDiscoException, TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException, ArchivoPapeleraException
-from app.schemas.file_schemas import AddFileTrashResponse, FileBase, FileResponse, RestoreFileResponse
+from app.schemas.file_schemas import AddFileTrashResponse, DeleteFilePermanentResponse, FileBase, FileResponse, RestoreFileResponse
 from app.services.auth_services import get_current_user
 
 file_router = APIRouter()
@@ -86,7 +86,7 @@ def get_files_trash(usuario: User = Depends(get_current_user), db: Session = Dep
     ]
 
 
-@file_router.delete("/trash/{id_archivo}")
+@file_router.delete("/trash/{id_archivo}", response_model=DeleteFilePermanentResponse)
 def delete_file_permanent(id_archivo: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         eliminar_archivo_permanente(

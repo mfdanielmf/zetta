@@ -29,3 +29,7 @@ class AddFileTrashResponse(BaseModel):
 
 class RestoreFileResponse(AddFileTrashResponse):
     pass
+
+
+class DeleteFilePermanentResponse(BaseModel):
+    msg: str = "Archivo eliminado correctamente"

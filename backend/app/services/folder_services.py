@@ -1,5 +1,7 @@
+import os
 from pathlib import Path
 from datetime import datetime, timezone
+import shutil
 import uuid
 
 from fastapi import UploadFile
@@ -7,11 +9,11 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.config import config
-from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException, CarpetaNoEncontradaException, TamañoExcedidoException, CarpetaPapeleraException
+from app.models.exceptions import EliminarDiscoException, IdYaUsadaException, NombreYaUsadoException, CarpetaNoEncontradaException, TamañoExcedidoException, CarpetaPapeleraException
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.folder_repo import add_folder, get_folder_id_user, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz, get_folders_inside_folder, get_folder_nombre_raiz, get_folder_trash, update_folder, get_all_folders_trash_raiz
+from app.repositories.folder_repo import add_folder, delete_folder, get_folder_id_user, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz, get_folders_inside_folder, get_folder_nombre_raiz, get_folder_trash, update_folder, get_all_folders_trash_raiz
 from app.repositories.file_repo import insert_file_db, get_file_by_name_in_folder
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
@@ -259,3 +261,21 @@ def obtener_carpetas_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: 
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
     return get_folders_inside_folder(id_carpeta=carpeta.id, id_usuario=usuario.id, db=db)
+
+
+def eliminar_carpeta_permanente(id_carpeta: uuid.UUID, usuario: User, db: Session):
+    """
+    CarpetaNoEncontradaException
+    """
+    carpeta: Folder = obtener_carpeta_papelera(
+        id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+    path: str = carpeta.path
+
+    try:
+        if os.path.exists(path):
+            shutil.rmtree(path=path)
+    except Exception:
+        raise EliminarDiscoException("Error al eliminar la carpeta del disco")
+
+    delete_folder(carpeta=carpeta, db=db)

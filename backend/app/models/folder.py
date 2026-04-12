@@ -19,9 +19,13 @@ class Folder(Base):
     id_usuario = Column(UUID(as_uuid=True), ForeignKey(
         "usuarios.id"), nullable=False)
     id_carpeta = Column(UUID(as_uuid=True), ForeignKey(
-        "carpetas.id"), nullable=True)
+        "carpetas.id", ondelete="CASCADE"), nullable=True)
 
+    carpeta = relationship("Folder",
+                           remote_side=[id], back_populates="carpetas")
     usuario = relationship(
         "User", back_populates="carpetas", passive_deletes=True)
     archivos = relationship(
-        "File", back_populates="carpeta", passive_deletes=True)
+        "File", back_populates="carpeta", cascade="all, delete-orphan")
+    carpetas = relationship(
+        "Folder", back_populates="carpeta", cascade="all, delete-orphan")
