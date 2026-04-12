@@ -57,7 +57,7 @@ const mainBreadcrumb = computed(() => {
                   <BreadcrumbLink as-child>
                     <RouterLink
                       :to="{
-                        name: mainBreadcrumb.name === 'carpeta' ? 'carpeta' : 'carpetaPapelera',
+                        name: mainBreadcrumb.name === 'archivos' ? 'carpeta' : 'carpetaPapelera',
                         params: { id: carpeta.id },
                       }"
                       :class="{
