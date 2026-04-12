@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import os
 from pathlib import Path
 import uuid
 
@@ -8,7 +9,7 @@ from app.models.exceptions import ArchivoPapeleraException, TamañoExcedidoExcep
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.file_repo import insert_file_db, get_file_by_id_and_user, get_files_user, get_file_by_name_in_folder, get_all_files_in_folder, update_file, get_file_trash, get_all_files_trash_raiz
+from app.repositories.file_repo import delete_file, insert_file_db, get_file_by_id_and_user, get_files_user, get_file_by_name_in_folder, get_all_files_in_folder, update_file, get_file_trash, get_all_files_trash_raiz
 
 from app.config import config
 from app.services.folder_services import obtener_carpeta_usuario_id, obtener_carpeta_papelera
@@ -41,7 +42,7 @@ def obtener_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session) 
 
     if not archivo:
         raise ArchivoNoEncontradoException(
-            f"No se ha encontrado el archivo con id {id}")
+            f"No se ha encontrado el archivo con id {id_archivo}")
 
     return archivo
 
@@ -147,3 +148,21 @@ def obtener_archivos_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: 
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
     return carpeta.archivos
+
+
+def eliminar_archivo_permanente(id_archivo: uuid.UUID, usuario: User, db: Session):
+    """
+    ArchivoNoEncontradoException, Exception
+    """
+    archivo: File = obtener_archivo_papelera(
+        id_archivo=id_archivo, usuario=usuario, db=db)
+
+    path: str = archivo.path
+
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+    except Exception:
+        raise Exception(f"Error al eliminar el archivo del disco")
+
+    delete_file(archivo=archivo, db=db)

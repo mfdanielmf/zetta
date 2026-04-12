@@ -9,14 +9,14 @@ from app.models.user import User
 def add_folder(carpeta: Folder, db: Session) -> Folder:
     db.add(carpeta)
     db.commit()
-    db.flush(carpeta)
+    db.refresh(carpeta)
 
     return carpeta
 
 
 def update_folder(carpeta: Folder, db: Session) -> Folder:
     db.commit()
-    db.flush(carpeta)
+    db.refresh(carpeta)
 
     return carpeta
 

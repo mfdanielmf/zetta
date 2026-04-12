@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.database.db import get_db
 
 from app.models.user import User
-from app.services.file_services import guardar_archivo, obtener_archivos_usuario, obtener_archivo_id, añadir_archivo_papelera, restaurar_archivo_papelera, obtener_archivos_papelera_raiz
+from app.services.file_services import eliminar_archivo_permanente, guardar_archivo, obtener_archivos_usuario, obtener_archivo_id, añadir_archivo_papelera, restaurar_archivo_papelera, obtener_archivos_papelera_raiz
 from app.models.exceptions import ArchivoNoEncontradoException, TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException, ArchivoPapeleraException
 from app.schemas.file_schemas import AddFileTrashResponse, FileBase, FileResponse, RestoreFileResponse
 from app.services.auth_services import get_current_user
@@ -84,6 +84,22 @@ def get_files_trash(usuario: User = Depends(get_current_user), db: Session = Dep
             fecha_eliminacion=archivo.fecha_eliminacion
         ) for archivo in archivos
     ]
+
+
+@file_router.delete("/trash/{id_archivo}")
+def delete_file_permanent(id_archivo: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        eliminar_archivo_permanente(
+            id_archivo=id_archivo, db=db, usuario=usuario)
+
+        return {
+            "msg": "Archivo eliminado correctamente"
+        }
+    except ArchivoNoEncontradoException:
+        raise HTTPException(
+            404, detail="No se ha encontrado el archivo en la papelera")
+    except Exception as e2:
+        raise HTTPException(500, detail=str(e2))
 
 
 @file_router.get("/{id_archivo}", response_class=FileResp)
