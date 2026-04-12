@@ -124,6 +124,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/files/trash/{id_archivo}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete File Permanent */
+        delete: operations["delete_file_permanent_api_files_trash__id_archivo__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/files/{id_archivo}": {
         parameters: {
             query?: never;
@@ -189,6 +206,23 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/folders/trash/{id_carpeta}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Folder Permanent */
+        delete: operations["delete_folder_permanent_api_folders_trash__id_carpeta__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -323,6 +357,22 @@ export interface components {
         Body_upload_file_to_folder_api_folders__id_carpeta__files_post: {
             /** File Upload */
             file_upload: string[];
+        };
+        /** DeleteFilePermanentResponse */
+        DeleteFilePermanentResponse: {
+            /**
+             * Msg
+             * @default Archivo eliminado correctamente
+             */
+            msg: string;
+        };
+        /** DeleteFolderPermanentResponse */
+        DeleteFolderPermanentResponse: {
+            /**
+             * Msg
+             * @default Carpeta eliminada correctamente
+             */
+            msg: string;
         };
         /** FileBase */
         FileBase: {
@@ -724,6 +774,39 @@ export interface operations {
             };
         };
     };
+    delete_file_permanent_api_files_trash__id_archivo__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id_archivo: string;
+            };
+            cookie?: {
+                access_token?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeleteFilePermanentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     download_files_api_files__id_archivo__get: {
         parameters: {
             query?: never;
@@ -905,6 +988,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FolderBase"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_folder_permanent_api_folders_trash__id_carpeta__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id_carpeta: string;
+            };
+            cookie?: {
+                access_token?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeleteFolderPermanentResponse"];
                 };
             };
             /** @description Validation Error */
