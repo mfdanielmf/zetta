@@ -21,7 +21,7 @@ import {
 import { useDeleteFilePermanent, useGetFilesTrash, useRestoreFile } from '@/queries/useFilesQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { Ellipsis, Folder, RefreshCcw, Trash2 } from 'lucide-vue-next'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import {
   useDeleteFolderPermanent,
   useGetFoldersTrash,
@@ -30,16 +30,30 @@ import {
 import getIconExtension from '@/utils/iconMap'
 import { useRouter } from 'vue-router'
 import { useFolderStore } from '@/stores/folder.store'
+import DialogEliminarArchivo from '@/components/files/DialogEliminarArchivo.vue'
+import DialogEliminarCarpeta from '@/components/folders/DialogEliminarCarpeta.vue'
 
 const router = useRouter()
 const folderStore = useFolderStore()
+
+const eliminarArchivoAbierto = ref<boolean>(false)
+const eliminarCarpetaAbierto = ref<boolean>(false)
+const idEliminar = ref<string>('')
 
 const { data: dataFolders, isLoading: loadingFolders } = useGetFoldersTrash()
 const { data: dataFiles, isLoading: loadingFiles } = useGetFilesTrash()
 const { mutateAsync: mutateRestoreFile } = useRestoreFile()
 const { mutateAsync: mutateRestoreFolder } = useRestoreFolder()
-const { mutateAsync: mutateDeleteFilePermanent } = useDeleteFilePermanent()
-const { mutateAsync: mutateDeleteFolderPermanent } = useDeleteFolderPermanent()
+const {
+  mutateAsync: mutateDeleteFilePermanent,
+  isPending: pendingDeleteFile,
+  isSuccess: successDeleteFile,
+} = useDeleteFilePermanent()
+const {
+  mutateAsync: mutateDeleteFolderPermanent,
+  isPending: pendingDeleteFolder,
+  isSuccess: successDeleteFolder,
+} = useDeleteFolderPermanent()
 
 const cargando = computed(() => {
   if (loadingFiles.value || loadingFolders.value) {
@@ -59,6 +73,16 @@ const noData = computed(() => {
 
   return false
 })
+
+function handleOpenDialogArchivo(id: string) {
+  idEliminar.value = id
+  eliminarArchivoAbierto.value = true
+}
+
+function handleOpenDialogCarpeta(id: string) {
+  idEliminar.value = id
+  eliminarCarpetaAbierto.value = true
+}
 
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
@@ -81,17 +105,32 @@ async function restaurarCarpeta(idCarpeta: string) {
 async function eliminarArchivoPermanente(idArchivo: string) {
   try {
     await mutateDeleteFilePermanent(idArchivo)
+
+    if (successDeleteFile) eliminarArchivoAbierto.value = false
   } catch {}
 }
 
 async function eliminarCarpetaPermanente(idCarpeta: string) {
   try {
     await mutateDeleteFolderPermanent(idCarpeta)
+
+    if (successDeleteFolder) eliminarCarpetaAbierto.value = false
   } catch {}
 }
 </script>
 
 <template>
+  <DialogEliminarArchivo
+    v-model:open="eliminarArchivoAbierto"
+    @eliminar-permanente="eliminarArchivoPermanente(idEliminar)"
+    :pending="pendingDeleteFile"
+  />
+  <DialogEliminarCarpeta
+    v-model:open="eliminarCarpetaAbierto"
+    @eliminar-permanente="eliminarCarpetaPermanente(idEliminar)"
+    :pending="pendingDeleteFolder"
+  />
+
   <div class="space-y-2">
     <Table>
       <TableCaption v-if="cargando || noData">
@@ -149,7 +188,7 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   class="hover:cursor-pointer"
-                  @click="eliminarCarpetaPermanente(folder.id)"
+                  @click="handleOpenDialogCarpeta(folder.id)"
                 >
                   <Trash2 />
                   Eliminar definitivamente
@@ -192,7 +231,7 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   class="hover:cursor-pointer"
-                  @click="eliminarArchivoPermanente(file.id)"
+                  @click="handleOpenDialogArchivo(file.id)"
                 >
                   <Trash2 />
                   Eliminar definitivamente
