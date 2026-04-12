@@ -9,7 +9,7 @@ from app.models.exceptions import ArchivoPapeleraException, EliminarDiscoExcepti
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.file_repo import delete_file, insert_file_db, get_file_by_id_and_user, get_files_user, get_file_by_name_in_folder, get_all_files_in_folder, update_file, get_file_trash, get_all_files_trash_raiz
+from app.repositories.file_repo import delete_file, insert_file_db, get_file_by_id_and_user, get_file_by_name_in_folder, get_all_files_in_folder, update_file, get_file_trash, get_all_files_trash_raiz, get_files_raiz
 
 from app.config import config
 from app.services.folder_services import obtener_carpeta_usuario_id, obtener_carpeta_papelera
@@ -104,7 +104,7 @@ def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario:
 
 
 def obtener_archivos_usuario(usuario: User, db: Session) -> list[File]:
-    return get_files_user(usuario=usuario, db=db)
+    return get_files_raiz(id_usuario=usuario.id, db=db)
 
 
 def obtener_archivos_carpeta(id_carpeta: uuid.UUID, db: Session, usuario: User) -> list[File]:
