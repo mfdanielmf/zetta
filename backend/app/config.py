@@ -16,6 +16,9 @@ class Config(BaseSettings):
     UPLOAD_DIR: str = "uploads"
     TAMAÑO_LIMITE: int = 1000 * 1024 * 1024  # 1GB
 
+    # Días para que se borren datos de la papelera
+    DIAS_PAPELERA: int = 30
+
     @computed_field
     @property
     def DATABASE_URL(self) -> str:
