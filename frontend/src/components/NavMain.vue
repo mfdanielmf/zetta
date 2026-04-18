@@ -54,9 +54,9 @@ defineProps<{
             <SidebarMenuSub>
               <SidebarMenuSubItem v-for="subItem in item.items" :key="subItem.title">
                 <SidebarMenuSubButton as-child>
-                  <a :href="subItem.url">
+                  <RouterLink :to="{path: subItem.url }" active-class="bg-neutral-200/60 pointer-events-none">
                     <span>{{ subItem.title }}</span>
-                  </a>
+                  </RouterLink>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             </SidebarMenuSub>

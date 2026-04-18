@@ -13,5 +13,5 @@ class User(Base):
     contraseña = Column(String, nullable=False)
     fecha_creacion = Column(DateTime, default=func.now())
 
-    archivos = relationship(
-        "File", back_populates="usuario", passive_deletes=True)
+    archivos = relationship("File", back_populates="usuario", passive_deletes=True)
+    carpetas = relationship("Folder", back_populates="usuario", passive_deletes=True)

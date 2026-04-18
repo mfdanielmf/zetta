@@ -20,15 +20,14 @@ const props = defineProps<{
 }>()
 
 const schema = toTypedSchema(
-  zod
-    .object({
-      nombre: zod
-        .string()
-        .min(1, 'Este campo es obligatorio')
-        .min(4, 'Mínimo 4 caracteres')
-        .max(20, 'Máximo 20 caracteres'),
-      contraseña: zod.string().min(1, 'Este campo es obligatorio').min(6, 'Mínimo 6 caracteres'),
-    })
+  zod.object({
+    nombre: zod
+      .string()
+      .min(1, 'Este campo es obligatorio')
+      .min(4, 'Mínimo 4 caracteres')
+      .max(20, 'Máximo 20 caracteres'),
+    contraseña: zod.string().min(1, 'Este campo es obligatorio').min(6, 'Mínimo 6 caracteres'),
+  }),
 )
 
 const { handleSubmit, errors } = useForm({ validationSchema: schema })
@@ -43,7 +42,7 @@ const onSubmit = handleSubmit(async (data: LoginRequest) => {
   const success = await authStore.iniciarSesion(data)
 
   if (success) {
-    router.push({name: "dashboard"})
+    router.push({ name: 'archivos' })
   }
 })
 </script>
@@ -64,7 +63,7 @@ const onSubmit = handleSubmit(async (data: LoginRequest) => {
           <h1 class="text-xl font-bold">Bienvenido de nuevo</h1>
 
           <FieldDescription>
-            ¿No tienes una cuenta? <RouterLink :to="{name: 'register'}">Crear Cuenta</RouterLink>
+            ¿No tienes una cuenta? <RouterLink :to="{ name: 'register' }">Crear Cuenta</RouterLink>
           </FieldDescription>
         </div>
 
@@ -81,10 +80,9 @@ const onSubmit = handleSubmit(async (data: LoginRequest) => {
         </Field>
 
         <Field>
-
           <Button type="submit" class="hover:cursor-pointer" :disabled="authStore.cargando">
-            <Spinner v-if="authStore.cargando"/>
-            {{ !authStore.cargando ? "Iniciar Sesión" :  "Cargando..." }}
+            <Spinner v-if="authStore.cargando" />
+            {{ !authStore.cargando ? 'Iniciar Sesión' : 'Cargando...' }}
           </Button>
         </Field>
       </FieldGroup>

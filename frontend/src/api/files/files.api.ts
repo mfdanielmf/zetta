@@ -1,8 +1,35 @@
-import api from "../axios.config";
-import type { GetFilesResponse } from "../types/types";
+import api from '../axios.config'
+import type {
+  DeleteFilePermanentResponse,
+  GetFilesResponse,
+  GetFilesTrashResponse,
+  PostFilesResponse,
+  RestoreFileResponse,
+  SendFileTrashResponse,
+} from '../types/types'
+
+const URL = '/api/files'
 
 export default {
-  obtenerArchivosUsuario(){
-    return api().get<GetFilesResponse>('/api/files')
-  }
+  obtenerArchivosUsuario() {
+    return api().get<GetFilesResponse>(URL)
+  },
+  subirArchivosUsuario(data: FormData) {
+    return api().post<PostFilesResponse>(URL, data)
+  },
+  descargarArchivo(id: string) {
+    return api().get(URL + `/${id}`, { responseType: 'blob' })
+  },
+  mandarArchivoPapelera(idArchivo: string) {
+    return api().delete<SendFileTrashResponse>(URL + `/${idArchivo}`)
+  },
+  obtenerArchivosPapelera() {
+    return api().get<GetFilesTrashResponse>(URL + '/trash')
+  },
+  restaurarArchivoPapelera(idArchivo: string) {
+    return api().put<RestoreFileResponse>(URL + `/${idArchivo}/restaurar`)
+  },
+  eliminarArchivoPermanente(idArchivo: string) {
+    return api().delete<DeleteFilePermanentResponse>(URL + `/trash/${idArchivo}`)
+  },
 }

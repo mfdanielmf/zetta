@@ -12,9 +12,24 @@ class FileBase(BaseModel):
     fecha_creacion: datetime
     tamaño_bytes: int
     id_usuario: uuid.UUID
+    id_carpeta: uuid.UUID | None
     nombre_usuario: str
+    fecha_eliminacion: datetime | None = None
 
 
 class FileResponse(BaseModel):
     msg: str
+    archivos: list[FileBase]
+
+
+class AddFileTrashResponse(BaseModel):
+    msg: str
     archivo: FileBase
+
+
+class RestoreFileResponse(AddFileTrashResponse):
+    pass
+
+
+class DeleteFilePermanentResponse(BaseModel):
+    msg: str = "Archivo eliminado correctamente"

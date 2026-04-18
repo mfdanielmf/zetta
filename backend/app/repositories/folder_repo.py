@@ -1,0 +1,66 @@
+import uuid
+
+from sqlalchemy.orm import Session
+
+from app.models.folder import Folder
+from app.models.user import User
+
+
+def add_folder(carpeta: Folder, db: Session) -> Folder:
+    db.add(carpeta)
+    db.commit()
+    db.refresh(carpeta)
+
+    return carpeta
+
+
+def update_folder(carpeta: Folder, db: Session) -> Folder:
+    db.commit()
+    db.refresh(carpeta)
+
+    return carpeta
+
+
+def get_folder_id_user(id: uuid.UUID, usuario: User, db: Session) -> Folder | None:
+    return db.query(Folder).filter(Folder.id == id, Folder.id_usuario == usuario.id, Folder.fecha_eliminacion == None).first()
+
+
+def get_folder_original_name(nombre_original: str, usuario: User, db: Session) -> Folder | None:
+    return db.query(Folder).filter_by(nombre_original=nombre_original, id_usuario=usuario.id).first()
+
+
+def get_folders_user(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
+    return db.query(Folder).filter_by(id_usuario=id_usuario).all()
+
+
+def get_folder_name_anidada(id_carpeta_padre: str, nombre_carpeta: str, usuario: User, db: Session) -> Folder | None:
+    return db.query(Folder).filter_by(id_usuario=usuario.id, nombre_original=nombre_carpeta, id_carpeta=id_carpeta_padre).first()
+
+
+def get_folder_id(id_carpeta: str, db: Session) -> Folder | None:
+    return db.query(Folder).filter_by(id=id_carpeta).first()
+
+
+def get_folders_user_raiz(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
+    return db.query(Folder).filter(Folder.id_usuario == id_usuario, Folder.id_carpeta == None, Folder.fecha_eliminacion == None).all()
+
+
+def get_folder_nombre_raiz(nombre_carpeta: str, id_usuario: uuid.UUID, db: Session) -> Folder | None:
+    return db.query(Folder).filter_by(nombre_original=nombre_carpeta, id_usuario=id_usuario, id_carpeta=None).first()
+
+
+def get_folders_inside_folder(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session) -> list[Folder]:
+    return db.query(Folder).filter_by(id_carpeta=id_carpeta, id_usuario=id_usuario).all()
+
+
+def get_folder_trash(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session) -> Folder | None:
+    return db.query(Folder).filter(Folder.id == id_carpeta, Folder.id_usuario == id_usuario, Folder.fecha_eliminacion != None).first()
+
+
+def get_all_folders_trash_raiz(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
+    return db.query(Folder).filter(Folder.id_usuario == id_usuario, Folder.fecha_eliminacion != None, Folder.id_carpeta == None).all()
+
+
+def delete_folder(carpeta: Folder, db: Session):
+    db.delete(carpeta)
+    db.commit()

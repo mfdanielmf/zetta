@@ -5,7 +5,7 @@ from app.models.user import User
 def insert_user_db(usuario: User, db: Session) -> User:
     db.add(usuario)
     db.commit()
-    db.flush(usuario)
+    db.refresh(usuario)
 
     return usuario
 
