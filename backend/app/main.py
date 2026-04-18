@@ -10,7 +10,9 @@ from app.routes.folder_routes import folder_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="ZETTA", description="DOCS API ZETTA")
+from app.core.lifespan import lifespan
+
+app = FastAPI(title="ZETTA", description="DOCS API ZETTA", lifespan=lifespan)
 
 # Config temporal
 app.add_middleware(
