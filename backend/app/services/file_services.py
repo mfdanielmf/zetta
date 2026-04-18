@@ -9,7 +9,7 @@ from app.models.exceptions import ArchivoPapeleraException, EliminarDiscoExcepti
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.file_repo import delete_file, insert_file_db, get_file_by_id_and_user, get_file_by_name_in_folder, get_all_files_in_folder, update_file, get_file_trash, get_all_files_trash_raiz, get_files_raiz
+from app.repositories.file_repo import delete_file, get_file_by_id, insert_file_db, get_file_by_id_and_user, get_file_by_name_in_folder, get_all_files_in_folder, update_file, get_file_trash, get_all_files_trash_raiz, get_files_raiz
 
 from app.config import config
 from app.services.folder_services import obtener_carpeta_usuario_id, obtener_carpeta_papelera
@@ -83,7 +83,7 @@ def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario:
     id: uuid.UUID = uuid.uuid4()
 
     # Por si se genera un UUID ya usado
-    if get_file_by_id_and_user(id=id, usuario=usuario, db=db):
+    if get_file_by_id(id_archivo=id, db=db):
         raise IdYaUsadaException(
             f"Ya se ha usado la ID {id}. Vuelve a subir el archivo")
 
