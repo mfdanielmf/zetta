@@ -4,7 +4,9 @@ import type {
   CreateFolderResponse,
   DeleteFolderPermanentResponse,
   GetFilesFolderResponse,
+  GetFilesFolderTrashResponse,
   GetFoldersAnidada,
+  GetFoldersAnidadaTrashResponse,
   GetFoldersResponse,
   GetFoldersTrashResponse,
   RestoreFolderResponse,
@@ -46,5 +48,11 @@ export default {
   },
   eliminarCarpetaPermanente(idCarpeta: string) {
     return api().delete<DeleteFolderPermanentResponse>(URL + `/trash/${idCarpeta}`)
+  },
+  obtenerArchivosCarpetaPapelera(idCarpeta: string) {
+    return api().get<GetFilesFolderTrashResponse>(URL + `/trash/${idCarpeta}/files`)
+  },
+  obtenerCarpetasAnidadasPapelera(idCarpeta: string) {
+    return api().get<GetFoldersAnidadaTrashResponse>(URL + `/trash/${idCarpeta}/folders`)
   },
 }
