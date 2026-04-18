@@ -20,8 +20,12 @@ def update_file(archivo: File, db: Session) -> File:
     return archivo
 
 
+def get_file_by_id(id_archivo: uuid.UUID, db: Session) -> File | None:
+    return db.query(File).filter_by(id=id_archivo).first()
+
+
 def get_file_by_id_and_user(id: uuid.UUID, usuario: User, db: Session) -> File | None:
-    return db.query(File).filter_by(id=id, id_usuario=usuario.id).first()
+    return db.query(File).filter(File.id == id, File.id_usuario == usuario.id, File.fecha_eliminacion == None).first()
 
 
 def get_files_user(usuario: User, db: Session) -> list[File]:
@@ -47,10 +51,11 @@ def get_file_trash(id_archivo: uuid.UUID, id_usuario: uuid.UUID, db: Session) ->
 def get_all_files_trash_raiz(id_usuario: uuid.UUID, db: Session) -> list[File]:
     return db.query(File).filter(File.id_usuario == id_usuario, File.fecha_eliminacion != None, File.id_carpeta == None).all()
 
+
 def get_files_raiz(id_usuario: uuid.UUID, db: Session) -> list[File]:
-    return db.query(File).filter(File.id_usuario == id_usuario, File.id_carpeta == None).all()
+    return db.query(File).filter(File.id_usuario == id_usuario, File.id_carpeta == None, File.fecha_eliminacion == None).all()
+
 
 def delete_file(archivo: File, db: Session):
     db.delete(archivo)
     db.commit()
-    
