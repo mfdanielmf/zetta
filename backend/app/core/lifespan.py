@@ -23,7 +23,7 @@ async def lifespan(app: FastAPI):
     limpiar_papelera()
 
     scheduler.add_job(limpiar_papelera, IntervalTrigger(
-        hours=12), replace_existing=True, max_instances=1, coalesce=True)
+        hours=12), id="job_limpieza_papelera", replace_existing=True, max_instances=1, coalesce=True)
 
     scheduler.start()
 
