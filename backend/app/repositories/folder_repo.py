@@ -22,7 +22,7 @@ def update_folder(carpeta: Folder, db: Session) -> Folder:
 
 
 def get_folder_id_user(id: uuid.UUID, usuario: User, db: Session) -> Folder | None:
-    return db.query(Folder).filter_by(id=id, id_usuario=usuario.id).first()
+    return db.query(Folder).filter(Folder.id == id, Folder.id_usuario == usuario.id, Folder.fecha_eliminacion == None).first()
 
 
 def get_folder_original_name(nombre_original: str, usuario: User, db: Session) -> Folder | None:
@@ -42,7 +42,7 @@ def get_folder_id(id_carpeta: str, db: Session) -> Folder | None:
 
 
 def get_folders_user_raiz(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
-    return db.query(Folder).filter_by(id_usuario=id_usuario, id_carpeta=None).all()
+    return db.query(Folder).filter(Folder.id_usuario == id_usuario, Folder.id_carpeta == None, Folder.fecha_eliminacion == None).all()
 
 
 def get_folder_nombre_raiz(nombre_carpeta: str, id_usuario: uuid.UUID, db: Session) -> Folder | None:
