@@ -4,6 +4,7 @@ import {
   deleteFolderPermanentService,
   obtenerArchivosCarpetaPapeleraService,
   obtenerArchivosCarpetaService,
+  obtenerCarpetasAnidadasPapeleraService,
   obtenerCarpetasAnidadasService,
   obtenerCarpetasPapeleraService,
   obtenerCarpetasService,
@@ -230,6 +231,16 @@ export function useGetFilesFolderTrash(idCarpeta: ComputedRef<string>) {
   return useQuery({
     queryKey: ['archivosCarpetaPapelera', authStore.usuario?.id, () => toValue(idCarpeta)],
     queryFn: () => obtenerArchivosCarpetaPapeleraService(toValue(idCarpeta)),
+    enabled: computed(() => !!authStore.usuario?.id && !!toValue(idCarpeta)),
+  })
+}
+
+export function useGetFoldersAnidadasPapelera(idCarpeta: ComputedRef<string>) {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['carpetasAnidadasPapelera', authStore.usuario?.id, () => toValue(idCarpeta)],
+    queryFn: () => obtenerCarpetasAnidadasPapeleraService(toValue(idCarpeta)),
     enabled: computed(() => !!authStore.usuario?.id && !!toValue(idCarpeta)),
   })
 }

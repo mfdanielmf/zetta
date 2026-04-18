@@ -88,8 +88,29 @@ export async function deleteFolderPermanentService(idCarpeta: string) {
 }
 
 export async function obtenerArchivosCarpetaPapeleraService(idCarpeta: string) {
-  // Try catch manejado en el guard del router
-  const req = await foldersApi.obtenerArchivosCarpetaPapelera(idCarpeta)
+  try {
+    const req = await foldersApi.obtenerArchivosCarpetaPapelera(idCarpeta)
 
-  return req.data
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.detail || 'Error al obtener los archivos')
+    } else {
+      toast.error('Error al obtener los archivos')
+    }
+  }
+}
+
+export async function obtenerCarpetasAnidadasPapeleraService(idCarpeta: string) {
+  try {
+    const req = await foldersApi.obtenerCarpetasAnidadasPapelera(idCarpeta)
+
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.detail || 'Error al obtener las carpetas')
+    } else {
+      toast.error('Error al obtener los carpetas')
+    }
+  }
 }

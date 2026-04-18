@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useGetFilesFolderTrash, useGetFoldersAnidadas } from '@/queries/useFoldersQuery'
+import { useGetFilesFolderTrash, useGetFoldersAnidadasPapelera } from '@/queries/useFoldersQuery'
 
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { useFolderStore } from '@/stores/folder.store'
@@ -44,7 +44,7 @@ const noData = computed(() => {
 
 const { data: dataArchivos, isLoading: loadingArchivos } = useGetFilesFolderTrash(idCarpeta)
 const { data: dataCarpetasAnidadas, isLoading: loadingCarpetasAnidadas } =
-  useGetFoldersAnidadas(idCarpeta)
+  useGetFoldersAnidadasPapelera(idCarpeta)
 
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)

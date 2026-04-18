@@ -6,6 +6,7 @@ import type {
   GetFilesFolderResponse,
   GetFilesFolderTrashResponse,
   GetFoldersAnidada,
+  GetFoldersAnidadaTrashResponse,
   GetFoldersResponse,
   GetFoldersTrashResponse,
   RestoreFolderResponse,
@@ -50,5 +51,8 @@ export default {
   },
   obtenerArchivosCarpetaPapelera(idCarpeta: string) {
     return api().get<GetFilesFolderTrashResponse>(URL + `/trash/${idCarpeta}/files`)
+  },
+  obtenerCarpetasAnidadasPapelera(idCarpeta: string) {
+    return api().get<GetFoldersAnidadaTrashResponse>(URL + `/trash/${idCarpeta}/folders`)
   },
 }
