@@ -4,6 +4,7 @@ import type {
   CreateFolderResponse,
   DeleteFolderPermanentResponse,
   GetFilesFolderResponse,
+  GetFilesFolderTrashResponse,
   GetFoldersAnidada,
   GetFoldersResponse,
   GetFoldersTrashResponse,
@@ -46,5 +47,8 @@ export default {
   },
   eliminarCarpetaPermanente(idCarpeta: string) {
     return api().delete<DeleteFolderPermanentResponse>(URL + `/trash/${idCarpeta}`)
+  },
+  obtenerArchivosCarpetaPapelera(idCarpeta: string) {
+    return api().get<GetFilesFolderTrashResponse>(URL + `/trash/${idCarpeta}/files`)
   },
 }

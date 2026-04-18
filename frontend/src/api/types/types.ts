@@ -28,3 +28,4 @@ export type SendFolderTrashResponse = components['schemas']['AddFolderTrashRespo
 export type GetFoldersTrashResponse = components['schemas']['FolderBase'][]
 export type RestoreFolderResponse = components['schemas']['RestoreFolderResponse']
 export type DeleteFolderPermanentResponse = components['schemas']['DeleteFolderPermanentResponse']
+export type GetFilesFolderTrashResponse = components['schemas']['FileBase'][]

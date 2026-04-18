@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useGetFilesFolder, useGetFoldersAnidadas } from '@/queries/useFoldersQuery'
+import { useGetFilesFolderTrash, useGetFoldersAnidadas } from '@/queries/useFoldersQuery'
 
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { useFolderStore } from '@/stores/folder.store'
@@ -42,7 +42,7 @@ const noData = computed(() => {
   return false
 })
 
-const { data: dataArchivos, isLoading: loadingArchivos } = useGetFilesFolder(idCarpeta)
+const { data: dataArchivos, isLoading: loadingArchivos } = useGetFilesFolderTrash(idCarpeta)
 const { data: dataCarpetasAnidadas, isLoading: loadingCarpetasAnidadas } =
   useGetFoldersAnidadas(idCarpeta)
 

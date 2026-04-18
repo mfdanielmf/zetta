@@ -86,3 +86,10 @@ export async function deleteFolderPermanentService(idCarpeta: string) {
 
   return req.data
 }
+
+export async function obtenerArchivosCarpetaPapeleraService(idCarpeta: string) {
+  // Try catch manejado en el guard del router
+  const req = await foldersApi.obtenerArchivosCarpetaPapelera(idCarpeta)
+
+  return req.data
+}

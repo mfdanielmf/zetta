@@ -2,6 +2,7 @@ import {
   crearCarpetaAnidadaService,
   crearCarpetasService,
   deleteFolderPermanentService,
+  obtenerArchivosCarpetaPapeleraService,
   obtenerArchivosCarpetaService,
   obtenerCarpetasAnidadasService,
   obtenerCarpetasPapeleraService,
@@ -220,5 +221,15 @@ export function useDeleteFolderPermanent() {
         toast.error('Error al eliminar la carpeta')
       }
     },
+  })
+}
+
+export function useGetFilesFolderTrash(idCarpeta: ComputedRef<string>) {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['archivosCarpetaPapelera', authStore.usuario?.id, () => toValue(idCarpeta)],
+    queryFn: () => obtenerArchivosCarpetaPapeleraService(toValue(idCarpeta)),
+    enabled: computed(() => !!authStore.usuario?.id && !!toValue(idCarpeta)),
   })
 }
