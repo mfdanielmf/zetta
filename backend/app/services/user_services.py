@@ -1,9 +1,10 @@
+from pydantic import EmailStr
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.models.user import User
 from app.models.exceptions import CorreoYaUsadoException, NombreYaUsadoException, UsuarioNoEncontradoException
-from app.schemas.auth_schemas import LoginRequest
 from app.schemas.user_schemas import UserCreate
 from app.repositories.user_repo import insert_user_db, get_user_by_email, get_user_by_name
+
 from sqlalchemy.orm import Session
 
 
@@ -42,6 +43,19 @@ def crear_usuario(usuario: UserCreate, db: Session) -> User:
     usuario_db: User = insert_user_db(usuario=usuario_model, db=db)
 
     return usuario_db
+
+
+def obtener_usuario_correo(correo: EmailStr, db: Session) -> User:
+    """
+    UsuarioNoEncontradoException
+    """
+    usuario: User | None = get_user_by_email(correo=correo, db=db)
+
+    if usuario is None:
+        raise UsuarioNoEncontradoException(
+            f"No se ha encontrado el usuario con correo {correo}")
+
+    return usuario
 
 
 def comprobar_hash_contraseña(usuario: User, contraseña: str) -> bool:
