@@ -13,5 +13,5 @@ def add_shared_file_db(archivo_compartido: ArchivoCompartido, db: Session) -> Ar
     return archivo_compartido
 
 
-def get_shared_file(id_archivo: UUID, id_receptor: UUID, db: Session) -> ArchivoCompartido:
+def get_shared_file(id_archivo: UUID, id_receptor: UUID, db: Session) -> ArchivoCompartido | None:
     return db.query(ArchivoCompartido).filter_by(id_archivo=id_archivo, id_receptor=id_receptor).first()
