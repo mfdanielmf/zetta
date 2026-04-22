@@ -2,6 +2,7 @@ from app.models.file import File
 from app.models.user import User
 from app.models.folder import Folder
 from app.models.carpeta_compartida import CarpetaCompartida
+from app.models.archivo_compartido import ArchivoCompartido
 
 from app.routes.health_routes import health_router
 from app.routes.auth_routes import auth_router

@@ -3,6 +3,7 @@ from app.database.db import Base
 from sqlalchemy import UUID, Column, DateTime, String, func
 from sqlalchemy.orm import relationship
 
+from app.models.archivo_compartido import ArchivoCompartido
 from app.models.carpeta_compartida import CarpetaCompartida
 
 
@@ -23,3 +24,7 @@ class User(Base):
         "CarpetaCompartida", back_populates="propietario", foreign_keys=[CarpetaCompartida.id_propietario], passive_deletes=True)
     carpetas_recibidas = relationship(
         "CarpetaCompartida", back_populates="receptor", foreign_keys=[CarpetaCompartida.id_receptor], passive_deletes=True)
+    archivos_compartidos = relationship(
+        "ArchivoCompartido", back_populates="propietario", foreign_keys=[ArchivoCompartido.id_propietario], passive_deletes=True)
+    archivos_recibidos = relationship(
+        "ArchivoCompartido", back_populates="propietario", foreign_keys=[ArchivoCompartido.id_receptor], passive_deletes=True)
