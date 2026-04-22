@@ -42,6 +42,15 @@ class CarpetaPapeleraException(Exception):
     pass
 
 
+# COMPARTIDOS
+class PropietarioException(Exception):
+    pass
+
+
+class YaCompartidoException(Exception):
+    pass
+
+
 # GENERAL
 class IdYaUsadaException(Exception):
     pass

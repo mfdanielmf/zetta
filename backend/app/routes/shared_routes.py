@@ -1,0 +1,85 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.database.db import get_db
+from app.models.archivo_compartido import ArchivoCompartido
+from app.models.carpeta_compartida import CarpetaCompartida
+from app.models.exceptions import ArchivoNoEncontradoException, CarpetaNoEncontradaException, PropietarioException, UsuarioNoEncontradoException, YaCompartidoException
+from app.models.user import User
+from app.schemas import shared_file_schemas, shared_folder_schemas, file_schemas, folder_schemas
+from app.services.auth_services import get_current_user
+from app.services import shared_file_services, shared_folder_services
+
+shared_router = APIRouter()
+
+
+@shared_router.post("/files", response_model=shared_file_schemas.ShareFileResponse)
+def share_file(req: shared_file_schemas.ShareFileRequest, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        archivo_compartido: ArchivoCompartido = shared_file_services.compartir_archivo(
+            req=req, usuario=usuario, db=db)
+
+        return {
+            "msg": "Archivo compartido con éxito",
+            "archivo_compartido": {
+                "id": archivo_compartido.id,
+                "fecha_compartido": archivo_compartido.fecha_compartido,
+                "propietario": archivo_compartido.propietario,
+                "receptor": archivo_compartido.receptor,
+                "archivo": file_schemas.FileBase(
+                    id=archivo_compartido.archivo.id,
+                    nombre_original=archivo_compartido.archivo.nombre_original,
+                    path=archivo_compartido.archivo.path,
+                    tamaño_bytes=archivo_compartido.archivo.tamaño_bytes,
+                    fecha_creacion=archivo_compartido.archivo.fecha_creacion,
+                    id_usuario=archivo_compartido.archivo.id_usuario,
+                    nombre_usuario=archivo_compartido.archivo.usuario.nombre,
+                    id_carpeta=archivo_compartido.archivo.id_carpeta,
+                    fecha_eliminacion=archivo_compartido.archivo.fecha_eliminacion
+                )
+            }
+        }
+
+    except UsuarioNoEncontradoException as e1:
+        raise HTTPException(404, detail=str(e1))
+    except ArchivoNoEncontradoException as e2:
+        raise HTTPException(404, detail=str(e2))
+    except PropietarioException as e3:
+        raise HTTPException(400, detail=str(e3))
+    except YaCompartidoException as e4:
+        raise HTTPException(409, detail=str(e4))
+
+
+@shared_router.post("/folders", response_model=shared_folder_schemas.ShareFolderResponse)
+def share_folder(req: shared_folder_schemas.ShareFolderRequest, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        carpeta_compartida: CarpetaCompartida = shared_folder_services.compartir_carpeta(
+            req=req, usuario=usuario, db=db)
+
+        return {
+            "msg": "Carpeta compartida con éxito",
+            "carpeta_compartida": {
+                "id": carpeta_compartida.id,
+                "fecha_compartido": carpeta_compartida.fecha_compartido,
+                "propietario": carpeta_compartida.propietario,
+                "receptor": carpeta_compartida.receptor,
+                "carpeta": folder_schemas.FolderBase(
+                    id=carpeta_compartida.carpeta.id,
+                    nombre_original=carpeta_compartida.carpeta.nombre_original,
+                    path=carpeta_compartida.carpeta.path,
+                    fecha_creacion=carpeta_compartida.carpeta.fecha_creacion,
+                    id_usuario=carpeta_compartida.carpeta.id_usuario,
+                    nombre_usuario=carpeta_compartida.carpeta.usuario.nombre,
+                    id_carpeta=carpeta_compartida.carpeta.id_carpeta,
+                    fecha_eliminacion=carpeta_compartida.carpeta.fecha_eliminacion
+                )
+            }
+        }
+
+    except UsuarioNoEncontradoException as e1:
+        raise HTTPException(404, detail=str(e1))
+    except CarpetaNoEncontradaException as e2:
+        raise HTTPException(404, detail=str(e2))
+    except PropietarioException as e3:
+        raise HTTPException(400, detail=str(e3))
+    except YaCompartidoException as e4:
+        raise HTTPException(409, detail=str(e4))
