@@ -29,3 +29,5 @@ class Folder(Base):
         "File", back_populates="carpeta", cascade="all, delete-orphan")
     carpetas = relationship(
         "Folder", back_populates="carpeta", cascade="all, delete-orphan")
+    compartida_con = relationship(
+        "CarpetaCompartida", back_populates="carpeta", passive_deletes=True)
