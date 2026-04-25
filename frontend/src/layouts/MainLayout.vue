@@ -22,10 +22,20 @@ const mainBreadcrumb = computed(() => {
       name: 'papelera',
       titulo: 'Papelera',
     }
-  } else {
+  } else if (route.name === 'archivos' || route.path.startsWith('/storage')) {
     return {
       name: 'archivos',
       titulo: 'Mis Archivos',
+    }
+  } else if (route.name === 'compartidos' || route.path.startsWith('/shared/sent')) {
+    return {
+      name: 'compartidos',
+      titulo: 'Compartidos',
+    }
+  } else {
+    return {
+      name: 'recibidos',
+      titulo: 'Recibidos',
     }
   }
 })
