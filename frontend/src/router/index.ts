@@ -14,6 +14,8 @@ const FilesView = () => import('@/views/StorageView.vue')
 const FolderFilesView = () => import('@/views/FolderFilesView.vue')
 const PapeleraView = () => import('@/views/PapeleraView.vue')
 const FolderFilesPapeleraView = () => import('@/views/FolderFilesPapeleraView.vue')
+const ReceivedView = () => import('@/views/ReceivedView.vue')
+const SentView = () => import('@/views/SentView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +53,22 @@ const router = createRouter({
               path: ':id',
               name: 'carpetaPapelera',
               component: FolderFilesPapeleraView,
+            },
+          ],
+        },
+        {
+          path: 'shared',
+          redirect: { name: 'recibidos' },
+          children: [
+            {
+              path: 'received',
+              name: 'recibidos',
+              component: ReceivedView,
+            },
+            {
+              path: 'sent',
+              name: 'compartidos',
+              component: SentView,
             },
           ],
         },
