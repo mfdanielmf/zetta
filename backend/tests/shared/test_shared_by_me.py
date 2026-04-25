@@ -30,7 +30,6 @@ def test_archivos_compartidos_por_mi_success():
         id_usuario=usuario.id,
         usuario=usuario,
         nombre_usuario=usuario.nombre,
-        id_carpeta=None
     )
 
     usuario_falso2: User = User(
