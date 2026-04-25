@@ -12,7 +12,7 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
-} from "lucide-vue-next"
+} from 'lucide-vue-next'
 import NavMain from '@/components/NavMain.vue'
 import NavProjects from '@/components/NavProjects.vue'
 import NavUser from '@/components/NavUser.vue'
@@ -26,133 +26,126 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 import { useAuthStore } from '@/stores/auth.store'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
-  collapsible: "icon",
+  collapsible: 'icon',
 })
 
 const authStore = useAuthStore()
+const route = useRoute()
 
-// This is sample data.
-const data = {
+const isActive = (path: string) => route.path.startsWith(path)
+
+const data = computed(() => ({
   teams: [
     {
-      name: "Zetta",
+      name: 'Zetta',
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      plan: 'Enterprise',
     },
     {
-      name: "Acme Corp.",
+      name: 'Acme Corp.',
       logo: AudioWaveform,
-      plan: "Startup",
+      plan: 'Startup',
     },
     {
-      name: "Evil Corp.",
+      name: 'Evil Corp.',
       logo: Command,
-      plan: "Free",
+      plan: 'Free',
     },
   ],
+
   navMain: [
     {
-      title: "Mi Unidad",
-      url: "#",
+      title: 'Mi Unidad',
+      url: '#',
       icon: SquareTerminal,
-      isActive: true,
+      isActive: route.path.startsWith('/storage') || isActive('/trash'),
       items: [
         {
-          title: "Almacenamiento",
-          url: "/storage"
+          title: 'Almacenamiento',
+          url: '/storage',
+          isActive: isActive('/storage'),
         },
         {
-          title: "Papelera",
-          url: "/trash"
+          title: 'Papelera',
+          url: '/trash',
+          isActive: isActive('/trash'),
         },
       ],
     },
     {
-      title: "Models",
-      url: "#",
+      title: 'Compartido',
+      url: '#',
       icon: Bot,
+      isActive: route.path.startsWith('/shared'),
       items: [
         {
-          title: "Genesis",
-          url: "#",
+          title: 'Compartido conmigo',
+          url: '/shared/received',
+          isActive: isActive('/shared/received'),
         },
         {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
+          title: 'Compartido por mí',
+          url: '/shared/sent',
+          isActive: isActive('/shared/sent'),
         },
       ],
     },
+
     {
-      title: "Documentation",
-      url: "#",
+      title: 'Documentation',
+      url: '#',
       icon: BookOpen,
       items: [
         {
-          title: "Introduction",
-          url: "#",
+          title: 'Introduction',
+          url: '#',
         },
         {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
+          title: 'Get Started',
+          url: '#',
         },
       ],
     },
+
     {
-      title: "Settings",
-      url: "#",
+      title: 'Settings',
+      url: '#',
       icon: Settings2,
       items: [
         {
-          title: "General",
-          url: "#",
+          title: 'General',
+          url: '#',
         },
         {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
+          title: 'Team',
+          url: '#',
         },
       ],
     },
   ],
+
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
+      name: 'Design Engineering',
+      url: '#',
       icon: Frame,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
+      name: 'Sales & Marketing',
+      url: '#',
       icon: PieChart,
     },
     {
-      name: "Travel",
-      url: "#",
+      name: 'Travel',
+      url: '#',
       icon: Map,
     },
   ],
-}
+}))
 </script>
 
 <template>
@@ -165,7 +158,7 @@ const data = {
       <NavProjects :projects="data.projects" />
     </SidebarContent>
     <SidebarFooter>
-      <NavUser :user="authStore.usuario" v-if="authStore.usuario"/>
+      <NavUser :user="authStore.usuario" v-if="authStore.usuario" />
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>

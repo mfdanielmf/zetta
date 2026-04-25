@@ -10,10 +10,13 @@ const AuthLayout = () => import('@/layouts/AuthLayout.vue')
 
 const RegisterView = () => import('@/views/auth/RegisterView.vue')
 const LoginView = () => import('@/views/auth/LoginView.vue')
-const FilesView = () => import('@/views/StorageView.vue')
-const FolderFilesView = () => import('@/views/FolderFilesView.vue')
-const PapeleraView = () => import('@/views/PapeleraView.vue')
-const FolderFilesPapeleraView = () => import('@/views/FolderFilesPapeleraView.vue')
+const FilesView = () => import('@/views/storage/StorageView.vue')
+const FolderFilesView = () => import('@/views/storage/FolderFilesView.vue')
+const PapeleraView = () => import('@/views/trash/PapeleraView.vue')
+const FolderFilesPapeleraView = () => import('@/views/trash/FolderFilesPapeleraView.vue')
+const ReceivedView = () => import('@/views/shared/ReceivedView.vue')
+const SentView = () => import('@/views/shared/SentView.vue')
+const SharedFolderView = () => import('@/views/shared/SharedFolderView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +54,32 @@ const router = createRouter({
               path: ':id',
               name: 'carpetaPapelera',
               component: FolderFilesPapeleraView,
+            },
+          ],
+        },
+        {
+          path: 'shared',
+          redirect: { name: 'recibidos' },
+          children: [
+            {
+              path: 'received',
+              name: 'recibidos',
+              component: ReceivedView,
+            },
+            {
+              path: 'sent',
+              children: [
+                {
+                  path: '',
+                  name: 'compartidos',
+                  component: SentView,
+                },
+                {
+                  path: ':id',
+                  name: 'carpetaCompartida',
+                  component: SharedFolderView,
+                },
+              ],
             },
           ],
         },
@@ -110,7 +139,7 @@ router.beforeEach(async (to) => {
 router.afterEach((to) => {
   const folderStore = useFolderStore()
 
-  if (to.name != 'carpeta' && to.name != 'carpetaPapelera') {
+  if (to.name != 'carpeta' && to.name != 'carpetaPapelera' && to.name != 'carpetaCompartida') {
     folderStore.limpiarCarpetas()
   }
 })

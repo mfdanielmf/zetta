@@ -30,3 +30,7 @@ export type RestoreFolderResponse = components['schemas']['RestoreFolderResponse
 export type DeleteFolderPermanentResponse = components['schemas']['DeleteFolderPermanentResponse']
 export type GetFilesFolderTrashResponse = components['schemas']['FileBase'][]
 export type GetFoldersAnidadaTrashResponse = components['schemas']['FolderBase'][]
+
+// SHARED
+export type GetSharedFilesByMeResponse = components['schemas']['ArchivoCompartidoBase'][]
+export type GetSharedFoldersByMeResponse = components['schemas']['CarpetaCompartidaBase'][]

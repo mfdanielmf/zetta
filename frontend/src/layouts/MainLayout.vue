@@ -21,11 +21,25 @@ const mainBreadcrumb = computed(() => {
     return {
       name: 'papelera',
       titulo: 'Papelera',
+      nameDetalle: 'carpetaPapelera',
     }
-  } else {
+  } else if (route.name === 'archivos' || route.path.startsWith('/storage')) {
     return {
       name: 'archivos',
       titulo: 'Mis Archivos',
+      nameDetalle: 'carpeta',
+    }
+  } else if (route.name === 'compartidos' || route.path.startsWith('/shared/sent')) {
+    return {
+      name: 'compartidos',
+      titulo: 'Compartidos',
+      nameDetalle: 'carpetaCompartida',
+    }
+  } else {
+    return {
+      name: 'recibidos',
+      titulo: 'Recibidos',
+      nameDetalle: 'carpetaCompartida',
     }
   }
 })
@@ -57,7 +71,7 @@ const mainBreadcrumb = computed(() => {
                   <BreadcrumbLink as-child>
                     <RouterLink
                       :to="{
-                        name: mainBreadcrumb.name === 'archivos' ? 'carpeta' : 'carpetaPapelera',
+                        name: mainBreadcrumb.nameDetalle,
                         params: { id: carpeta.id },
                       }"
                       :class="{
