@@ -46,7 +46,7 @@ const { data: dataCarpetas, isLoading: loadingCarpetasAnidadas } = useGetSharedF
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
 
-  router.push({ name: 'carpetaPapelera', params: { id: idCarpeta } })
+  router.push({ name: 'carpetaCompartida', params: { id: idCarpeta } })
 }
 </script>
 
