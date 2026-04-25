@@ -36,7 +36,7 @@ const props = withDefaults(defineProps<SidebarProps>(), {
 const authStore = useAuthStore()
 const route = useRoute()
 
-const isActive = (path: string) => route.path === path
+const isActive = (path: string) => route.path.startsWith(path)
 
 const data = computed(() => ({
   teams: [
