@@ -5,6 +5,7 @@ from app.models.exceptions import PropietarioException, YaCompartidoException
 from app.models.file import File
 from app.models.user import User
 from app.schemas import shared_file_schemas as sfs
+from app.schemas.file_schemas import FileBase
 from app.services import user_services
 from app.services import file_services
 from app.repositories import shared_file_repo
@@ -36,3 +37,35 @@ def compartir_archivo(req: sfs.ShareFileRequest, usuario: User, db: Session) -> 
         archivo_compartido=archivo_compartido, db=db)
 
     return archivo_compartido_db
+
+
+def obtener_archivos_compartidos(usuario: User, db: Session) -> list[sfs.ArchivoCompartidoBase]:
+    archivos_compartidos: list[ArchivoCompartido] = shared_file_repo.get_all_shared_files_raiz(
+        id_usuario=usuario.id, db=db)
+
+    compartidos_base: list[sfs.ArchivoCompartidoBase] = []
+
+    for a in archivos_compartidos:
+        archivo_base: FileBase = FileBase(
+            id=a.archivo.id,
+            nombre_original=a.archivo.nombre_original,
+            path=a.archivo.path,
+            tamaño_bytes=a.archivo.tamaño_bytes,
+            fecha_creacion=a.archivo.fecha_creacion,
+            id_usuario=a.archivo.id_usuario,
+            nombre_usuario=a.archivo.usuario.nombre,
+            id_carpeta=a.archivo.id_carpeta,
+            fecha_eliminacion=a.archivo.fecha_eliminacion
+        )
+
+        compartidos_base.append(
+            sfs.ArchivoCompartidoBase(
+                id=a.id,
+                fecha_compartido=a.fecha_compartido,
+                propietario=a.propietario,
+                receptor=a.receptor,
+                archivo=archivo_base
+            )
+        )
+
+    return compartidos_base

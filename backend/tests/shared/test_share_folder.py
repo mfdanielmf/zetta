@@ -2,10 +2,8 @@ import uuid
 
 from fastapi.testclient import TestClient
 from app.main import app
-from app.models.archivo_compartido import ArchivoCompartido
 from app.models.carpeta_compartida import CarpetaCompartida
-from app.models.exceptions import CarpetaNoEncontradaException, PropietarioException, YaCompartidoException, ArchivoNoEncontradoException, UsuarioNoEncontradoException
-from app.models.file import File
+from app.models.exceptions import CarpetaNoEncontradaException, PropietarioException, YaCompartidoException, UsuarioNoEncontradoException
 from app.models.folder import Folder
 from app.models.user import User
 from app.services.auth_services import get_current_user
