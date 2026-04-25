@@ -3,7 +3,6 @@ import uuid
 from fastapi.testclient import TestClient
 from app.main import app
 from app.models.archivo_compartido import ArchivoCompartido
-from app.models.exceptions import PropietarioException, YaCompartidoException, ArchivoNoEncontradoException, UsuarioNoEncontradoException
 from app.models.file import File
 from app.models.user import User
 from app.schemas import shared_file_schemas
@@ -53,7 +52,7 @@ def test_archivos_compartidos_por_mi_success():
     with patch("app.routes.shared_routes.shared_file_services.obtener_archivos_compartidos") as mock_compartidos:
         mock_compartidos.return_value = [archivo_compartido]
 
-        response = client.get("/api/shared/files")
+        response = client.get("/api/shared/sent/files")
 
     resp_json = response.json()
     assert response.status_code == 200
@@ -78,7 +77,7 @@ def test_archivos_compartidos_por_mi_vacio():
     with patch("app.routes.shared_routes.shared_file_services.obtener_archivos_compartidos") as mock_compartidos:
         mock_compartidos.return_value = []
 
-        response = client.get("/api/shared/files")
+        response = client.get("/api/shared/sent/files")
 
     resp_json = response.json()
     assert response.status_code == 200

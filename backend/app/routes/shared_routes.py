@@ -12,13 +12,13 @@ from app.services import shared_file_services, shared_folder_services
 shared_router = APIRouter()
 
 
-@shared_router.get("/files", response_model=list[shared_file_schemas.ArchivoCompartidoBase])
-def get_shared_files(usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@shared_router.get("/sent/files", response_model=list[shared_file_schemas.ArchivoCompartidoBase])
+def get_shared_files_by_user(usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return shared_file_services.obtener_archivos_compartidos(usuario=usuario, db=db)
 
 
-@shared_router.post("/files", response_model=shared_file_schemas.ShareFileResponse)
-def share_file(req: shared_file_schemas.ShareFileRequest, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@shared_router.post("/sent/files", response_model=shared_file_schemas.ShareFileResponse)
+def share_file_with_user(req: shared_file_schemas.ShareFileRequest, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         archivo_compartido: ArchivoCompartido = shared_file_services.compartir_archivo(
             req=req, usuario=usuario, db=db)
@@ -54,8 +54,13 @@ def share_file(req: shared_file_schemas.ShareFileRequest, usuario: User = Depend
         raise HTTPException(409, detail=str(e4))
 
 
-@shared_router.post("/folders", response_model=shared_folder_schemas.ShareFolderResponse)
-def share_folder(req: shared_folder_schemas.ShareFolderRequest, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@shared_router.get("/sent/folders", response_model=list[shared_folder_schemas.CarpetaCompartidaBase])
+def get_shared_folders_by_user():
+    pass
+
+
+@shared_router.post("/sent/folders", response_model=shared_folder_schemas.ShareFolderResponse)
+def share_folder_with_user(req: shared_folder_schemas.ShareFolderRequest, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         carpeta_compartida: CarpetaCompartida = shared_folder_services.compartir_carpeta(
             req=req, usuario=usuario, db=db)

@@ -49,7 +49,7 @@ def test_crear_compartir_carpeta_success():
         mock_compartir.return_value = carpeta_compartida
 
         response = client.post(
-            "/api/shared/folders", json={"id_carpeta": str(carpeta_falsa.id), "correo_usuario": usuario_falso2.correo}
+            "/api/shared/sent/folders", json={"id_carpeta": str(carpeta_falsa.id), "correo_usuario": usuario_falso2.correo}
         )
 
     resp_json = response.json()["carpeta_compartida"]
@@ -78,7 +78,7 @@ def test_compartir_carpeta_usuario_es_propietario():
             "Ya eres el propietario")
 
         response = client.post(
-            "/api/shared/folders", json={"id_carpeta": str(id_test), "correo_usuario": usuario.correo}
+            "/api/shared/sent/folders", json={"id_carpeta": str(id_test), "correo_usuario": usuario.correo}
         )
 
     assert response.status_code == 400
@@ -97,7 +97,7 @@ def test_carpeta_ya_compartida():
         mock_compartir.side_effect = YaCompartidoException("Ya compartido")
 
         response = client.post(
-            "/api/shared/folders", json={"id_carpeta": str(id_test), "correo_usuario": usuario.correo}
+            "/api/shared/sent/folders", json={"id_carpeta": str(id_test), "correo_usuario": usuario.correo}
         )
 
     assert response.status_code == 409
@@ -117,7 +117,7 @@ def test_compartir_carpeta_no_encontrada():
             "No encontrada")
 
         response = client.post(
-            "/api/shared/folders", json={"id_carpeta": str(id_test), "correo_usuario": usuario.correo}
+            "/api/shared/sent/folders", json={"id_carpeta": str(id_test), "correo_usuario": usuario.correo}
         )
 
     assert response.status_code == 404
@@ -137,7 +137,7 @@ def test_compartir_carpeta_receptor_no_encontrado():
             "Usuario no encontrado")
 
         response = client.post(
-            "/api/shared/folders", json={"id_carpeta": str(id_test), "correo_usuario": usuario.correo}
+            "/api/shared/sent/folders", json={"id_carpeta": str(id_test), "correo_usuario": usuario.correo}
         )
 
     assert response.status_code == 404
