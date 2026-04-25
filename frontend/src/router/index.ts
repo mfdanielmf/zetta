@@ -12,10 +12,10 @@ const RegisterView = () => import('@/views/auth/RegisterView.vue')
 const LoginView = () => import('@/views/auth/LoginView.vue')
 const FilesView = () => import('@/views/StorageView.vue')
 const FolderFilesView = () => import('@/views/FolderFilesView.vue')
-const PapeleraView = () => import('@/views/PapeleraView.vue')
-const FolderFilesPapeleraView = () => import('@/views/FolderFilesPapeleraView.vue')
-const ReceivedView = () => import('@/views/ReceivedView.vue')
-const SentView = () => import('@/views/SentView.vue')
+const PapeleraView = () => import('@/views/trash/PapeleraView.vue')
+const FolderFilesPapeleraView = () => import('@/views/trash/FolderFilesPapeleraView.vue')
+const ReceivedView = () => import('@/views/shared/ReceivedView.vue')
+const SentView = () => import('@/views/shared/SentView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
