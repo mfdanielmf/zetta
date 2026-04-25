@@ -12,6 +12,11 @@ from app.services import shared_file_services, shared_folder_services
 shared_router = APIRouter()
 
 
+@shared_router.get("/files", response_model=list[shared_file_schemas.ArchivoCompartidoBase])
+def get_shared_files(usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return shared_file_services.obtener_archivos_compartidos(usuario=usuario, db=db)
+
+
 @shared_router.post("/files", response_model=shared_file_schemas.ShareFileResponse)
 def share_file(req: shared_file_schemas.ShareFileRequest, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
