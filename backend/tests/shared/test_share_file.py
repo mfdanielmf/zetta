@@ -50,7 +50,7 @@ def test_compartir_archivo_success():
         mock_compartir.return_value = archivo_compartido
 
         response = client.post(
-            "/api/shared/files", json={"id_archivo": str(archivo_falso.id), "correo_usuario": usuario_falso2.correo})
+            "/api/shared/sent/files", json={"id_archivo": str(archivo_falso.id), "correo_usuario": usuario_falso2.correo})
 
     resp_json = response.json()["archivo_compartido"]
     assert response.status_code == 200
@@ -78,7 +78,7 @@ def test_compartir_archivo_usuario_es_propietario():
             "Ya eres el propietario")
 
         response = client.post(
-            "/api/shared/files", json={"id_archivo": str(id_test), "correo_usuario": usuario.correo}
+            "/api/shared/sent/files", json={"id_archivo": str(id_test), "correo_usuario": usuario.correo}
         )
 
     assert response.status_code == 400
@@ -97,7 +97,7 @@ def test_archivo_ya_compartido():
         mock_compartir.side_effect = YaCompartidoException("Ya compartido")
 
         response = client.post(
-            "/api/shared/files", json={"id_archivo": str(id_test), "correo_usuario": usuario.correo}
+            "/api/shared/sent/files", json={"id_archivo": str(id_test), "correo_usuario": usuario.correo}
         )
 
     assert response.status_code == 409
@@ -117,7 +117,7 @@ def test_compartir_archivo_no_encontrado():
             "No encontrado")
 
         response = client.post(
-            "/api/shared/files", json={"id_archivo": str(id_test), "correo_usuario": usuario.correo}
+            "/api/shared/sent/files", json={"id_archivo": str(id_test), "correo_usuario": usuario.correo}
         )
 
     assert response.status_code == 404
@@ -137,7 +137,7 @@ def test_compartir_archivo_receptor_no_encontrado():
             "Usuario no encontrado")
 
         response = client.post(
-            "/api/shared/files", json={"id_archivo": str(id_test), "correo_usuario": usuario.correo}
+            "/api/shared/sent/files", json={"id_archivo": str(id_test), "correo_usuario": usuario.correo}
         )
 
     assert response.status_code == 404
