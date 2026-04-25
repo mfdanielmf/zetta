@@ -68,13 +68,18 @@ const router = createRouter({
             },
             {
               path: 'sent',
-              name: 'compartidos',
-              component: SentView,
-            },
-            {
-              path: 'sent/:id',
-              name: 'carpetaCompartida',
-              component: SharedFolderView,
+              children: [
+                {
+                  path: '',
+                  name: 'compartidos',
+                  component: SentView,
+                },
+                {
+                  path: ':id',
+                  name: 'carpetaCompartida',
+                  component: SharedFolderView,
+                },
+              ],
             },
           ],
         },
