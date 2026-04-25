@@ -55,8 +55,8 @@ def share_file_with_user(req: shared_file_schemas.ShareFileRequest, usuario: Use
 
 
 @shared_router.get("/sent/folders", response_model=list[shared_folder_schemas.CarpetaCompartidaBase])
-def get_shared_folders_by_user():
-    pass
+def get_shared_folders_by_user(usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return shared_folder_services.obtener_carpetas_compartidas(usuario=usuario, db=db)
 
 
 @shared_router.post("/sent/folders", response_model=shared_folder_schemas.ShareFolderResponse)

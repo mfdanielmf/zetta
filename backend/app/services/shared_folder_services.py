@@ -6,6 +6,7 @@ from app.models.folder import Folder
 from app.models.user import User
 from app.repositories import shared_folder_repo
 from app.schemas import shared_folder_schemas as sfs
+from app.schemas.folder_schemas import FolderBase
 from app.services import folder_services, user_services
 
 
@@ -33,3 +34,34 @@ def compartir_carpeta(req: sfs.ShareFolderRequest, usuario: User, db: Session) -
         carpeta_compartida=carpeta_compartida, db=db)
 
     return carpeta_compartida_db
+
+
+def obtener_carpetas_compartidas(usuario: User, db: Session) -> list[sfs.CarpetaCompartidaBase]:
+    carpetas_compartidas: list[CarpetaCompartida] = shared_folder_repo.get_all_shared_folders_raiz(
+        id_usuario=usuario.id, db=db)
+
+    compartidos_base: list[sfs.CarpetaCompartidaBase] = []
+
+    for c in carpetas_compartidas:
+        carpeta_base: FolderBase = FolderBase(
+            id=c.carpeta.id,
+            nombre_original=c.carpeta.nombre_original,
+            path=c.carpeta.path,
+            fecha_creacion=c.carpeta.fecha_creacion,
+            id_usuario=c.carpeta.id_usuario,
+            nombre_usuario=c.carpeta.usuario.nombre,
+            id_carpeta=c.carpeta.id_carpeta,
+            fecha_eliminacion=c.carpeta.fecha_eliminacion
+        )
+
+        compartidos_base.append(
+            sfs.CarpetaCompartidaBase(
+                id=c.id,
+                fecha_compartido=c.fecha_compartido,
+                propietario=c.propietario,
+                receptor=c.receptor,
+                carpeta=carpeta_base
+            )
+        )
+
+    return compartidos_base
