@@ -17,7 +17,7 @@ class CarpetaCompartida(Base):
     id_receptor = Column(UUID(as_uuid=True), ForeignKey(
         "usuarios.id"), nullable=False)
     id_carpeta = Column(UUID(as_uuid=True), ForeignKey(
-        "carpetas.id"), nullable=False)
+        "carpetas.id", ondelete="CASCADE"), nullable=False)
 
     propietario = relationship(
         "User", back_populates="carpetas_compartidas", foreign_keys=[id_propietario], passive_deletes=True)

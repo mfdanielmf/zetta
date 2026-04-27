@@ -17,7 +17,7 @@ class ArchivoCompartido(Base):
     id_receptor = Column(UUID(as_uuid=True), ForeignKey(
         "usuarios.id"), nullable=False)
     id_archivo = Column(UUID(as_uuid=True), ForeignKey(
-        "archivos.id"), nullable=False)
+        "archivos.id", ondelete="CASCADE"), nullable=False)
 
     propietario = relationship(
         "User", back_populates="archivos_compartidos", foreign_keys=[id_propietario], passive_deletes=True)
