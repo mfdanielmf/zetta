@@ -119,6 +119,10 @@ export function useDeleteFilePermanent() {
         queryKey: ['archivosPapelera', authStore.usuario?.id],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ['archivosCompartidos', authStore.usuario?.id],
+      })
+
       toast.success(data?.msg || 'Archivo eliminado correctamente')
     },
     onError: (e: unknown) => {
