@@ -28,3 +28,16 @@ def get_all_shared_folders_raiz(id_usuario: UUID, db: Session) -> list[CarpetaCo
         .filter_by(id_propietario=id_usuario).
         all()
     )
+
+
+def get_all_received_folders_raiz(id_usuario: UUID, db: Session) -> list[CarpetaCompartida]:
+    return (
+        db.query(CarpetaCompartida)
+        .options(
+            joinedload(CarpetaCompartida.propietario),
+            joinedload(CarpetaCompartida.receptor),
+            joinedload(CarpetaCompartida.carpeta)
+        )
+        .filter_by(id_receptor=id_usuario).
+        all()
+    )
