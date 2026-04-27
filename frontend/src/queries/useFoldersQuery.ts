@@ -213,6 +213,10 @@ export function useDeleteFolderPermanent() {
         queryKey: ['carpetasPapelera', authStore.usuario?.id],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ['carpetasCompartidas', authStore.usuario?.id],
+      })
+
       toast.success(data?.msg || 'Carpeta eliminada correctamente')
     },
     onError: (e: unknown) => {
