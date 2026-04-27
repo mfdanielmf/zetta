@@ -30,3 +30,15 @@ def get_all_shared_files_raiz(id_usuario: UUID, db: Session) -> list[ArchivoComp
         .filter_by(id_propietario=id_usuario).
         all()
     )
+
+
+def get_all_received_files_raiz(id_usuario: UUID, db: Session) -> list[ArchivoCompartido]:
+    return (
+        db.query(ArchivoCompartido)
+        .options(
+            joinedload(ArchivoCompartido.propietario),
+            joinedload(ArchivoCompartido.receptor),
+            joinedload(ArchivoCompartido.archivo)
+        )
+        .filter_by(id_receptor=id_usuario).all()
+    )

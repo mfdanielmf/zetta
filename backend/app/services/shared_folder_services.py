@@ -65,3 +65,34 @@ def obtener_carpetas_compartidas(usuario: User, db: Session) -> list[sfs.Carpeta
         )
 
     return compartidos_base
+
+
+def obtener_carpetas_recibidas(usuario: User, db: Session) -> list[sfs.CarpetaCompartidaBase]:
+    carpetas_recibidas: list[CarpetaCompartida] = shared_folder_repo.get_all_received_folders_raiz(
+        id_usuario=usuario.id, db=db)
+
+    recibidos_base: list[sfs.CarpetaCompartidaBase] = []
+
+    for c in carpetas_recibidas:
+        carpeta_base: FolderBase = FolderBase(
+            id=c.carpeta.id,
+            nombre_original=c.carpeta.nombre_original,
+            path=c.carpeta.path,
+            fecha_creacion=c.carpeta.fecha_creacion,
+            id_usuario=c.carpeta.id_usuario,
+            nombre_usuario=c.carpeta.usuario.nombre,
+            id_carpeta=c.carpeta.id_carpeta,
+            fecha_eliminacion=c.carpeta.fecha_eliminacion
+        )
+
+        recibidos_base.append(
+            sfs.CarpetaCompartidaBase(
+                id=c.id,
+                fecha_compartido=c.fecha_compartido,
+                propietario=c.propietario,
+                receptor=c.receptor,
+                carpeta=carpeta_base
+            )
+        )
+
+    return recibidos_base

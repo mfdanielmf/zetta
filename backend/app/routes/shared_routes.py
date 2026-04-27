@@ -93,3 +93,13 @@ def share_folder_with_user(req: shared_folder_schemas.ShareFolderRequest, usuari
         raise HTTPException(400, detail=str(e3))
     except YaCompartidoException as e4:
         raise HTTPException(409, detail=str(e4))
+
+
+@shared_router.get("/received/files", response_model=list[shared_file_schemas.ArchivoCompartidoBase])
+def get_shared_files_with_user(usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return shared_file_services.obtener_archivos_recibidos(usuario=usuario, db=db)
+
+
+@shared_router.get("/received/folders", response_model=list[shared_folder_schemas.CarpetaCompartidaBase])
+def get_shared_folders_by_user(usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return shared_folder_services.obtener_carpetas_recibidas(usuario=usuario, db=db)
