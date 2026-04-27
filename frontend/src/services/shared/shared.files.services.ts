@@ -1,4 +1,5 @@
 import sharedApi from '@/api/shared/shared.api'
+import type { ShareFileRequest } from '@/api/types/types'
 import axios from 'axios'
 import { toast } from 'vue-sonner'
 
@@ -14,4 +15,10 @@ export async function getSharedFilesByMeService() {
       toast.error('Error al obtener los archivos compartidos')
     }
   }
+}
+
+export async function shareFileService(data: ShareFileRequest) {
+  const req = await sharedApi.compartirArchivo(data)
+
+  return req.data
 }

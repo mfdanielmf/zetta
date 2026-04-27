@@ -42,6 +42,7 @@ import { useRouter } from 'vue-router'
 import { useFolderStore } from '@/stores/folder.store'
 import { useShareFolder } from '@/queries/useSharedFoldersQuery'
 import { toast } from 'vue-sonner'
+import { useShareFile } from '@/queries/useSharedFilesQuery'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
@@ -49,6 +50,9 @@ const CrearCarpetaDialog = defineAsyncComponent(
 )
 const CompartirCarpetaDialog = defineAsyncComponent(
   () => import('@/components/folders/CompartirCarpetaDialog.vue'),
+)
+const CompartirArchivoDialog = defineAsyncComponent(
+  () => import('@/components/files/CompartirArchivoDialog.vue'),
 )
 
 const router = useRouter()
@@ -69,6 +73,11 @@ const {
   isSuccess: successCompartirCarpeta,
   isPending: pendingCompartirCarpeta,
 } = useShareFolder()
+const {
+  mutateAsync: mutateCompartirArchivo,
+  isSuccess: successCompartirArchivo,
+  isPending: pendingCompartirArchivo,
+} = useShareFile()
 
 const cargando = computed(() => {
   if (loadingFiles.value || loadingFolders.value) {
@@ -93,6 +102,8 @@ const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
 const compartirCarpetaAbierto = ref<boolean>(false)
 const idCarpetaSeleccionada = ref<string | null>(null)
+const compartirArchivoAbierto = ref<boolean>(false)
+const idArchivoSeleccionado = ref<string | null>(null)
 
 async function descargarArchivo(id: string, nombre: string) {
   await downloadFileService(id, nombre)
@@ -143,6 +154,26 @@ function abrirCompartirCarpeta(idCarpeta: string) {
   compartirCarpetaAbierto.value = true
   idCarpetaSeleccionada.value = idCarpeta
 }
+
+async function compartirArchivo(correo: string) {
+  try {
+    if (idArchivoSeleccionado.value) {
+      await mutateCompartirArchivo({
+        id_archivo: idArchivoSeleccionado.value,
+        correo_usuario: correo,
+      })
+
+      if (successCompartirArchivo) compartirArchivoAbierto.value = false
+    } else {
+      toast.error('Error al seleccionar el archivo a compartir')
+    }
+  } catch {}
+}
+
+function abrirCompartirArchivo(idArchivo: string) {
+  compartirArchivoAbierto.value = true
+  idArchivoSeleccionado.value = idArchivo
+}
 </script>
 
 <template>
@@ -174,6 +205,12 @@ function abrirCompartirCarpeta(idCarpeta: string) {
     </DropdownMenu>
 
     <ArchivoDialog v-model:open="subirAbierto" :subir="mutacionInsertar.mutateAsync" />
+    <CompartirArchivoDialog
+      v-model:open="compartirArchivoAbierto"
+      :pending="pendingCompartirArchivo"
+      :reset="compartirArchivoAbierto"
+      @compartir-archivo="compartirArchivo"
+    />
     <CrearCarpetaDialog
       v-model:open="crearAbierto"
       @crear-carpeta="crearCarpeta"
@@ -296,6 +333,13 @@ function abrirCompartirCarpeta(idCarpeta: string) {
                 >
                   <Trash2 />
                   Eliminar
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="abrirCompartirArchivo(file.id)"
+                >
+                  <Share2 />
+                  Compartir
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
