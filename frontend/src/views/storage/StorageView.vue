@@ -25,16 +25,34 @@ import {
   formatDateService,
   formatearTamañoService,
 } from '@/services/file.services'
-import { Download, Ellipsis, Folder, FolderPlus, Plus, Trash2, Upload } from 'lucide-vue-next'
+import {
+  Download,
+  Ellipsis,
+  Folder,
+  FolderPlus,
+  Plus,
+  Share2,
+  Trash2,
+  Upload,
+} from 'lucide-vue-next'
 import { computed, defineAsyncComponent, ref } from 'vue'
 import { useCreateFolder, useGetFoldersUser, useMoveFolderTrash } from '@/queries/useFoldersQuery'
 import getIconExtension from '@/utils/iconMap'
 import { useRouter } from 'vue-router'
 import { useFolderStore } from '@/stores/folder.store'
+import { useShareFolder } from '@/queries/useSharedFoldersQuery'
+import { toast } from 'vue-sonner'
+import { useShareFile } from '@/queries/useSharedFilesQuery'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
   () => import('@/components/folders/CrearCarpetaDialog.vue'),
+)
+const CompartirCarpetaDialog = defineAsyncComponent(
+  () => import('@/components/folders/CompartirCarpetaDialog.vue'),
+)
+const CompartirArchivoDialog = defineAsyncComponent(
+  () => import('@/components/files/CompartirArchivoDialog.vue'),
 )
 
 const router = useRouter()
@@ -45,6 +63,21 @@ const { data: dataFiles, isLoading: loadingFiles } = useGetFilesUser()
 const mutacionInsertar = useInsertFiles()
 const { mutateAsync: mutateArchivoPapelera } = useMoveFileTrash()
 const { mutateAsync: mutateCarpetaPapelera } = useMoveFolderTrash()
+const {
+  mutateAsync: mutateCreate,
+  isSuccess: successCreate,
+  isPending: pendingCreate,
+} = useCreateFolder()
+const {
+  mutateAsync: mutateCompartirCarpeta,
+  isSuccess: successCompartirCarpeta,
+  isPending: pendingCompartirCarpeta,
+} = useShareFolder()
+const {
+  mutateAsync: mutateCompartirArchivo,
+  isSuccess: successCompartirArchivo,
+  isPending: pendingCompartirArchivo,
+} = useShareFile()
 
 const cargando = computed(() => {
   if (loadingFiles.value || loadingFolders.value) {
@@ -65,14 +98,12 @@ const noData = computed(() => {
   return false
 })
 
-const {
-  mutateAsync: mutateCreate,
-  isSuccess: successCreate,
-  isPending: pendingCreate,
-} = useCreateFolder()
-
 const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
+const compartirCarpetaAbierto = ref<boolean>(false)
+const idCarpetaSeleccionada = ref<string | null>(null)
+const compartirArchivoAbierto = ref<boolean>(false)
+const idArchivoSeleccionado = ref<string | null>(null)
 
 async function descargarArchivo(id: string, nombre: string) {
   await downloadFileService(id, nombre)
@@ -102,6 +133,46 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
 
   router.push({ name: 'carpeta', params: { id: idCarpeta } })
+}
+
+async function compartirCarpeta(correo: string) {
+  try {
+    if (idCarpetaSeleccionada.value) {
+      await mutateCompartirCarpeta({
+        id_carpeta: idCarpetaSeleccionada.value,
+        correo_usuario: correo,
+      })
+
+      if (successCompartirCarpeta) compartirCarpetaAbierto.value = false
+    } else {
+      toast.error('Error al seleccionar la carpeta a compartir')
+    }
+  } catch {}
+}
+
+function abrirCompartirCarpeta(idCarpeta: string) {
+  compartirCarpetaAbierto.value = true
+  idCarpetaSeleccionada.value = idCarpeta
+}
+
+async function compartirArchivo(correo: string) {
+  try {
+    if (idArchivoSeleccionado.value) {
+      await mutateCompartirArchivo({
+        id_archivo: idArchivoSeleccionado.value,
+        correo_usuario: correo,
+      })
+
+      if (successCompartirArchivo) compartirArchivoAbierto.value = false
+    } else {
+      toast.error('Error al seleccionar el archivo a compartir')
+    }
+  } catch {}
+}
+
+function abrirCompartirArchivo(idArchivo: string) {
+  compartirArchivoAbierto.value = true
+  idArchivoSeleccionado.value = idArchivo
 }
 </script>
 
@@ -134,11 +205,23 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
     </DropdownMenu>
 
     <ArchivoDialog v-model:open="subirAbierto" :subir="mutacionInsertar.mutateAsync" />
+    <CompartirArchivoDialog
+      v-model:open="compartirArchivoAbierto"
+      :pending="pendingCompartirArchivo"
+      :reset="compartirArchivoAbierto"
+      @compartir-archivo="compartirArchivo"
+    />
     <CrearCarpetaDialog
       v-model:open="crearAbierto"
       @crear-carpeta="crearCarpeta"
       :pending="pendingCreate"
       :reset="crearAbierto"
+    />
+    <CompartirCarpetaDialog
+      v-model:open="compartirCarpetaAbierto"
+      :pending="pendingCompartirCarpeta"
+      :reset="compartirCarpetaAbierto"
+      @compartir-carpeta="compartirCarpeta"
     />
 
     <Table>
@@ -198,6 +281,13 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
                   <Trash2 />
                   Eliminar
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="abrirCompartirCarpeta(folder.id)"
+                >
+                  <Share2 />
+                  Compartir
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </TableCell>
@@ -243,6 +333,13 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
                 >
                   <Trash2 />
                   Eliminar
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="abrirCompartirArchivo(file.id)"
+                >
+                  <Share2 />
+                  Compartir
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

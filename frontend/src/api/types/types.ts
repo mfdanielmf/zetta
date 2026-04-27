@@ -34,3 +34,7 @@ export type GetFoldersAnidadaTrashResponse = components['schemas']['FolderBase']
 // SHARED
 export type GetSharedFilesByMeResponse = components['schemas']['ArchivoCompartidoBase'][]
 export type GetSharedFoldersByMeResponse = components['schemas']['CarpetaCompartidaBase'][]
+export type ShareFileRequest = components['schemas']['ShareFileRequest']
+export type ShareFileResponse = components['schemas']['ShareFileResponse']
+export type ShareFolderRequest = components['schemas']['ShareFolderRequest']
+export type ShareFolderResponse = components['schemas']['ShareFolderResponse']
