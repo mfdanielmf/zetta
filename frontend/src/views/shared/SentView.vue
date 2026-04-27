@@ -112,7 +112,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
             {{ formatearTamañoService(file.archivo.tamaño_bytes) }}
           </TableCell>
           <TableCell class="font-medium">
-            {{ formatDateService(file.archivo.fecha_creacion) }}
+            {{ formatDateService(file.fecha_compartido) }}
           </TableCell>
         </TableRow>
       </TableBody>
