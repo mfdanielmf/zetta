@@ -1,4 +1,5 @@
 import sharedApi from '@/api/shared/shared.api'
+import type { ShareFolderRequest } from '@/api/types/types'
 import axios from 'axios'
 import { toast } from 'vue-sonner'
 
@@ -14,4 +15,10 @@ export async function getSharedFoldersByMeService() {
       toast.error('Error al obtener las carpetas compartidas')
     }
   }
+}
+
+export async function shareFolderService(data: ShareFolderRequest) {
+  const req = await sharedApi.compartirCarpeta(data)
+
+  return req.data
 }
