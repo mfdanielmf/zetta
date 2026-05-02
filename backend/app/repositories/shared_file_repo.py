@@ -40,3 +40,41 @@ def get_all_received_files_raiz(id_usuario: UUID, db: Session) -> list[ArchivoCo
         )
         .filter_by(id_receptor=id_usuario).all()
     )
+
+
+def get_all_shared_files_raiz_paginados(id_usuario: UUID, db: Session, offset: int, limit: int) -> tuple[int, list[ArchivoCompartido]]:
+    query = (
+        db.query(ArchivoCompartido)
+        .options(
+            joinedload(ArchivoCompartido.propietario),
+            joinedload(ArchivoCompartido.receptor),
+            joinedload(ArchivoCompartido.archivo)
+        )
+        .filter_by(id_propietario=id_usuario)
+    )
+
+    total: int = query.count()
+
+    archivos_compartidos: list[ArchivoCompartido] = query.order_by(
+        ArchivoCompartido.fecha_compartido.desc()).offset(offset).limit(limit).all()
+
+    return total, archivos_compartidos
+
+
+def get_all_received_files_raiz_paginados(id_usuario: UUID, db: Session, offset: int, limit: int) -> tuple[int, list[ArchivoCompartido]]:
+    query = (
+        db.query(ArchivoCompartido)
+        .options(
+            joinedload(ArchivoCompartido.propietario),
+            joinedload(ArchivoCompartido.receptor),
+            joinedload(ArchivoCompartido.archivo)
+        )
+        .filter_by(id_receptor=id_usuario)
+    )
+
+    total: int = query.count()
+
+    archivos_recibidos: list[ArchivoCompartido] = query.order_by(
+        ArchivoCompartido.fecha_compartido.desc()).offset(offset).limit(limit).all()
+
+    return total, archivos_recibidos

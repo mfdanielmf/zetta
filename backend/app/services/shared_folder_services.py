@@ -96,3 +96,69 @@ def obtener_carpetas_recibidas(usuario: User, db: Session) -> list[sfs.CarpetaCo
         )
 
     return recibidos_base
+
+
+def obtener_carpetas_compartidas_paginadas(usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[sfs.CarpetaCompartidaBase]]:
+    offset: int = (pagina - 1) * limite
+
+    total, carpetas_compartidas = shared_folder_repo.get_all_shared_folders_raiz_paginadas(
+        id_usuario=usuario.id, db=db, offset=offset, limit=limite)
+
+    compartidos_base: list[sfs.CarpetaCompartidaBase] = []
+
+    for c in carpetas_compartidas:
+        carpeta_base: FolderBase = FolderBase(
+            id=c.carpeta.id,
+            nombre_original=c.carpeta.nombre_original,
+            path=c.carpeta.path,
+            fecha_creacion=c.carpeta.fecha_creacion,
+            id_usuario=c.carpeta.id_usuario,
+            nombre_usuario=c.carpeta.usuario.nombre,
+            id_carpeta=c.carpeta.id_carpeta,
+            fecha_eliminacion=c.carpeta.fecha_eliminacion
+        )
+
+        compartidos_base.append(
+            sfs.CarpetaCompartidaBase(
+                id=c.id,
+                fecha_compartido=c.fecha_compartido,
+                propietario=c.propietario,
+                receptor=c.receptor,
+                carpeta=carpeta_base
+            )
+        )
+
+    return total, compartidos_base
+
+
+def obtener_carpetas_recibidas_paginadas(usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[sfs.CarpetaCompartidaBase]]:
+    offset: int = (pagina - 1) * limite
+
+    total, carpetas_recibidas = shared_folder_repo.get_all_received_folders_raiz_paginadas(
+        id_usuario=usuario.id, db=db, offset=offset, limit=limite)
+
+    recibidos_base: list[sfs.CarpetaCompartidaBase] = []
+
+    for c in carpetas_recibidas:
+        carpeta_base: FolderBase = FolderBase(
+            id=c.carpeta.id,
+            nombre_original=c.carpeta.nombre_original,
+            path=c.carpeta.path,
+            fecha_creacion=c.carpeta.fecha_creacion,
+            id_usuario=c.carpeta.id_usuario,
+            nombre_usuario=c.carpeta.usuario.nombre,
+            id_carpeta=c.carpeta.id_carpeta,
+            fecha_eliminacion=c.carpeta.fecha_eliminacion
+        )
+
+        recibidos_base.append(
+            sfs.CarpetaCompartidaBase(
+                id=c.id,
+                fecha_compartido=c.fecha_compartido,
+                propietario=c.propietario,
+                receptor=c.receptor,
+                carpeta=carpeta_base
+            )
+        )
+
+    return total, recibidos_base

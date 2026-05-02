@@ -3,10 +3,10 @@ import uuid
 from fastapi.testclient import TestClient
 from app.main import app
 from app.models.user import User
+from app.middleware.auth_middleware import get_current_user
 from app.schemas import shared_folder_schemas
 from app.schemas.folder_schemas import FolderBase
 from app.schemas.shared_folder_schemas import CarpetaCompartidaBase
-from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
 from unittest.mock import patch
 
@@ -14,7 +14,7 @@ client = TestClient(app=app)
 
 
 def test_carpetas_compartidos_por_mi_success():
-    usuario = override_get_current_user()
+    usuario: User = override_get_current_user()
     app.dependency_overrides[get_current_user] = lambda: usuario
 
     id_compartido: uuid.UUID = uuid.uuid4()
@@ -46,23 +46,31 @@ def test_carpetas_compartidos_por_mi_success():
         carpeta=carpeta_falsa
     )
 
-    with patch("app.routes.shared_routes.shared_folder_services.obtener_carpetas_recibidas") as mock_compartidos:
-        mock_compartidos.return_value = [carpeta_compartida]
+    with patch("app.routes.shared_routes.shared_folder_services.obtener_carpetas_recibidas_paginadas") as mock_compartidos:
+        mock_compartidos.return_value = (1, [carpeta_compartida])
 
-        response = client.get("/api/shared/received/folders")
+        response = client.get("/api/shared/received/folders?page=1&limit=25")
 
-    resp_json = response.json()
     assert response.status_code == 200
 
-    assert len(resp_json) == 1
-    assert resp_json[0]["propietario"]["id"] == str(usuario.id)
-    assert resp_json[0]["propietario"]["correo"] == usuario.correo
-    assert resp_json[0]["receptor"]["id"] == str(usuario_falso2.id)
-    assert resp_json[0]["receptor"]["correo"] == usuario_falso2.correo
-    assert resp_json[0]["carpeta"]["id"] == str(carpeta_falsa.id)
-    assert resp_json[0]["carpeta"]["nombre_original"] == carpeta_falsa.nombre_original
-    assert resp_json[0]["carpeta"]["path"] == carpeta_falsa.path
-    assert resp_json[0]["carpeta"]["id_usuario"] == str(usuario.id)
+    resp_json = response.json()
+
+    assert resp_json["total"] == 1
+    assert resp_json["pagina"] == 1
+    assert resp_json["limite"] == 25
+    assert len(resp_json["items"]) == 1
+
+    item = resp_json["items"][0]
+
+    assert item["propietario"]["id"] == str(usuario.id)
+    assert item["propietario"]["correo"] == usuario.correo
+    assert item["receptor"]["id"] == str(usuario_falso2.id)
+    assert item["receptor"]["correo"] == usuario_falso2.correo
+
+    assert item["carpeta"]["id"] == str(carpeta_falsa.id)
+    assert item["carpeta"]["nombre_original"] == carpeta_falsa.nombre_original
+    assert item["carpeta"]["path"] == carpeta_falsa.path
+    assert item["carpeta"]["id_usuario"] == str(usuario.id)
 
     app.dependency_overrides.clear()
 
@@ -70,14 +78,18 @@ def test_carpetas_compartidos_por_mi_success():
 def test_carpetas_compartidas_por_mi_vacio():
     app.dependency_overrides[get_current_user] = override_get_current_user
 
-    with patch("app.routes.shared_routes.shared_folder_services.obtener_carpetas_recibidas") as mock_compartidos:
-        mock_compartidos.return_value = []
+    with patch("app.routes.shared_routes.shared_folder_services.obtener_carpetas_recibidas_paginadas") as mock_compartidos:
+        mock_compartidos.return_value = (0, [])
 
-        response = client.get("/api/shared/received/folders")
+        response = client.get("/api/shared/received/folders?page=1&limit=25")
 
-    resp_json = response.json()
     assert response.status_code == 200
 
-    assert len(resp_json) == 0
+    resp_json = response.json()
+
+    assert resp_json["total"] == 0
+    assert resp_json["items"] == []
+    assert resp_json["pagina"] == 1
+    assert resp_json["limite"] == 25
 
     app.dependency_overrides.clear()
