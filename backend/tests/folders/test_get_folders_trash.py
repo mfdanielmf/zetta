@@ -35,7 +35,7 @@ def test_get_papelera_1_carpeta():
         usuario=usuario
     )
 
-    with patch("app.routes.folder_routes.obtener_carpetas_papelera_raiz") as mock_obtener:
+    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_papelera_raiz") as mock_obtener:
         mock_obtener.return_value = [carpeta]
 
         response = client.get("/api/folders/trash")
@@ -78,7 +78,7 @@ def test_get_papelera_varias_carpetas():
 
     carpetas_falsas: list[Folder] = [carpeta, carpeta2]
 
-    with patch("app.routes.folder_routes.obtener_carpetas_papelera_raiz") as mock_obtener:
+    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_papelera_raiz") as mock_obtener:
         mock_obtener.return_value = carpetas_falsas
 
         response = client.get("/api/folders/trash")

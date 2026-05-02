@@ -15,7 +15,7 @@ def test_eliminar_carpeta_permanente_success():
 
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.eliminar_carpeta_permanente") as mock_delete:
+    with patch("app.routes.folder_routes.folder_services.eliminar_carpeta_permanente") as mock_delete:
         mock_delete.return_value = None
 
         response = client.delete(f"/api/folders/trash/{id_carpeta}")
@@ -33,7 +33,7 @@ def test_eliminar_carpeta_permanente_no_existente():
 
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.eliminar_carpeta_permanente") as mock_delete:
+    with patch("app.routes.folder_routes.folder_services.eliminar_carpeta_permanente") as mock_delete:
         mock_delete.side_effect = CarpetaNoEncontradaException()
 
         response = client.delete(f"/api/folders/trash/{id_carpeta}")
@@ -51,7 +51,7 @@ def test_eliminar_carpeta_permanente_error_disco():
 
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.eliminar_carpeta_permanente") as mock_delete:
+    with patch("app.routes.folder_routes.folder_services.eliminar_carpeta_permanente") as mock_delete:
         mock_delete.side_effect = EliminarDiscoException(
             "Error al eliminar la carpeta del disco")
 

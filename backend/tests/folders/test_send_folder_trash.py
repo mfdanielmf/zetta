@@ -27,7 +27,7 @@ def test_añadir_carpeta_papelera_success():
         fecha_eliminacion=datetime.now()
     )
 
-    with patch("app.routes.folder_routes.añadir_carpeta_papelera") as mock_añadir:
+    with patch("app.routes.folder_routes.folder_services.añadir_carpeta_papelera") as mock_añadir:
         mock_añadir.return_value = carpeta
 
         response = client.delete(f"/api/folders/{carpeta.id}")
@@ -48,7 +48,7 @@ def test_añadir_papelera_carpeta_no_encontrada():
 
     id_test: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.añadir_carpeta_papelera") as mock_añadir:
+    with patch("app.routes.folder_routes.folder_services.añadir_carpeta_papelera") as mock_añadir:
         mock_añadir.side_effect = CarpetaNoEncontradaException()
 
         response = client.delete(f"/api/folders/{id_test}")
@@ -66,7 +66,7 @@ def test_añadir_papelera_carpeta_que_ya_estaba():
 
     id_test: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.añadir_carpeta_papelera") as mock_añadir:
+    with patch("app.routes.folder_routes.folder_services.añadir_carpeta_papelera") as mock_añadir:
         mock_añadir.side_effect = CarpetaPapeleraException()
 
         response = client.delete(f"/api/folders/{id_test}")

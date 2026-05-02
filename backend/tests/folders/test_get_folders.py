@@ -44,7 +44,7 @@ def test_get_carpetas_usuario_con_uploads():
         usuario=usuario
     )
 
-    with patch("app.routes.folder_routes.obtener_carpetas_usuario_raiz") as mock_obtener:
+    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_usuario_raiz") as mock_obtener:
         mock_obtener.return_value = [carpeta]
 
         response = client.get("/api/folders")

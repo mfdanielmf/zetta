@@ -32,7 +32,7 @@ def test_crear_carpeta_success():
         id_carpeta=id_padre
     )
 
-    with patch("app.routes.folder_routes.crear_carpeta_anidada") as mock_crear:
+    with patch("app.routes.folder_routes.folder_services.crear_carpeta_anidada") as mock_crear:
         mock_crear.return_value = carpeta_hija
 
         response = client.post(
@@ -58,7 +58,7 @@ def test_carpeta_id_usada():
 
     id_test = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.crear_carpeta_anidada") as mock_crear:
+    with patch("app.routes.folder_routes.folder_services.crear_carpeta_anidada") as mock_crear:
         mock_crear.side_effect = IdYaUsadaException(
             f"Ya se ha usado el ID {id_test}. Vuelve a subir la carpeta")
 
@@ -79,7 +79,7 @@ def test_carpeta_nombre_usado():
     id_test = uuid.uuid4()
     nombre_carpeta = "test"
 
-    with patch("app.routes.folder_routes.crear_carpeta_anidada") as mock_crear:
+    with patch("app.routes.folder_routes.folder_services.crear_carpeta_anidada") as mock_crear:
         mock_crear.side_effect = NombreYaUsadoException(
             f"Ya has creado una carpeta con el nombre {nombre_carpeta}")
 

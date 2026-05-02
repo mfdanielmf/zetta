@@ -31,7 +31,7 @@ def test_obtener_archivos_carpeta_papelera():
         usuario=usuario
     )
 
-    with patch("app.routes.folder_routes.obtener_archivos_carpeta_papelera") as mock_obtener:
+    with patch("app.routes.folder_routes.file_services.obtener_archivos_carpeta_papelera") as mock_obtener:
         mock_obtener.return_value = [archivo_falso]
 
         response = client.get(f"/api/folders/trash/{id_carpeta}/files")
@@ -51,7 +51,7 @@ def test_obtener_archivos_carpeta_que_no_esta_en_papelera():
     app.dependency_overrides[get_current_user] = override_get_current_user
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.obtener_archivos_carpeta_papelera") as mock_guardar:
+    with patch("app.routes.folder_routes.file_services.obtener_archivos_carpeta_papelera") as mock_guardar:
         mock_guardar.side_effect = CarpetaNoEncontradaException()
 
         response = client.get(f"/api/folders/trash/{id_carpeta}/files")
@@ -67,7 +67,7 @@ def test_obtener_archivos_carpeta_papelera_vacia():
     app.dependency_overrides[get_current_user] = override_get_current_user
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.obtener_archivos_carpeta_papelera") as mock_guardar:
+    with patch("app.routes.folder_routes.file_services.obtener_archivos_carpeta_papelera") as mock_guardar:
         mock_guardar.return_value = []
 
         response = client.get(f"/api/folders/trash/{id_carpeta}/files")

@@ -32,7 +32,7 @@ def test_subir_archivo_carpeta():
         usuario=usuario
     )
 
-    with patch("app.routes.folder_routes.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
+    with patch("app.routes.folder_routes.folder_services.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.return_value = archivo_falso
 
         response = client.post(f"/api/folders/{id_carpeta}/files", files={
@@ -56,7 +56,7 @@ def test_subir_archivo_carpeta_no_existente():
     app.dependency_overrides[get_current_user] = override_get_current_user
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
+    with patch("app.routes.folder_routes.folder_services.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.side_effect = CarpetaNoEncontradaException(
             f"No se ha encontrado la carpeta con id {id_carpeta}")
 
@@ -87,7 +87,7 @@ def test_subir_archivo_carpeta_tamaño_excedido():
     app.dependency_overrides[get_current_user] = override_get_current_user
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
+    with patch("app.routes.folder_routes.folder_services.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.side_effect = TamañoExcedidoException(
             "Has superado el tamaño límite")
 
@@ -105,7 +105,7 @@ def test_subir_archivo_nombre_usado():
     app.dependency_overrides[get_current_user] = override_get_current_user
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
+    with patch("app.routes.folder_routes.folder_services.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.side_effect = NombreYaUsadoException(
             "Ya hay un archivo con el nombre 'testing.txt' en la carpeta")
 
@@ -162,7 +162,7 @@ def test_subir_varios_archivos_carpeta():
 
     archivos_falsos = [archivo_falso, archivo_falso2]
 
-    with patch("app.routes.folder_routes.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
+    with patch("app.routes.folder_routes.folder_services.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.side_effect = archivos_falsos
 
         response = client.post(f"/api/folders/{id_carpeta}/files", files=[
