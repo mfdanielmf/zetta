@@ -9,10 +9,10 @@ from app.models.exceptions import ArchivoPapeleraException, EliminarDiscoExcepti
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.file_repo import delete_file, get_file_by_id, insert_file_db, get_file_by_id_and_user, get_file_by_name_in_folder, get_all_files_in_folder, update_file, get_file_trash, get_all_files_trash_raiz, get_files_raiz
+from app.repositories.file_repo import delete_file, get_file_by_id, insert_file_db, get_file_by_id_and_user, get_file_by_name_in_folder, update_file, get_file_trash, get_all_files_trash_raiz, get_files_raiz
 
 from app.config import config
-from app.services.folder_services import obtener_carpeta_usuario_id, obtener_carpeta_papelera
+from app.services.folder_services import obtener_carpeta_papelera, obtener_carpeta_usuario_permisos
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -111,9 +111,10 @@ def obtener_archivos_carpeta(id_carpeta: uuid.UUID, db: Session, usuario: User) 
     """
     CarpetaNoEncontradaException
     """
-    obtener_carpeta_usuario_id(id_carpeta=id_carpeta, usuario=usuario, db=db)
+    carpeta: Folder = obtener_carpeta_usuario_permisos(
+        id_carpeta=id_carpeta, usuario=usuario, db=db)
 
-    return get_all_files_in_folder(db=db, id_carpeta=id_carpeta, usuario=usuario)
+    return carpeta.archivos
 
 
 def añadir_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session) -> File:
