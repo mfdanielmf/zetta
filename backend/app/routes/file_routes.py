@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse as FileResp
 from sqlalchemy.orm import Session
 from app.database.db import get_db
 
+from app.middleware.pagination_middleware import get_pagination
 from app.models.user import User
 from app.models import exceptions as ex
 from app.schemas import file_schemas
@@ -14,24 +15,32 @@ from app.services import file_services
 file_router = APIRouter()
 
 
-@file_router.get("", response_model=list[file_schemas.FileBase])
-def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
-    archivos: list[File] = file_services.obtener_archivos_usuario(usuario=usuario, db=db)
+@file_router.get("", response_model=file_schemas.PaginatedFileResponse)
+def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current_user), paginacion: tuple[int, int] = Depends(get_pagination)):
+    pagina, limite = paginacion
 
-    return [
-        file_schemas.FileBase(
-            id=archivo_db.id,
-            nombre_original=archivo_db.nombre_original,
-            path=archivo_db.path,
-            tamaño_bytes=archivo_db.tamaño_bytes,
-            fecha_creacion=archivo_db.fecha_creacion,
-            id_usuario=archivo_db.id_usuario,
-            nombre_usuario=archivo_db.usuario.nombre,
-            id_carpeta=archivo_db.id_carpeta,
-            fecha_eliminacion=archivo_db.fecha_eliminacion
-        )
-        for archivo_db in archivos
-    ]
+    total, archivos = file_services.obtener_archivos_usuario_paginados(
+        usuario=usuario, db=db, pagina=pagina, limite=limite)
+
+    return {
+        "items": [
+            file_schemas.FileBase(
+                id=archivo_db.id,
+                nombre_original=archivo_db.nombre_original,
+                path=archivo_db.path,
+                tamaño_bytes=archivo_db.tamaño_bytes,
+                fecha_creacion=archivo_db.fecha_creacion,
+                id_usuario=archivo_db.id_usuario,
+                nombre_usuario=archivo_db.usuario.nombre,
+                id_carpeta=archivo_db.id_carpeta,
+                fecha_eliminacion=archivo_db.fecha_eliminacion
+            )
+            for archivo_db in archivos
+        ],
+        "total": total,
+        "pagina": pagina,
+        "limite": limite
+    }
 
 
 @file_router.post("", response_model=file_schemas.FileResponse)
@@ -66,24 +75,32 @@ async def upload_file(file_upload: list[UploadFile] = File(...), db: Session = D
         raise HTTPException(409, str(e3))
 
 
-@file_router.get("/trash", response_model=list[file_schemas.FileBase])
-def get_files_trash(usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    archivos: list[File] = file_services.obtener_archivos_papelera_raiz(
-        usuario=usuario, db=db)
+@file_router.get("/trash", response_model=file_schemas.PaginatedFileResponse)
+def get_files_trash(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+    pagina, limite = paginacion
 
-    return [
-        file_schemas.FileBase(
-            id=archivo.id,
-            nombre_original=archivo.nombre_original,
-            path=archivo.path,
-            tamaño_bytes=archivo.tamaño_bytes,
-            fecha_creacion=archivo.fecha_creacion,
-            id_usuario=archivo.id_usuario,
-            nombre_usuario=archivo.usuario.nombre,
-            id_carpeta=archivo.id_carpeta,
-            fecha_eliminacion=archivo.fecha_eliminacion
-        ) for archivo in archivos
-    ]
+    total, archivos = file_services.obtener_archivos_papelera_raiz_paginados(
+        usuario=usuario, db=db, pagina=pagina, limite=limite)
+
+    return {
+        "items": [
+            file_schemas.FileBase(
+                id=archivo_db.id,
+                nombre_original=archivo_db.nombre_original,
+                path=archivo_db.path,
+                tamaño_bytes=archivo_db.tamaño_bytes,
+                fecha_creacion=archivo_db.fecha_creacion,
+                id_usuario=archivo_db.id_usuario,
+                nombre_usuario=archivo_db.usuario.nombre,
+                id_carpeta=archivo_db.id_carpeta,
+                fecha_eliminacion=archivo_db.fecha_eliminacion
+            )
+            for archivo_db in archivos
+        ],
+        "total": total,
+        "pagina": pagina,
+        "limite": limite
+    }
 
 
 @file_router.delete("/trash/{id_archivo}", response_model=file_schemas.DeleteFilePermanentResponse)
@@ -105,7 +122,8 @@ def delete_file_permanent(id_archivo: UUID, usuario: User = Depends(get_current_
 @file_router.get("/{id_archivo}", response_class=FileResp)
 def download_files(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
-        archivo: File = file_services.obtener_archivo_permisos(id_archivo=id_archivo, usuario=usuario, db=db)
+        archivo: File = file_services.obtener_archivo_permisos(
+            id_archivo=id_archivo, usuario=usuario, db=db)
 
         return FileResp(path=archivo.path, filename=archivo.nombre_original)
     except ex.ArchivoNoEncontradoException:

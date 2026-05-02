@@ -165,7 +165,8 @@ def eliminar_archivo_permanente(id_archivo: uuid.UUID, usuario: User, db: Sessio
         if os.path.exists(path):
             os.remove(path)
     except Exception:
-        raise ex.EliminarDiscoException("Error al eliminar el archivo del disco")
+        raise ex.EliminarDiscoException(
+            "Error al eliminar el archivo del disco")
 
     file_repo.delete_file(archivo=archivo, db=db)
 
@@ -174,7 +175,8 @@ def obtener_archivo_permisos(id_archivo: uuid.UUID, usuario: User, db: Session) 
     """
     ArchivoNoEncontradoException
     """
-    archivo: File | None = file_repo.get_file_by_id(id_archivo=id_archivo, db=db)
+    archivo: File | None = file_repo.get_file_by_id(
+        id_archivo=id_archivo, db=db)
 
     if not archivo:
         raise ex.ArchivoNoEncontradoException(
@@ -200,3 +202,15 @@ def obtener_archivo_permisos(id_archivo: uuid.UUID, usuario: User, db: Session) 
 
     raise ex.ArchivoNoEncontradoException(
         f"No se ha encontrado el archivo con id {id_archivo}")
+
+
+def obtener_archivos_usuario_paginados(usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[File]]:
+    offset: int = (pagina - 1) * limite
+
+    return file_repo.get_files_raiz_paginados(id_usuario=usuario.id, db=db, offset=offset, limit=limite)
+
+
+def obtener_archivos_papelera_raiz_paginados(usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[File]]:
+    offset: int = (pagina - 1) * limite
+
+    return file_repo.get_all_files_trash_raiz_paginados(id_usuario=usuario.id, db=db, offset=offset, limit=limite)
