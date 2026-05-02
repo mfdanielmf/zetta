@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.models.file import File
 from app.models.user import User
-from app.services.auth_services import get_current_user
+from app.middleware.auth_middleware import get_current_user
 from app.models.exceptions import ArchivoNoEncontradoException, ArchivoPapeleraException
 from tests.util import override_get_current_user
 

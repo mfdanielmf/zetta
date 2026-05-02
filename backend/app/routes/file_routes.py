@@ -9,7 +9,7 @@ from app.models.user import User
 from app.services.file_services import eliminar_archivo_permanente, guardar_archivo, obtener_archivos_usuario, obtener_archivo_permisos, añadir_archivo_papelera, restaurar_archivo_papelera, obtener_archivos_papelera_raiz
 from app.models.exceptions import ArchivoNoEncontradoException, EliminarDiscoException, TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException, ArchivoPapeleraException
 from app.schemas.file_schemas import AddFileTrashResponse, DeleteFilePermanentResponse, FileBase, FileResponse, RestoreFileResponse
-from app.services.auth_services import get_current_user
+from app.middleware.auth_middleware import get_current_user
 
 file_router = APIRouter()
 

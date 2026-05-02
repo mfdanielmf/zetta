@@ -5,7 +5,7 @@ from app.main import app
 from app.models.exceptions import CarpetaNoEncontradaException
 from app.models.folder import Folder
 from app.models.user import User
-from app.services.auth_services import get_current_user
+from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
 from unittest.mock import patch
 from app.config import config

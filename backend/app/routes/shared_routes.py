@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
+from app.middleware.auth_middleware import get_current_user
 from app.database.db import get_db
 from app.models.archivo_compartido import ArchivoCompartido
 from app.models.carpeta_compartida import CarpetaCompartida
 from app.models.exceptions import ArchivoNoEncontradoException, CarpetaNoEncontradaException, PropietarioException, UsuarioNoEncontradoException, YaCompartidoException
 from app.models.user import User
 from app.schemas import shared_file_schemas, shared_folder_schemas, file_schemas, folder_schemas
-from app.services.auth_services import get_current_user
 from app.services import shared_file_services, shared_folder_services
 
 shared_router = APIRouter()

@@ -6,7 +6,7 @@ from app.models.archivo_compartido import ArchivoCompartido
 from app.models.user import User
 from app.schemas import shared_file_schemas
 from app.schemas.file_schemas import FileBase
-from app.services.auth_services import get_current_user
+from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
 from unittest.mock import patch
 

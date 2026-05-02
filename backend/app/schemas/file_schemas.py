@@ -33,3 +33,9 @@ class RestoreFileResponse(AddFileTrashResponse):
 
 class DeleteFilePermanentResponse(BaseModel):
     msg: str = "Archivo eliminado correctamente"
+
+class PaginatedFileResponse(BaseModel):
+    items: list[FileBase]
+    total: int
+    pagina: int
+    limite: int
