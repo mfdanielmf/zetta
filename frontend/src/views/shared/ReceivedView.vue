@@ -26,6 +26,7 @@ import {
   formatDateService,
   formatearTamañoService,
 } from '@/services/file.services'
+import { downloadFolderService } from '@/services/folder.services'
 
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
@@ -66,6 +67,10 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
 
 async function descargarArchivo(id: string, nombre: string) {
   await downloadFileService(id, nombre)
+}
+
+async function descargarCarpeta(id: string, nombre: string) {
+  await downloadFolderService(id, nombre)
 }
 </script>
 
@@ -122,7 +127,10 @@ async function descargarArchivo(id: string, nombre: string) {
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="descargarCarpeta(folder.carpeta.id, folder.carpeta.nombre_original)"
+                >
                   <Download />
                   Descargar
                 </DropdownMenuItem>
