@@ -26,7 +26,7 @@ def test_restaurar_archivo():
         usuario=usuario
     )
 
-    with patch("app.routes.file_routes.restaurar_archivo_papelera") as mock_restaurar:
+    with patch("app.routes.file_routes.file_services.restaurar_archivo_papelera") as mock_restaurar:
         mock_restaurar.return_value = archivo_fake
 
         response = client.put(f"/api/files/{archivo_fake.id}/restaurar")
@@ -50,7 +50,7 @@ def test_restaurar_archivo_id_no_encontrada():
 
     id_test: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.file_routes.restaurar_archivo_papelera") as mock_restaurar:
+    with patch("app.routes.file_routes.file_services.restaurar_archivo_papelera") as mock_restaurar:
         mock_restaurar.side_effect = ArchivoNoEncontradoException()
 
         response = client.put(f"/api/files/{id_test}/restaurar")

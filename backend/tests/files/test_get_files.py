@@ -43,7 +43,7 @@ def test_get_archivos_usuario_con_uploads():
         usuario=usuario
     )
 
-    with patch("app.routes.file_routes.obtener_archivos_usuario") as mock_obtener:
+    with patch("app.routes.file_routes.file_services.obtener_archivos_usuario") as mock_obtener:
         mock_obtener.return_value = [archivo_fake]
 
         response = client.get("/api/files")

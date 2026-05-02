@@ -50,8 +50,8 @@ def test_restaurar_carpeta_id_no_encontrada():
 
     id_test: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.file_routes.restaurar_archivo_papelera") as mock_restaurar:
-        mock_restaurar.side_effect = CarpetaNoEncontradaException()
+    with patch("app.routes.folder_routes.restaurar_carpeta_papelera") as mock_restaurar:
+        mock_restaurar.side_effect = CarpetaNoEncontradaException("No se ha encontrado la carpeta")
 
         response = client.put(f"/api/folders/{id_test}/restaurar")
 
@@ -59,6 +59,6 @@ def test_restaurar_carpeta_id_no_encontrada():
     json_response = response.json()
 
     assert json_response[
-        "detail"] == f"No se ha encontrado la carpeta con ID {id_test} en la papelera"
+        "detail"] == f"No se ha encontrado la carpeta"
 
     app.dependency_overrides.clear()

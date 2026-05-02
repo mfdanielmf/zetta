@@ -21,7 +21,7 @@ def test_subir_archivo():
     archivo_falso: File = File(id=id, nombre_original="test.txt", tamaño_bytes="20",
                                path=f"uploads/{id}.txt", fecha_creacion="2026-01-21T01:44:31.825198", id_usuario=id, usuario=usuario_falso)
 
-    with patch("app.routes.file_routes.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
+    with patch("app.routes.file_routes.file_services.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.return_value = archivo_falso
 
         response = client.post("/api/files", files={
@@ -63,7 +63,7 @@ def test_subir_varios_archivos():
 
     archivos_falsos = [archivo_falso, archivo_falso2]
 
-    with patch("app.routes.file_routes.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
+    with patch("app.routes.file_routes.file_services.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.side_effect = archivos_falsos
 
         response = client.post("/api/files", files=[
@@ -88,7 +88,7 @@ def test_subir_varios_archivos():
 def test_subir_archivo_nombre_usado():
     app.dependency_overrides[get_current_user] = override_get_current_user
 
-    with patch("app.routes.file_routes.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
+    with patch("app.routes.file_routes.file_services.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.side_effect = NombreYaUsadoException(
             "Ya hay un archivo con ese nombre")
 
@@ -105,7 +105,7 @@ def test_subir_archivo_nombre_usado():
 def test_subir_archivo_id_usada():
     app.dependency_overrides[get_current_user] = override_get_current_user
 
-    with patch("app.routes.file_routes.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
+    with patch("app.routes.file_routes.file_services.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.side_effect = IdYaUsadaException(
             "Ya se ha usado la ID. Vuelve a subir el archivo")
 
@@ -123,7 +123,7 @@ def test_subir_archivo_id_usada():
 def test_subir_archivo_id_usada():
     app.dependency_overrides[get_current_user] = override_get_current_user
 
-    with patch("app.routes.file_routes.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
+    with patch("app.routes.file_routes.file_services.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.side_effect = IdYaUsadaException(
             "Ya se ha usado la ID. Vuelve a subir el archivo")
 
@@ -141,7 +141,7 @@ def test_subir_archivo_id_usada():
 def test_subir_archivo_tamaño_excedido():
     app.dependency_overrides[get_current_user] = override_get_current_user
 
-    with patch("app.routes.file_routes.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
+    with patch("app.routes.file_routes.file_services.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.side_effect = TamañoExcedidoException(
             f"Has excedido el tamaño máximo de subida")
 
