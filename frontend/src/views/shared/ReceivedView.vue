@@ -46,7 +46,7 @@ const { data: dataCarpetas, isLoading: loadingCarpetasAnidadas } = useGetReceive
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
 
-  router.push({ name: 'carpetaCompartida', params: { id: idCarpeta } })
+  router.push({ name: 'carpetaRecibida', params: { id: idCarpeta } })
 }
 </script>
 

@@ -39,7 +39,7 @@ const mainBreadcrumb = computed(() => {
     return {
       name: 'recibidos',
       titulo: 'Recibidos',
-      nameDetalle: 'carpetaCompartida',
+      nameDetalle: 'carpetaRecibida',
     }
   }
 })
