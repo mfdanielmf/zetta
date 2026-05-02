@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useGetReceivedFiles } from '@/queries/useSharedFilesQuery'
-import { useGetSharedFoldersByMe } from '@/queries/useSharedFoldersQuery'
+import { useGetReceivedFolders } from '@/queries/useSharedFoldersQuery'
 
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { useFolderStore } from '@/stores/folder.store'
@@ -41,7 +41,7 @@ const noData = computed(() => {
 })
 
 const { data: dataArchivos, isLoading: loadingArchivos } = useGetReceivedFiles()
-const { data: dataCarpetas, isLoading: loadingCarpetasAnidadas } = useGetSharedFoldersByMe()
+const { data: dataCarpetas, isLoading: loadingCarpetasAnidadas } = useGetReceivedFolders()
 
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)

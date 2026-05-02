@@ -1,5 +1,6 @@
 import type { ShareFolderRequest } from '@/api/types/types'
 import {
+  getReceivedFoldersService,
   getSharedFoldersByMeService,
   shareFolderService,
 } from '@/services/shared/shared.folders.services'
@@ -36,5 +37,15 @@ export function useShareFolder() {
         toast.error('Error al compartir la carpeta')
       }
     },
+  })
+}
+
+export function useGetReceivedFolders() {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['carpetasRecibidas', authStore.usuario?.id],
+    queryFn: () => getReceivedFoldersService(),
+    enabled: !!authStore.usuario?.id,
   })
 }
