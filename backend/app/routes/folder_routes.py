@@ -1,6 +1,8 @@
+from io import BytesIO
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File as FileFA
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.database.db import get_db
@@ -11,7 +13,7 @@ from app.models.user import User
 from app.schemas.file_schemas import FileBase
 from app.services.file_services import obtener_archivos_carpeta, obtener_archivos_carpeta_papelera
 from app.services.auth_services import get_current_user
-from app.services.folder_services import crear_carpeta, eliminar_carpeta_permanente, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_papelera, obtener_carpetas_papelera_raiz, obtener_carpetas_carpeta_papelera
+from app.services.folder_services import crear_carpeta, descargar_carpeta, eliminar_carpeta_permanente, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_papelera, obtener_carpetas_papelera_raiz, obtener_carpetas_carpeta_papelera
 from app.schemas.folder_schemas import DeleteFolderPermanentResponse, FolderBase, FolderRequest, FolderResponse, RestoreFolderResponse, UploadFileFolderResponse, AddFolderTrashResponse
 
 folder_router = APIRouter()
@@ -143,7 +145,24 @@ def get_folders_inside_folder_on_trash(id_carpeta: UUID, usuario: User = Depends
         ]
     except CarpetaNoEncontradaException:
         raise HTTPException(
-            404, f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera")
+            404, detail=f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera")
+
+
+@folder_router.get("/{id_carpeta}")
+def download_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        buffer, carpeta = descargar_carpeta(
+            id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+        return StreamingResponse(
+            content=buffer,
+            media_type="application/zip",
+            headers={
+                "Content-Disposition": f'attachment; filename="{carpeta.nombre_original}.zip"'
+            }
+        )
+    except CarpetaNoEncontradaException as e1:
+        raise HTTPException(404, detail=str(e1))
 
 
 @folder_router.delete("/{id_carpeta}", response_model=AddFolderTrashResponse)
