@@ -36,7 +36,7 @@ def test_get_archivo_papelera():
         usuario=usuario
     )
 
-    with patch("app.routes.file_routes.obtener_archivos_papelera_raiz") as mock_obtener:
+    with patch("app.routes.file_routes.file_services.obtener_archivos_papelera_raiz") as mock_obtener:
         mock_obtener.return_value = [archivo_fake]
 
         response = client.get("/api/files/trash")
@@ -80,7 +80,7 @@ def test_get_archivos_multiples_papelera():
 
     archivos_falsos = [archivo_fake, archivo_fake2]
 
-    with patch("app.routes.file_routes.obtener_archivos_papelera_raiz") as mock_obtener:
+    with patch("app.routes.file_routes.file_services.obtener_archivos_papelera_raiz") as mock_obtener:
         mock_obtener.return_value = archivos_falsos
 
         response = client.get("/api/files/trash")

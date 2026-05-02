@@ -14,7 +14,7 @@ def test_eliminar_archivo_permanente_success():
 
     id_archivo: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.file_routes.eliminar_archivo_permanente") as mock_delete:
+    with patch("app.routes.file_routes.file_services.eliminar_archivo_permanente") as mock_delete:
         mock_delete.return_value = None
 
         response = client.delete(f"/api/files/trash/{id_archivo}")
@@ -32,7 +32,7 @@ def test_eliminar_archivo_permanente_no_existente():
 
     id_archivo: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.file_routes.eliminar_archivo_permanente") as mock_delete:
+    with patch("app.routes.file_routes.file_services.eliminar_archivo_permanente") as mock_delete:
         mock_delete.side_effect = ArchivoNoEncontradoException()
 
         response = client.delete(f"/api/files/trash/{id_archivo}")
@@ -50,7 +50,7 @@ def test_eliminar_archivo_permanente_error_disco():
 
     archivo_id: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.file_routes.eliminar_archivo_permanente") as mock_delete:
+    with patch("app.routes.file_routes.file_services.eliminar_archivo_permanente") as mock_delete:
         mock_delete.side_effect = EliminarDiscoException(
             "Error al eliminar el archivo del disco")
 

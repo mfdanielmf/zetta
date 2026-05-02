@@ -25,7 +25,7 @@ def test_añadir_archivo_papelera_success():
         usuario=usuario
     )
 
-    with patch("app.routes.file_routes.añadir_archivo_papelera") as mock_añadir:
+    with patch("app.routes.file_routes.file_services.añadir_archivo_papelera") as mock_añadir:
         mock_añadir.return_value = archivo
 
         response = client.delete(f"/api/files/{archivo.id}")
@@ -46,7 +46,7 @@ def test_añadir_papelera_archivo_no_encontrado():
 
     id_test: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.file_routes.añadir_archivo_papelera") as mock_añadir:
+    with patch("app.routes.file_routes.file_services.añadir_archivo_papelera") as mock_añadir:
         mock_añadir.side_effect = ArchivoNoEncontradoException()
 
         response = client.delete(f"/api/files/{id_test}")
@@ -64,7 +64,7 @@ def test_añadir_papelera_archivo_que_ya_estaba():
 
     id_test: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.file_routes.añadir_archivo_papelera") as mock_añadir:
+    with patch("app.routes.file_routes.file_services.añadir_archivo_papelera") as mock_añadir:
         mock_añadir.side_effect = ArchivoPapeleraException()
 
         response = client.delete(f"/api/files/{id_test}")

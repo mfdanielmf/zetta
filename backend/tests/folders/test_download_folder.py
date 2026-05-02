@@ -32,7 +32,7 @@ def test_descargar_carpeta_existente():
         usuario=usuario
     )
 
-    with patch("app.routes.folder_routes.descargar_carpeta") as mock_descargar:
+    with patch("app.routes.folder_routes.folder_services.descargar_carpeta") as mock_descargar:
         mock_descargar.return_value = (buffer_falso, carpeta_falsa)
 
         response = client.get(f"/api/folders/{id_carpeta}")
@@ -52,7 +52,7 @@ def test_descargar_carpeta_no_encontrada():
     app.dependency_overrides[get_current_user] = override_get_current_user
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.descargar_carpeta") as mock_guardar:
+    with patch("app.routes.folder_routes.folder_services.descargar_carpeta") as mock_guardar:
         mock_guardar.side_effect = CarpetaNoEncontradaException(
             f"No se ha encontrado la carpeta con id {id_carpeta}")
 

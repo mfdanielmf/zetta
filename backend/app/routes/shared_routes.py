@@ -5,7 +5,7 @@ from app.middleware.auth_middleware import get_current_user
 from app.database.db import get_db
 from app.models.archivo_compartido import ArchivoCompartido
 from app.models.carpeta_compartida import CarpetaCompartida
-from app.models.exceptions import ArchivoNoEncontradoException, CarpetaNoEncontradaException, PropietarioException, UsuarioNoEncontradoException, YaCompartidoException
+from app.models import exceptions as ex
 from app.models.user import User
 from app.schemas import shared_file_schemas, shared_folder_schemas, file_schemas, folder_schemas
 from app.services import shared_file_services, shared_folder_services
@@ -45,13 +45,13 @@ def share_file_with_user(req: shared_file_schemas.ShareFileRequest, usuario: Use
             }
         }
 
-    except UsuarioNoEncontradoException as e1:
+    except ex.UsuarioNoEncontradoException as e1:
         raise HTTPException(404, detail=str(e1))
-    except ArchivoNoEncontradoException as e2:
+    except ex.ArchivoNoEncontradoException as e2:
         raise HTTPException(404, detail=str(e2))
-    except PropietarioException as e3:
+    except ex.PropietarioException as e3:
         raise HTTPException(400, detail=str(e3))
-    except YaCompartidoException as e4:
+    except ex.YaCompartidoException as e4:
         raise HTTPException(409, detail=str(e4))
 
 
@@ -86,13 +86,13 @@ def share_folder_with_user(req: shared_folder_schemas.ShareFolderRequest, usuari
             }
         }
 
-    except UsuarioNoEncontradoException as e1:
+    except ex.UsuarioNoEncontradoException as e1:
         raise HTTPException(404, detail=str(e1))
-    except CarpetaNoEncontradaException as e2:
+    except ex.CarpetaNoEncontradaException as e2:
         raise HTTPException(404, detail=str(e2))
-    except PropietarioException as e3:
+    except ex.PropietarioException as e3:
         raise HTTPException(400, detail=str(e3))
-    except YaCompartidoException as e4:
+    except ex.YaCompartidoException as e4:
         raise HTTPException(409, detail=str(e4))
 
 

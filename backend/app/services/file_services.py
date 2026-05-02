@@ -5,15 +5,15 @@ import uuid
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
-from app.models.exceptions import ArchivoPapeleraException, CarpetaNoEncontradaException, EliminarDiscoException, TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
+from app.models import exceptions as ex
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories.file_repo import delete_file, get_file_by_id, insert_file_db, get_file_by_id_and_user, get_file_by_name_in_folder, update_file, get_file_trash, get_all_files_trash_raiz, get_files_raiz
 from app.repositories import shared_file_repo
+from app.repositories import file_repo
+from app.services import folder_services
 
 from app.config import config
-from app.services.folder_services import obtener_carpeta_papelera, obtener_carpeta_usuario_permisos
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -24,11 +24,11 @@ def obtener_archivo_id(id: uuid.UUID, usuario: User, db: Session) -> File:
     """
     ArchivoNoEncontradoException
     """
-    archivo: File | None = get_file_by_id_and_user(
+    archivo: File | None = file_repo.get_file_by_id_and_user(
         id=id, usuario=usuario, db=db)
 
     if not archivo:
-        raise ArchivoNoEncontradoException(
+        raise ex.ArchivoNoEncontradoException(
             f"No se ha encontrado el archivo con id {id}")
 
     return archivo
@@ -38,18 +38,18 @@ def obtener_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session) 
     """
     ArchivoNoEncontradoException
     """
-    archivo: File | None = get_file_trash(
+    archivo: File | None = file_repo.get_file_trash(
         id_archivo=id_archivo, id_usuario=usuario.id, db=db)
 
     if not archivo:
-        raise ArchivoNoEncontradoException(
+        raise ex.ArchivoNoEncontradoException(
             f"No se ha encontrado el archivo con id {id_archivo}")
 
     return archivo
 
 
 def obtener_archivos_papelera_raiz(usuario: User, db: Session) -> list[File]:
-    return get_all_files_trash_raiz(id_usuario=usuario.id, db=db)
+    return file_repo.get_all_files_trash_raiz(id_usuario=usuario.id, db=db)
 
 
 async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -> File:
@@ -59,7 +59,7 @@ async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -
     data = await file_upload.read()
 
     if len(data) > TAMAÑO_LIMITE:
-        raise TamañoExcedidoException(
+        raise ex.TamañoExcedidoException(
             f"Has excedido el tamaño máximo de subida")
 
     archivo_db, file_path = añadir_archivo_db(
@@ -77,15 +77,15 @@ def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario:
     """
 
     # Si hay un archivo con el mismo nombre en la raiz (no tiene id_carpeta), salimos
-    if get_file_by_name_in_folder(nombre_original=nombre_original, usuario=usuario, db=db):
-        raise NombreYaUsadoException(
+    if file_repo.get_file_by_name_in_folder(nombre_original=nombre_original, usuario=usuario, db=db):
+        raise ex.NombreYaUsadoException(
             f"Ya hay un archivo con el nombre '{nombre_original}'. Cambia el nombre")
 
     id: uuid.UUID = uuid.uuid4()
 
     # Por si se genera un UUID ya usado
-    if get_file_by_id(id_archivo=id, db=db):
-        raise IdYaUsadaException(
+    if file_repo.get_file_by_id(id_archivo=id, db=db):
+        raise ex.IdYaUsadaException(
             f"Ya se ha usado la ID {id}. Vuelve a subir el archivo")
 
     extension = nombre_original.split(".").pop()  # png, jpg, txt...
@@ -99,20 +99,20 @@ def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario:
     archivo: File = File(id=id, nombre_original=nombre_original,
                          path=str(file_path), id_usuario=usuario.id, tamaño_bytes=tamaño)
 
-    archivo_db: File = insert_file_db(archivo=archivo, db=db)
+    archivo_db: File = file_repo.insert_file_db(archivo=archivo, db=db)
 
     return archivo_db, file_path
 
 
 def obtener_archivos_usuario(usuario: User, db: Session) -> list[File]:
-    return get_files_raiz(id_usuario=usuario.id, db=db)
+    return file_repo.get_files_raiz(id_usuario=usuario.id, db=db)
 
 
 def obtener_archivos_carpeta(id_carpeta: uuid.UUID, db: Session, usuario: User) -> list[File]:
     """
     CarpetaNoEncontradaException
     """
-    carpeta: Folder = obtener_carpeta_usuario_permisos(
+    carpeta: Folder = folder_services.obtener_carpeta_usuario_permisos(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
     return carpeta.archivos
@@ -122,13 +122,13 @@ def añadir_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session) 
     """
     ArchivoNoEncontradoException, ArchivoPapeleraException
     """
-    if get_file_trash(id_archivo=id_archivo, id_usuario=usuario.id, db=db):
-        raise ArchivoPapeleraException()
+    if file_repo.get_file_trash(id_archivo=id_archivo, id_usuario=usuario.id, db=db):
+        raise ex.ArchivoPapeleraException()
 
     archivo: File = obtener_archivo_id(id=id_archivo, db=db, usuario=usuario)
     archivo.fecha_eliminacion = datetime.now(timezone.utc)
 
-    return update_file(archivo=archivo, db=db)
+    return file_repo.update_file(archivo=archivo, db=db)
 
 
 def restaurar_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session) -> File:
@@ -139,14 +139,14 @@ def restaurar_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session
         id_archivo=id_archivo, db=db, usuario=usuario)
     archivo.fecha_eliminacion = None
 
-    return update_file(archivo=archivo, db=db)
+    return file_repo.update_file(archivo=archivo, db=db)
 
 
 def obtener_archivos_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) -> list[File]:
     """
     CarpetaNoEncontradaException
     """
-    carpeta: Folder = obtener_carpeta_papelera(
+    carpeta: Folder = folder_services.obtener_carpeta_papelera(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
     return carpeta.archivos
@@ -165,19 +165,19 @@ def eliminar_archivo_permanente(id_archivo: uuid.UUID, usuario: User, db: Sessio
         if os.path.exists(path):
             os.remove(path)
     except Exception:
-        raise EliminarDiscoException("Error al eliminar el archivo del disco")
+        raise ex.EliminarDiscoException("Error al eliminar el archivo del disco")
 
-    delete_file(archivo=archivo, db=db)
+    file_repo.delete_file(archivo=archivo, db=db)
 
 
 def obtener_archivo_permisos(id_archivo: uuid.UUID, usuario: User, db: Session) -> File:
     """
     ArchivoNoEncontradoException
     """
-    archivo: File | None = get_file_by_id(id_archivo=id_archivo, db=db)
+    archivo: File | None = file_repo.get_file_by_id(id_archivo=id_archivo, db=db)
 
     if not archivo:
-        raise ArchivoNoEncontradoException(
+        raise ex.ArchivoNoEncontradoException(
             f"No se ha encontrado el archivo con id {id}")
 
     if archivo.id_usuario == usuario.id:
@@ -189,14 +189,14 @@ def obtener_archivo_permisos(id_archivo: uuid.UUID, usuario: User, db: Session) 
     # Miramos si el archivo está dentro de una carpeta compartida
     try:
         if archivo.id_carpeta:
-            obtener_carpeta_usuario_permisos(
+            folder_services.obtener_carpeta_usuario_permisos(
                 id_carpeta=archivo.id_carpeta, usuario=usuario, db=db)
 
             # Si la carpeta no lanza excepción, tiene permisos
             return archivo
-    except CarpetaNoEncontradaException:
-        raise ArchivoNoEncontradoException(
+    except ex.CarpetaNoEncontradaException:
+        raise ex.ArchivoNoEncontradoException(
             f"No se ha encontrado el archivo con id {id_archivo}")
 
-    raise ArchivoNoEncontradoException(
+    raise ex.ArchivoNoEncontradoException(
         f"No se ha encontrado el archivo con id {id_archivo}")

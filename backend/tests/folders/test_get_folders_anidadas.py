@@ -17,7 +17,7 @@ def test_get_anidadas_carpeta_no_existente():
     app.dependency_overrides[get_current_user] = override_get_current_user
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.obtener_carpetas_dentro_carpeta") as mock_obtener:
+    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_dentro_carpeta") as mock_obtener:
         mock_obtener.side_effect = CarpetaNoEncontradaException()
 
         response = client.get(f"/api/folders/{id_carpeta}/folders")
@@ -34,7 +34,7 @@ def test_get_anidadas_sin_carpetas():
 
     random_id: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.obtener_carpetas_dentro_carpeta") as mock_obtener:
+    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_dentro_carpeta") as mock_obtener:
         mock_obtener.return_value = []
 
         response = client.get(f"/api/folders/{random_id}/folders")
@@ -63,7 +63,7 @@ def test_get_anidadas_con_una_carpeta():
         id_carpeta=random_id
     )
 
-    with patch("app.routes.folder_routes.obtener_carpetas_dentro_carpeta") as mock_obtener:
+    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_dentro_carpeta") as mock_obtener:
         mock_obtener.return_value = [carpeta_falsa]
 
         response = client.get(f"/api/folders/{random_id}/folders")
@@ -111,7 +111,7 @@ def test_get_anidadas_con_varias_carpetas():
 
     carpetas_falsas = [carpeta_falsa, carpeta_falsa2]
 
-    with patch("app.routes.folder_routes.obtener_carpetas_dentro_carpeta") as mock_obtener:
+    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_dentro_carpeta") as mock_obtener:
         mock_obtener.return_value = carpetas_falsas
 
         response = client.get(f"/api/folders/{random_id}/folders")
