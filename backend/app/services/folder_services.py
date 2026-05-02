@@ -363,13 +363,25 @@ def obtener_carpetas_papelera_raiz_paginadas(usuario: User, db: Session, pagina:
     return folder_repo.get_all_folders_trash_raiz_paginadas(id_usuario=usuario.id, db=db, offset=offset, limit=limite)
 
 
-def obtener_carpetas_carpeta_papelera_paginada(id_carpeta: uuid.UUID, usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[Folder]]:
+def obtener_carpetas_carpeta_papelera_paginadas(id_carpeta: uuid.UUID, usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[Folder]]:
     """
     CarpetaNoEncontradaException
     """
-    offset = (pagina - 1) * limite
-
     carpeta: Folder = obtener_carpeta_papelera(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+    offset = (pagina - 1) * limite
+
+    return folder_repo.get_folders_inside_folder_paginadas(id_carpeta=carpeta.id, id_usuario=usuario.id, db=db, offset=offset, limit=limite)
+
+
+def obtener_carpetas_dentro_carpeta_paginadas(id_carpeta_padre: uuid.UUID, usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[Folder]]:
+    """
+    CarpetaNoEncontradaException
+    """
+    carpeta: Folder = obtener_carpeta_usuario_permisos(
+        id_carpeta=id_carpeta_padre, usuario=usuario, db=db)
+
+    offset = (pagina - 1) * limite
 
     return folder_repo.get_folders_inside_folder_paginadas(id_carpeta=carpeta.id, id_usuario=usuario.id, db=db, offset=offset, limit=limite)

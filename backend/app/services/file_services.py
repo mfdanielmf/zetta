@@ -225,4 +225,16 @@ def obtener_archivos_carpeta_papelera_paginados(id_carpeta: uuid.UUID, usuario: 
 
     offset = (pagina - 1) * limite
 
-    return file_repo.get_all_files_in_folder_trash_paginados(id_carpeta=carpeta.id, db=db, id_usuario=usuario.id, offset=offset, limit=limite)
+    return file_repo.get_all_files_in_folder_paginados(id_carpeta=carpeta.id, db=db, id_usuario=usuario.id, offset=offset, limit=limite)
+
+
+def obtener_archivos_carpeta_paginados(id_carpeta: uuid.UUID, db: Session, usuario: User, pagina: int, limite: int) -> tuple[int, list[File]]:
+    """
+    CarpetaNoEncontradaException
+    """
+    carpeta: Folder = folder_services.obtener_carpeta_usuario_permisos(
+        id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+    offset = (pagina - 1) * limite
+
+    return file_repo.get_all_files_in_folder_paginados(id_carpeta=carpeta.id, db=db, id_usuario=usuario.id, offset=offset, limit=limite)

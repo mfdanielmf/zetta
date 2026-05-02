@@ -151,7 +151,7 @@ def get_folders_inside_folder_on_trash(id_carpeta: UUID, usuario: User = Depends
     pagina, limite = paginacion
 
     try:
-        total, carpetas = folder_services.obtener_carpetas_carpeta_papelera_paginada(
+        total, carpetas = folder_services.obtener_carpetas_carpeta_papelera_paginadas(
             id_carpeta=id_carpeta, usuario=usuario, db=db, pagina=pagina, limite=limite)
 
         return {
@@ -243,26 +243,33 @@ def restore_folder_from_trash(id_carpeta: UUID, usuario: User = Depends(get_curr
         raise HTTPException(404, str(e1))
 
 
-@folder_router.get("/{id_carpeta}/files", response_model=list[FileBase])
-def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
-    try:
-        archivos: list[File] = file_services.obtener_archivos_carpeta(
-            db=db, id_carpeta=id_carpeta, usuario=usuario)
+@folder_router.get("/{id_carpeta}/files", response_model=file_schemas.PaginatedFileResponse)
+def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user), paginacion: tuple[int, int] = Depends(get_pagination)):
+    pagina, limite = paginacion
 
-        return [
-            FileBase(
-                id=archivo.id,
-                nombre_original=archivo.nombre_original,
-                path=archivo.path,
-                tamaño_bytes=archivo.tamaño_bytes,
-                fecha_creacion=archivo.fecha_creacion,
-                id_usuario=archivo.id_usuario,
-                nombre_usuario=archivo.usuario.nombre,
-                id_carpeta=archivo.id_carpeta,
-                fecha_eliminacion=archivo.fecha_eliminacion
-            )
-            for archivo in archivos
-        ]
+    try:
+        total, archivos = file_services.obtener_archivos_carpeta_paginados(
+            id_carpeta=id_carpeta, db=db, usuario=usuario, pagina=pagina, limite=limite)
+
+        return {
+            "items": [
+                file_schemas.FileBase(
+                    id=archivo_db.id,
+                    nombre_original=archivo_db.nombre_original,
+                    path=archivo_db.path,
+                    tamaño_bytes=archivo_db.tamaño_bytes,
+                    fecha_creacion=archivo_db.fecha_creacion,
+                    id_usuario=archivo_db.id_usuario,
+                    nombre_usuario=archivo_db.usuario.nombre,
+                    id_carpeta=archivo_db.id_carpeta,
+                    fecha_eliminacion=archivo_db.fecha_eliminacion
+                )
+                for archivo_db in archivos
+            ],
+            "total": total,
+            "pagina": pagina,
+            "limite": limite
+        }
     except ex.CarpetaNoEncontradaException:
         raise HTTPException(
             404, f"No se ha encontrado la carpeta con id {id_carpeta}")
@@ -301,25 +308,32 @@ async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] 
         raise HTTPException(409, str(e3))
 
 
-@folder_router.get("/{id_carpeta}/folders", response_model=list[folder_schemas.FolderBase])
-def get_folders_of_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    try:
-        carpetas: list[Folder] = folder_services.obtener_carpetas_dentro_carpeta(
-            id_carpeta_padre=id_carpeta, usuario=usuario, db=db)
+@folder_router.get("/{id_carpeta}/folders", response_model=folder_schemas.PaginatedFolderResponse)
+def get_folders_of_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+    pagina, limite = paginacion
 
-        return [
-            folder_schemas.FolderBase(
-                id=carpeta.id,
-                nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
-                fecha_creacion=carpeta.fecha_creacion,
-                id_usuario=carpeta.id_usuario,
-                nombre_usuario=carpeta.usuario.nombre,
-                id_carpeta=carpeta.id_carpeta,
-                fecha_eliminacion=carpeta.fecha_eliminacion
-            )
-            for carpeta in carpetas
-        ]
+    try:
+        total, carpetas = folder_services.obtener_carpetas_dentro_carpeta_paginadas(
+            id_carpeta_padre=id_carpeta, usuario=usuario, db=db, pagina=pagina, limite=limite)
+
+        return {
+            "items": [
+                folder_schemas.FolderBase(
+                    id=carpeta.id,
+                    nombre_original=carpeta.nombre_original,
+                    path=carpeta.path,
+                    fecha_creacion=carpeta.fecha_creacion,
+                    id_usuario=carpeta.id_usuario,
+                    nombre_usuario=carpeta.usuario.nombre,
+                    id_carpeta=carpeta.id_carpeta,
+                    fecha_eliminacion=carpeta.fecha_eliminacion
+                )
+                for carpeta in carpetas
+            ],
+            "total": total,
+            "pagina": pagina,
+            "limite": limite
+        }
     except ex.CarpetaNoEncontradaException:
         raise HTTPException(
             404, f"No se ha encontrado la carpeta con id {id_carpeta}")
