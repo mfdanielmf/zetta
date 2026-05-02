@@ -31,18 +31,24 @@ def test_obtener_archivos_carpeta_papelera():
         usuario=usuario
     )
 
-    with patch("app.routes.folder_routes.file_services.obtener_archivos_carpeta_papelera") as mock_obtener:
-        mock_obtener.return_value = [archivo_falso]
+    with patch("app.routes.folder_routes.file_services.obtener_archivos_carpeta_papelera_paginados") as mock_obtener:
+        mock_obtener.return_value = (1, [archivo_falso])
 
-        response = client.get(f"/api/folders/trash/{id_carpeta}/files")
+        response = client.get(
+            f"/api/folders/trash/{id_carpeta}/files?page=1&limit=25")
 
     assert response.status_code == 200
-    assert len(response.json()) == 1
-    json_response = response.json()[0]
 
-    assert json_response["id"] == str(id_archivo)
-    assert json_response["id_usuario"] == str(usuario.id)
-    assert json_response["id_carpeta"] == str(id_carpeta)
+    json_response = response.json()
+
+    assert json_response["total"] == 1
+    assert len(json_response["items"]) == 1
+
+    item = json_response["items"][0]
+
+    assert item["id"] == str(id_archivo)
+    assert item["id_usuario"] == str(usuario.id)
+    assert item["id_carpeta"] == str(id_carpeta)
 
     app.dependency_overrides.clear()
 
@@ -51,10 +57,11 @@ def test_obtener_archivos_carpeta_que_no_esta_en_papelera():
     app.dependency_overrides[get_current_user] = override_get_current_user
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.file_services.obtener_archivos_carpeta_papelera") as mock_guardar:
+    with patch("app.routes.folder_routes.file_services.obtener_archivos_carpeta_papelera_paginados") as mock_guardar:
         mock_guardar.side_effect = CarpetaNoEncontradaException()
 
-        response = client.get(f"/api/folders/trash/{id_carpeta}/files")
+        response = client.get(
+            f"/api/folders/trash/{id_carpeta}/files?page=1&limit=25")
 
     assert response.status_code == 404
     assert response.json()[
@@ -67,12 +74,17 @@ def test_obtener_archivos_carpeta_papelera_vacia():
     app.dependency_overrides[get_current_user] = override_get_current_user
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    with patch("app.routes.folder_routes.file_services.obtener_archivos_carpeta_papelera") as mock_guardar:
-        mock_guardar.return_value = []
+    with patch("app.routes.folder_routes.file_services.obtener_archivos_carpeta_papelera_paginados") as mock_guardar:
+        mock_guardar.return_value = (0, [])
 
-        response = client.get(f"/api/folders/trash/{id_carpeta}/files")
+        response = client.get(
+            f"/api/folders/trash/{id_carpeta}/files?page=1&limit=25")
 
     assert response.status_code == 200
-    assert len(response.json()) == 0
+
+    json_response = response.json()
+
+    assert json_response["items"] == []
+    assert json_response["total"] == 0
 
     app.dependency_overrides.clear()
