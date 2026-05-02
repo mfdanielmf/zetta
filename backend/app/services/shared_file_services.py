@@ -78,9 +78,6 @@ def obtener_archivos_recibidos(usuario: User, db: Session) -> list[sfs.ArchivoCo
     recibidos_base: list[sfs.ArchivoCompartidoBase] = []
 
     for a in archivos_recibidos:
-        print(a.archivo.nombre_original)
-        print(a.propietario.nombre)
-
         archivo_base: FileBase = FileBase(
             id=a.archivo.id,
             nombre_original=a.archivo.nombre_original,
