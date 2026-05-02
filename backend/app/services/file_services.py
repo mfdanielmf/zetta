@@ -5,11 +5,12 @@ import uuid
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
-from app.models.exceptions import ArchivoPapeleraException, EliminarDiscoException, TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
+from app.models.exceptions import ArchivoPapeleraException, CarpetaNoEncontradaException, EliminarDiscoException, TamañoExcedidoException, ArchivoNoEncontradoException, IdYaUsadaException, NombreYaUsadoException
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.repositories.file_repo import delete_file, get_file_by_id, insert_file_db, get_file_by_id_and_user, get_file_by_name_in_folder, update_file, get_file_trash, get_all_files_trash_raiz, get_files_raiz
+from app.repositories import shared_file_repo
 
 from app.config import config
 from app.services.folder_services import obtener_carpeta_papelera, obtener_carpeta_usuario_permisos
@@ -167,3 +168,35 @@ def eliminar_archivo_permanente(id_archivo: uuid.UUID, usuario: User, db: Sessio
         raise EliminarDiscoException("Error al eliminar el archivo del disco")
 
     delete_file(archivo=archivo, db=db)
+
+
+def obtener_archivo_permisos(id_archivo: uuid.UUID, usuario: User, db: Session) -> File:
+    """
+    ArchivoNoEncontradoException
+    """
+    archivo: File | None = get_file_by_id(id_archivo=id_archivo, db=db)
+
+    if not archivo:
+        raise ArchivoNoEncontradoException(
+            f"No se ha encontrado el archivo con id {id}")
+
+    if archivo.id_usuario == usuario.id:
+        return archivo
+
+    if shared_file_repo.get_shared_file(id_archivo=id_archivo, id_receptor=usuario.id, db=db):
+        return archivo
+
+    # Miramos si el archivo está dentro de una carpeta compartida
+    try:
+        if archivo.id_carpeta:
+            obtener_carpeta_usuario_permisos(
+                id_carpeta=archivo.id_carpeta, usuario=usuario, db=db)
+
+            # Si la carpeta no lanza excepción, tiene permisos
+            return archivo
+    except CarpetaNoEncontradaException:
+        raise ArchivoNoEncontradoException(
+            f"No se ha encontrado el archivo con id {id_archivo}")
+
+    raise ArchivoNoEncontradoException(
+        f"No se ha encontrado el archivo con id {id_archivo}")
