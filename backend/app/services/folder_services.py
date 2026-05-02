@@ -13,6 +13,7 @@ from app.models.exceptions import EliminarDiscoException, IdYaUsadaException, No
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
+from app.repositories import shared_folder_repo
 from app.repositories.folder_repo import add_folder, delete_folder, get_folder_id_user, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz, get_folders_inside_folder, get_folder_nombre_raiz, get_folder_trash, update_folder, get_all_folders_trash_raiz
 from app.repositories.file_repo import insert_file_db, get_file_by_name_in_folder
 
@@ -279,3 +280,24 @@ def eliminar_carpeta_permanente(id_carpeta: uuid.UUID, usuario: User, db: Sessio
         raise EliminarDiscoException("Error al eliminar la carpeta del disco")
 
     delete_folder(carpeta=carpeta, db=db)
+
+
+def obtener_carpeta_usuario_permisos(id_carpeta: str, usuario: User, db: Session) -> Folder:
+    """
+    CarpetaNoEncontradaException
+    """
+    carpeta: Folder | None = get_folder_id(id_carpeta=id_carpeta, db=db)
+
+    if not carpeta:
+        raise CarpetaNoEncontradaException(
+            f"No se ha encontrado la carpeta con id {id_carpeta}")
+
+    # Devolvemos la carpeta si el usuario es el propietario o la carpeta está compartida con él
+    if carpeta.id_usuario == usuario.id:
+        return carpeta
+
+    if shared_folder_repo.get_shared_folder(id_carpeta=id_carpeta, id_receptor=usuario.id, db=db):
+        return carpeta
+
+    raise CarpetaNoEncontradaException(
+        f"No se ha encontrado la carpeta con id {id_carpeta}")
