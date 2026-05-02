@@ -83,3 +83,15 @@ def get_all_files_trash_raiz_paginados(id_usuario: uuid.UUID, db: Session, offse
         File.fecha_creacion.desc()).offset(offset).limit(limit).all()
 
     return total, archivos
+
+
+def get_all_files_in_folder_trash_paginados(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, offset: int, limit: int) -> tuple[int, list[File]]:
+    query = db.query(File).filter(File.id_carpeta == id_carpeta,
+                                  File.id_usuario == id_usuario, File.fecha_eliminacion != None)
+
+    total: int = query.count()
+
+    archivos: list[File] = query.order_by(
+        File.fecha_creacion.desc()).offset(offset).limit(limit).all()
+
+    return total, archivos

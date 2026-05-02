@@ -3,8 +3,6 @@ from uuid import UUID
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.archivo_compartido import ArchivoCompartido
-from app.models.file import File
-from app.models.user import User
 
 
 def add_shared_file_db(archivo_compartido: ArchivoCompartido, db: Session) -> ArchivoCompartido:
