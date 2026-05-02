@@ -200,3 +200,8 @@ def obtener_archivo_permisos(id_archivo: uuid.UUID, usuario: User, db: Session) 
 
     raise ex.ArchivoNoEncontradoException(
         f"No se ha encontrado el archivo con id {id_archivo}")
+
+def obtener_archivos_usuario_paginados(usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[File]]:
+    offset: int = (pagina - 1) * limite
+
+    return file_repo.get_files_raiz_paginados(id_usuario=usuario.id, db=db, offset=offset, limit=limite)
