@@ -355,3 +355,9 @@ def obtener_carpetas_usuario_raiz_paginadas(usuario: User, db: Session, pagina: 
     offset = (pagina - 1) * limite
 
     return folder_repo.get_folders_user_raiz_paginadas(id_usuario=usuario.id, db=db, offset=offset, limit=limite)
+
+
+def obtener_carpetas_papelera_raiz_paginadas(usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[Folder]]:
+    offset = (pagina - 1) * limite
+
+    return folder_repo.get_all_folders_trash_raiz_paginadas(id_usuario=usuario.id, db=db, offset=offset, limit=limite)

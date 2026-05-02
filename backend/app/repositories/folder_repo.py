@@ -76,3 +76,15 @@ def get_folders_user_raiz_paginadas(id_usuario: uuid.UUID, db: Session, offset: 
         Folder.fecha_creacion.desc()).offset(offset).limit(limit).all()
 
     return total, carpetas
+
+
+def get_all_folders_trash_raiz_paginadas(id_usuario: uuid.UUID, db: Session, offset: int, limit: int) -> tuple[int, list[Folder]]:
+    query = db.query(Folder).filter(Folder.id_usuario == id_usuario,
+                                    Folder.fecha_eliminacion != None, Folder.id_carpeta == None)
+
+    total = query.count()
+
+    carpetas: list[Folder] = query.order_by(
+        Folder.fecha_creacion.desc()).offset(offset).limit(limit).all()
+
+    return total, carpetas

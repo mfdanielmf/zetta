@@ -1,4 +1,3 @@
-from io import BytesIO
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File as FileFA
@@ -70,24 +69,31 @@ def create_folder(req: folder_schemas.FolderRequest, db: Session = Depends(get_d
         raise HTTPException(409, str(e2))
 
 
-@folder_router.get("/trash", response_model=list[folder_schemas.FolderBase])
-def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    carpetas: list[Folder] = folder_services.obtener_carpetas_papelera_raiz(
-        usuario=usuario, db=db)
+@folder_router.get("/trash", response_model=folder_schemas.PaginatedFolderResponse)
+def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+    pagina, limite = paginacion
 
-    return [
-        folder_schemas.FolderBase(
-            id=carpeta.id,
-            nombre_original=carpeta.nombre_original,
-            path=carpeta.path,
-            fecha_creacion=carpeta.fecha_creacion,
-            id_usuario=carpeta.id_usuario,
-            nombre_usuario=carpeta.usuario.nombre,
-            id_carpeta=carpeta.id_carpeta,
-            fecha_eliminacion=carpeta.fecha_eliminacion
-        )
-        for carpeta in carpetas
-    ]
+    total, carpetas = folder_services.obtener_carpetas_papelera_raiz_paginadas(
+        usuario=usuario, db=db, pagina=pagina, limite=limite)
+
+    return {
+        "items": [
+            folder_schemas.FolderBase(
+                id=carpeta.id,
+                nombre_original=carpeta.nombre_original,
+                path=carpeta.path,
+                fecha_creacion=carpeta.fecha_creacion,
+                id_usuario=carpeta.id_usuario,
+                nombre_usuario=carpeta.usuario.nombre,
+                id_carpeta=carpeta.id_carpeta,
+                fecha_eliminacion=carpeta.fecha_eliminacion
+            )
+            for carpeta in carpetas
+        ],
+        "total": total,
+        "pagina": pagina,
+        "limite": limite
+    }
 
 
 @folder_router.delete("/trash/{id_carpeta}", response_model=folder_schemas.DeleteFolderPermanentResponse)
