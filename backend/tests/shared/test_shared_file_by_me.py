@@ -47,24 +47,30 @@ def test_archivos_compartidos_por_mi_success():
         archivo=archivo_falso
     )
 
-    with patch("app.routes.shared_routes.shared_file_services.obtener_archivos_compartidos") as mock_compartidos:
-        mock_compartidos.return_value = [archivo_compartido]
+    with patch("app.routes.shared_routes.shared_file_services.obtener_archivos_compartidos_paginados") as mock_compartidos:
+        mock_compartidos.return_value = (1, [archivo_compartido])
 
-        response = client.get("/api/shared/sent/files")
+        response = client.get("/api/shared/sent/files?page=1&limit=25")
 
     resp_json = response.json()
     assert response.status_code == 200
 
-    assert len(resp_json) == 1
-    assert resp_json[0]["propietario"]["id"] == str(usuario.id)
-    assert resp_json[0]["propietario"]["correo"] == usuario.correo
-    assert resp_json[0]["receptor"]["id"] == str(usuario_falso2.id)
-    assert resp_json[0]["receptor"]["correo"] == usuario_falso2.correo
-    assert resp_json[0]["archivo"]["id"] == str(archivo_falso.id)
-    assert resp_json[0]["archivo"]["nombre_original"] == archivo_falso.nombre_original
-    assert resp_json[0]["archivo"]["path"] == archivo_falso.path
-    assert resp_json[0]["archivo"]["tamaño_bytes"] == archivo_falso.tamaño_bytes
-    assert resp_json[0]["archivo"]["id_usuario"] == str(usuario.id)
+    assert resp_json["total"] == 1
+    assert resp_json["pagina"] == 1
+    assert resp_json["limite"] == 25
+    assert len(resp_json["items"]) == 1
+
+    item = resp_json["items"][0]
+
+    assert item["propietario"]["id"] == str(usuario.id)
+    assert item["propietario"]["correo"] == usuario.correo
+    assert item["receptor"]["id"] == str(usuario_falso2.id)
+    assert item["receptor"]["correo"] == usuario_falso2.correo
+    assert item["archivo"]["id"] == str(archivo_falso.id)
+    assert item["archivo"]["nombre_original"] == archivo_falso.nombre_original
+    assert item["archivo"]["path"] == archivo_falso.path
+    assert item["archivo"]["tamaño_bytes"] == archivo_falso.tamaño_bytes
+    assert item["archivo"]["id_usuario"] == str(usuario.id)
 
     app.dependency_overrides.clear()
 
@@ -72,14 +78,17 @@ def test_archivos_compartidos_por_mi_success():
 def test_archivos_compartidos_por_mi_vacio():
     app.dependency_overrides[get_current_user] = override_get_current_user
 
-    with patch("app.routes.shared_routes.shared_file_services.obtener_archivos_compartidos") as mock_compartidos:
-        mock_compartidos.return_value = []
+    with patch("app.routes.shared_routes.shared_file_services.obtener_archivos_compartidos_paginados") as mock_compartidos:
+        mock_compartidos.return_value = (0, [])
 
-        response = client.get("/api/shared/sent/files")
+        response = client.get("/api/shared/sent/files?page=1&limit=25")
 
     resp_json = response.json()
     assert response.status_code == 200
 
-    assert len(resp_json) == 0
+    assert resp_json["total"] == 0
+    assert resp_json["items"] == []
+    assert resp_json["pagina"] == 1
+    assert resp_json["limite"] == 25
 
     app.dependency_overrides.clear()
