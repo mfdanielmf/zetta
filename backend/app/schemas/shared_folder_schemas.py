@@ -27,3 +27,10 @@ class ShareFolderResponse(BaseModel):
 
     msg: str = "Carpeta compartida con éxito"
     carpeta_compartida: CarpetaCompartidaBase
+
+
+class PaginatedSharedFolderResponse(BaseModel):
+    items: list[CarpetaCompartidaBase]
+    total: int
+    pagina: int
+    limite: int

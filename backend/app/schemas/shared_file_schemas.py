@@ -27,3 +27,10 @@ class ShareFileResponse(BaseModel):
 
     msg: str = "Archivo compartido con éxito"
     archivo_compartido: ArchivoCompartidoBase
+
+
+class PaginatedSharedFileResponse(BaseModel):
+    items: list[ArchivoCompartidoBase]
+    total: int
+    pagina: int
+    limite: int
