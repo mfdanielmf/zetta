@@ -320,7 +320,7 @@ def descargar_carpeta(id_carpeta: uuid.UUID, usuario: User, db: Session) -> tupl
     """
     CarpetaNoEncontradaException
     """
-    carpeta: Folder = obtener_carpeta_usuario_id(
+    carpeta: Folder = obtener_carpeta_usuario_permisos(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
     buffer: io.BytesIO = io.BytesIO()
