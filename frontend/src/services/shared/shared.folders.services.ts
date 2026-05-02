@@ -22,3 +22,17 @@ export async function shareFolderService(data: ShareFolderRequest) {
 
   return req.data
 }
+
+export async function getReceivedFoldersService() {
+  try {
+    const req = await sharedApi.obtenerCarpetasRecibidas()
+
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.detail || 'Error al obtener las carpetas recibidas')
+    } else {
+      toast.error('Error al obtener las carpetas recibidas')
+    }
+  }
+}
