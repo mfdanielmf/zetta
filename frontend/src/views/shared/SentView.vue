@@ -8,13 +8,28 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
+import Button from '@/components/ui/button/Button.vue'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+
 import { useGetSharedFilesByMe } from '@/queries/useSharedFilesQuery'
 import { useGetSharedFoldersByMe } from '@/queries/useSharedFoldersQuery'
 
-import { formatDateService, formatearTamañoService } from '@/services/file.services'
+import {
+  downloadFileService,
+  formatDateService,
+  formatearTamañoService,
+} from '@/services/file.services'
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
-import { Folder } from 'lucide-vue-next'
+import { Download, Ellipsis, Folder } from 'lucide-vue-next'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -48,6 +63,10 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
 
   router.push({ name: 'carpetaCompartida', params: { id: idCarpeta } })
 }
+
+async function descargarArchivo(id: string, nombre: string) {
+  await downloadFileService(id, nombre)
+}
 </script>
 
 <template>
@@ -64,6 +83,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
           <TableHead>Compartido Con</TableHead>
           <TableHead>Tamaño</TableHead>
           <TableHead>Fecha Compartido</TableHead>
+          <TableHead>Acciones</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody v-if="!noData">
@@ -92,6 +112,23 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
           <TableCell class="font-medium">
             {{ formatDateService(folder.fecha_compartido) }}
           </TableCell>
+          <TableCell>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="outline" size="icon" class="hover:cursor-pointer" @click.stop>
+                  <Ellipsis />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
+                  <Download />
+                  Descargar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TableCell>
         </TableRow>
 
         <!-- Archivos -->
@@ -113,6 +150,26 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
           </TableCell>
           <TableCell class="font-medium">
             {{ formatDateService(file.fecha_compartido) }}
+          </TableCell>
+          <TableCell>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="outline" size="icon" class="hover:cursor-pointer">
+                  <Ellipsis />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="descargarArchivo(file.archivo.id, file.archivo.nombre_original)"
+                >
+                  <Download />
+                  Descargar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </TableCell>
         </TableRow>
       </TableBody>
