@@ -6,13 +6,13 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.database.db import get_db
+from app.middleware.auth_middleware import get_current_user
 from app.models.exceptions import CarpetaPapeleraException, EliminarDiscoException, IdYaUsadaException, NombreYaUsadoException, TamañoExcedidoException, CarpetaNoEncontradaException
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.schemas.file_schemas import FileBase
 from app.services.file_services import obtener_archivos_carpeta, obtener_archivos_carpeta_papelera
-from app.services.auth_services import get_current_user
 from app.services.folder_services import crear_carpeta, descargar_carpeta, eliminar_carpeta_permanente, obtener_carpetas_usuario_raiz, guardar_archivo_carpeta, crear_carpeta_anidada, obtener_carpetas_dentro_carpeta, añadir_carpeta_papelera, restaurar_carpeta_papelera, obtener_carpetas_papelera_raiz, obtener_carpetas_carpeta_papelera
 from app.schemas.folder_schemas import DeleteFolderPermanentResponse, FolderBase, FolderRequest, FolderResponse, RestoreFolderResponse, UploadFileFolderResponse, AddFolderTrashResponse
 

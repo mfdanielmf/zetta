@@ -6,7 +6,7 @@ from app.models.user import User
 from app.schemas import shared_folder_schemas
 from app.schemas.folder_schemas import FolderBase
 from app.schemas.shared_folder_schemas import CarpetaCompartidaBase
-from app.services.auth_services import get_current_user
+from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
 from unittest.mock import patch
 

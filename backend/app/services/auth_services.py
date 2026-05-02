@@ -70,23 +70,3 @@ def obtener_usuario_jwt(token: str, db: Session) -> User:
     user: User = obtener_usuario_nombre(nombre=token_data.nombre, db=db)
 
     return user
-
-
-# Middleware para inyectar en las rutas
-def get_current_user(db: Session = Depends(get_db), access_token: str = Cookie(None)) -> User:
-    """
-    HTTPException
-    """
-    if access_token is None:
-        raise HTTPException(
-            401,
-            detail="No se proporcionó token"
-        )
-
-    try:
-        return obtener_usuario_jwt(access_token, db)
-    except UsuarioNoEncontradoException:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    except UsuarioNoAutenticadoException:
-        raise HTTPException(
-            status_code=401, detail="Token incorrecto o expirado")
