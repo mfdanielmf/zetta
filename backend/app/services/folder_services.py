@@ -72,7 +72,8 @@ def obtener_carpeta_usuario_id(id_carpeta: str, usuario: User, db: Session) -> F
     """
     CarpetaNoEncontradaException
     """
-    carpeta: Folder = folder_repo.get_folder_id_user(id=id_carpeta, db=db, usuario=usuario)
+    carpeta: Folder = folder_repo.get_folder_id_user(
+        id=id_carpeta, db=db, usuario=usuario)
 
     if not carpeta:
         raise ex.CarpetaNoEncontradaException(
@@ -277,7 +278,8 @@ def eliminar_carpeta_permanente(id_carpeta: uuid.UUID, usuario: User, db: Sessio
         if os.path.exists(path):
             shutil.rmtree(path=path)
     except Exception:
-        raise ex.EliminarDiscoException("Error al eliminar la carpeta del disco")
+        raise ex.EliminarDiscoException(
+            "Error al eliminar la carpeta del disco")
 
     folder_repo.delete_folder(carpeta=carpeta, db=db)
 
@@ -286,7 +288,8 @@ def obtener_carpeta_usuario_permisos(id_carpeta: str, usuario: User, db: Session
     """
     CarpetaNoEncontradaException
     """
-    carpeta: Folder | None = folder_repo.get_folder_id(id_carpeta=id_carpeta, db=db)
+    carpeta: Folder | None = folder_repo.get_folder_id(
+        id_carpeta=id_carpeta, db=db)
 
     if not carpeta:
         raise ex.CarpetaNoEncontradaException(
@@ -346,3 +349,9 @@ def añadir_carpeta_a_zip(zipf: zipfile.ZipFile, carpeta: Folder, path_base: str
     for carpeta_anidada in carpeta.carpetas:
         añadir_carpeta_a_zip(
             zipf=zipf, carpeta=carpeta_anidada, path_base=path_actual)
+
+
+def obtener_carpetas_usuario_raiz_paginadas(usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[Folder]]:
+    offset = (pagina - 1) * limite
+
+    return folder_repo.get_folders_user_raiz_paginadas(id_usuario=usuario.id, db=db, offset=offset, limit=limite)

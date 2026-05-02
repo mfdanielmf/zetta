@@ -47,3 +47,10 @@ class RestoreFolderResponse(FolderResponse):
 
 class DeleteFolderPermanentResponse(BaseModel):
     msg: str = "Carpeta eliminada correctamente"
+
+
+class PaginatedFolderResponse(BaseModel):
+    items: list[FolderBase]
+    total: int
+    pagina: int
+    limite: int

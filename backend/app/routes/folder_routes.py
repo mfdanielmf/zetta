@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
+from app.middleware.pagination_middleware import get_pagination
 from app.models import exceptions as ex
 from app.models.file import File
 from app.models.folder import Folder
@@ -18,24 +19,31 @@ from app.schemas import folder_schemas
 folder_router = APIRouter()
 
 
-@folder_router.get("", response_model=list[folder_schemas.FolderBase])
-def get_folders(db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
-    carpetas: list[Folder] = folder_services.obtener_carpetas_usuario_raiz(
-        usuario=usuario, db=db)
+@folder_router.get("", response_model=folder_schemas.PaginatedFolderResponse)
+def get_folders(db: Session = Depends(get_db), usuario: User = Depends(get_current_user), paginacion: tuple[int, int] = Depends(get_pagination)):
+    pagina, limite = paginacion
 
-    return [
-        folder_schemas.FolderBase(
-            id=carpeta.id,
-            nombre_original=carpeta.nombre_original,
-            path=carpeta.path,
-            fecha_creacion=carpeta.fecha_creacion,
-            id_usuario=carpeta.id_usuario,
-            nombre_usuario=carpeta.usuario.nombre,
-            id_carpeta=carpeta.id_carpeta,
-            fecha_eliminacion=carpeta.fecha_eliminacion
-        )
-        for carpeta in carpetas
-    ]
+    total, carpetas = folder_services.obtener_carpetas_usuario_raiz_paginadas(
+        usuario=usuario, db=db, pagina=pagina, limite=limite)
+
+    return {
+        "items": [
+            folder_schemas.FolderBase(
+                id=carpeta.id,
+                nombre_original=carpeta.nombre_original,
+                path=carpeta.path,
+                fecha_creacion=carpeta.fecha_creacion,
+                id_usuario=carpeta.id_usuario,
+                nombre_usuario=carpeta.usuario.nombre,
+                id_carpeta=carpeta.id_carpeta,
+                fecha_eliminacion=carpeta.fecha_eliminacion
+            )
+            for carpeta in carpetas
+        ],
+        "total": total,
+        "pagina": pagina,
+        "limite": limite
+    }
 
 
 @folder_router.post("", response_model=folder_schemas.FolderResponse)
