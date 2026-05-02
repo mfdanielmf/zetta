@@ -1,5 +1,6 @@
 import type { ShareFileRequest } from '@/api/types/types'
 import {
+  getReceivedFilesService,
   getSharedFilesByMeService,
   shareFileService,
 } from '@/services/shared/shared.files.services'
@@ -36,5 +37,15 @@ export function useShareFile() {
         toast.error('Error al compartir el archivo')
       }
     },
+  })
+}
+
+export function useGetReceivedFiles() {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['archivosRecibidos', authStore.usuario?.id],
+    queryFn: () => getReceivedFilesService(),
+    enabled: !!authStore.usuario?.id,
   })
 }
