@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.carpeta_compartida import CarpetaCompartida
-from app.models.exceptions import PropietarioException, YaCompartidoException
+from app.models import exceptions as ex
 from app.models.folder import Folder
 from app.models.user import User
 from app.repositories import shared_folder_repo
@@ -15,13 +15,13 @@ def compartir_carpeta(req: sfs.ShareFolderRequest, usuario: User, db: Session) -
     PropietarioException, CarpetaNoEncontradaException, YaCompartidoException, UsuarioNoEncontradoException
     """
     if (req.correo_usuario).lower() == (usuario.correo).lower():
-        raise PropietarioException("Ya eres el propietario de la carpeta")
+        raise ex.PropietarioException("Ya eres el propietario de la carpeta")
 
     receptor: User = user_services.obtener_usuario_correo(
         correo=req.correo_usuario, db=db)
 
     if shared_folder_repo.get_shared_folder(id_carpeta=req.id_carpeta, id_receptor=receptor.id, db=db):
-        raise YaCompartidoException(
+        raise ex.YaCompartidoException(
             f"Ya has compartido la carpeta con {receptor.nombre}")
 
     carpeta: Folder = folder_services.obtener_carpeta_usuario_id(

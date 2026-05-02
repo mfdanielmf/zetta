@@ -11,13 +11,11 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.config import config
-from app.models.exceptions import EliminarDiscoException, IdYaUsadaException, NombreYaUsadoException, CarpetaNoEncontradaException, TamañoExcedidoException, CarpetaPapeleraException
+from app.models import exceptions as ex
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories import shared_folder_repo
-from app.repositories.folder_repo import add_folder, delete_folder, get_folder_id_user, get_folders_user, get_folder_name_anidada, get_folder_id, get_folders_user_raiz, get_folders_inside_folder, get_folder_nombre_raiz, get_folder_trash, update_folder, get_all_folders_trash_raiz
-from app.repositories.file_repo import insert_file_db, get_file_by_name_in_folder
+from app.repositories import shared_folder_repo, folder_repo, file_repo
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -28,14 +26,14 @@ def crear_carpeta(nombre: str, usuario: User, db: Session) -> Folder:
     """
     IdYaUsadaException, NombreYaUsadoException
     """
-    if get_folder_nombre_raiz(nombre_carpeta=nombre, id_usuario=usuario.id, db=db) is not None:
-        raise NombreYaUsadoException(
+    if folder_repo.get_folder_nombre_raiz(nombre_carpeta=nombre, id_usuario=usuario.id, db=db) is not None:
+        raise ex.NombreYaUsadoException(
             f"Ya has creado una carpeta con el nombre {nombre}")
 
     id_carpeta: uuid.UUID = uuid.uuid4()
 
-    if get_folder_id(id_carpeta=id_carpeta, db=db) is not None:
-        raise IdYaUsadaException(
+    if folder_repo.get_folder_id(id_carpeta=id_carpeta, db=db) is not None:
+        raise ex.IdYaUsadaException(
             f"Ya se ha usado la ID {id}. Vuelve a subir la carpeta")
 
     # Crear el almacén del usuario si no existe
@@ -47,17 +45,17 @@ def crear_carpeta(nombre: str, usuario: User, db: Session) -> Folder:
 
     carpeta: Folder = Folder(id=id_carpeta, nombre_original=nombre, path=str(
         folder_path), id_usuario=usuario.id)
-    carpeta_db: Folder = add_folder(carpeta=carpeta, db=db)
+    carpeta_db: Folder = folder_repo.add_folder(carpeta=carpeta, db=db)
 
     return carpeta_db
 
 
 def obtener_carpetas_usuario(usuario: User, db: Session) -> list[Folder]:
-    return get_folders_user(id_usuario=usuario.id, db=db)
+    return folder_repo.get_folders_user(id_usuario=usuario.id, db=db)
 
 
 def obtener_carpetas_usuario_raiz(usuario: User, db: Session) -> list[Folder]:
-    return get_folders_user_raiz(id_usuario=usuario.id, db=db)
+    return folder_repo.get_folders_user_raiz(id_usuario=usuario.id, db=db)
 
 
 def obtener_carpetas_dentro_carpeta(id_carpeta_padre: uuid.UUID, usuario: User, db: Session) -> list[Folder]:
@@ -74,10 +72,10 @@ def obtener_carpeta_usuario_id(id_carpeta: str, usuario: User, db: Session) -> F
     """
     CarpetaNoEncontradaException
     """
-    carpeta: Folder = get_folder_id_user(id=id_carpeta, db=db, usuario=usuario)
+    carpeta: Folder = folder_repo.get_folder_id_user(id=id_carpeta, db=db, usuario=usuario)
 
     if not carpeta:
-        raise CarpetaNoEncontradaException(
+        raise ex.CarpetaNoEncontradaException(
             f"No se ha encontrado la carpeta con id {id_carpeta}")
 
     return carpeta
@@ -87,18 +85,18 @@ def obtener_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) 
     """
     CarpetaNoEncontradaException
     """
-    carpeta: Folder = get_folder_trash(
+    carpeta: Folder = folder_repo.get_folder_trash(
         id_carpeta=id_carpeta, id_usuario=usuario.id, db=db)
 
     if not carpeta:
-        raise CarpetaNoEncontradaException(
+        raise ex.CarpetaNoEncontradaException(
             f"No se ha encontrado la carpeta con ID {id_carpeta} en la papelera")
 
     return carpeta
 
 
 def obtener_carpetas_papelera_raiz(usuario: User, db: Session) -> list[Folder]:
-    return get_all_folders_trash_raiz(id_usuario=usuario.id, db=db)
+    return folder_repo.get_all_folders_trash_raiz(id_usuario=usuario.id, db=db)
 
 
 def subir_archivo_carpeta_disco(file_path: str, data: bytes):
@@ -120,17 +118,17 @@ async def guardar_archivo_carpeta(id_carpeta: str, file_upload: UploadFile, db: 
     carpeta: Folder = obtener_carpeta_usuario_id(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
-    file_db: File | None = get_file_by_name_in_folder(
+    file_db: File | None = file_repo.get_file_by_name_in_folder(
         nombre_original=file_upload.filename, id_carpeta=carpeta.id, usuario=usuario, db=db)
 
     if file_db:
-        raise NombreYaUsadoException(
+        raise ex.NombreYaUsadoException(
             f"Ya existe un archivo con el nombre '{file_upload.filename}' en la carpeta '{carpeta.nombre_original}'")
 
     data = await file_upload.read()
 
     if len(data) > TAMAÑO_LIMITE:
-        raise TamañoExcedidoException(
+        raise ex.TamañoExcedidoException(
             f"Has excedido el tamaño máximo de subida")
 
     id_file: uuid.UUID = uuid.uuid4()
@@ -144,7 +142,7 @@ async def guardar_archivo_carpeta(id_carpeta: str, file_upload: UploadFile, db: 
     archivo: File = File(id=id_file, nombre_original=nombre_original,
                          path=str(file_path), id_usuario=usuario.id, tamaño_bytes=len(data), id_carpeta=id_carpeta)
 
-    archivo_guardado: File = insert_file_db(archivo=archivo, db=db)
+    archivo_guardado: File = file_repo.insert_file_db(archivo=archivo, db=db)
 
     subir_archivo_carpeta_disco(file_path=file_path, data=data)
 
@@ -155,21 +153,21 @@ def crear_carpeta_anidada(id_carpeta_padre: str, nombre: str, usuario: User, db:
     """
     CarpetaNoEncontradaException, NombreYaUsadoException, IdYaUsadaException
     """
-    carpeta_padre: Folder | None = get_folder_id_user(
+    carpeta_padre: Folder | None = folder_repo.get_folder_id_user(
         id=id_carpeta_padre, usuario=usuario, db=db)
 
     if not carpeta_padre:
-        raise CarpetaNoEncontradaException(
+        raise ex.CarpetaNoEncontradaException(
             f"No se ha encontrado la carpeta con ID {id_carpeta_padre}")
 
-    if get_folder_name_anidada(id_carpeta_padre=id_carpeta_padre, nombre_carpeta=nombre, usuario=usuario, db=db):
-        raise NombreYaUsadoException(
+    if folder_repo.get_folder_name_anidada(id_carpeta_padre=id_carpeta_padre, nombre_carpeta=nombre, usuario=usuario, db=db):
+        raise ex.NombreYaUsadoException(
             f"Ya has creado una carpeta con el nombre {nombre}")
 
     id_carpeta_nueva: uuid.UUID = uuid.uuid4()
 
-    if get_folder_id(id_carpeta=id_carpeta_nueva, db=db) is not None:
-        raise IdYaUsadaException(
+    if folder_repo.get_folder_id(id_carpeta=id_carpeta_nueva, db=db) is not None:
+        raise ex.IdYaUsadaException(
             f"Ya se ha usado el ID {id_carpeta_nueva}. Vuelve a crear la carpeta")
 
     folder_path = Path(carpeta_padre.path) / str(id_carpeta_nueva)
@@ -178,7 +176,7 @@ def crear_carpeta_anidada(id_carpeta_padre: str, nombre: str, usuario: User, db:
 
     carpeta: Folder = Folder(id=id_carpeta_nueva, nombre_original=nombre, path=str(
         folder_path), id_usuario=usuario.id, id_carpeta=id_carpeta_padre)
-    carpeta_db: Folder = add_folder(carpeta=carpeta, db=db)
+    carpeta_db: Folder = folder_repo.add_folder(carpeta=carpeta, db=db)
 
     return carpeta_db
 
@@ -187,8 +185,8 @@ def añadir_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) 
     """
     CarpetaPapeleraException, CarpetaNoEncontradaException
     """
-    if get_folder_trash(id_carpeta=id_carpeta, id_usuario=usuario.id, db=db):
-        raise CarpetaPapeleraException()
+    if folder_repo.get_folder_trash(id_carpeta=id_carpeta, id_usuario=usuario.id, db=db):
+        raise ex.CarpetaPapeleraException()
 
     carpeta: Folder = obtener_carpeta_usuario_id(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
@@ -219,7 +217,7 @@ def añadir_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) 
         synchronize_session=False
     )
 
-    return update_folder(carpeta=carpeta, db=db)
+    return folder_repo.update_folder(carpeta=carpeta, db=db)
 
 
 def restaurar_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session):
@@ -253,7 +251,7 @@ def restaurar_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session
         synchronize_session=False
     )
 
-    return update_folder(carpeta=carpeta, db=db)
+    return folder_repo.update_folder(carpeta=carpeta, db=db)
 
 
 def obtener_carpetas_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) -> list[Folder]:
@@ -263,7 +261,7 @@ def obtener_carpetas_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: 
     carpeta: Folder = obtener_carpeta_papelera(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
-    return get_folders_inside_folder(id_carpeta=carpeta.id, id_usuario=usuario.id, db=db)
+    return folder_repo.get_folders_inside_folder(id_carpeta=carpeta.id, id_usuario=usuario.id, db=db)
 
 
 def eliminar_carpeta_permanente(id_carpeta: uuid.UUID, usuario: User, db: Session):
@@ -279,19 +277,19 @@ def eliminar_carpeta_permanente(id_carpeta: uuid.UUID, usuario: User, db: Sessio
         if os.path.exists(path):
             shutil.rmtree(path=path)
     except Exception:
-        raise EliminarDiscoException("Error al eliminar la carpeta del disco")
+        raise ex.EliminarDiscoException("Error al eliminar la carpeta del disco")
 
-    delete_folder(carpeta=carpeta, db=db)
+    folder_repo.delete_folder(carpeta=carpeta, db=db)
 
 
 def obtener_carpeta_usuario_permisos(id_carpeta: str, usuario: User, db: Session) -> Folder:
     """
     CarpetaNoEncontradaException
     """
-    carpeta: Folder | None = get_folder_id(id_carpeta=id_carpeta, db=db)
+    carpeta: Folder | None = folder_repo.get_folder_id(id_carpeta=id_carpeta, db=db)
 
     if not carpeta:
-        raise CarpetaNoEncontradaException(
+        raise ex.CarpetaNoEncontradaException(
             f"No se ha encontrado la carpeta con id {id_carpeta}")
 
     # Devolvemos la carpeta si el usuario es el propietario o la carpeta está compartida con él
@@ -309,10 +307,10 @@ def obtener_carpeta_usuario_permisos(id_carpeta: str, usuario: User, db: Session
         if not carpeta_actual.id_carpeta:
             break
 
-        carpeta_actual = get_folder_id(
+        carpeta_actual = folder_repo.get_folder_id(
             id_carpeta=carpeta_actual.id_carpeta, db=db)
 
-    raise CarpetaNoEncontradaException(
+    raise ex.CarpetaNoEncontradaException(
         f"No se ha encontrado la carpeta con id {id_carpeta}")
 
 
