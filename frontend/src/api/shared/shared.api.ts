@@ -1,5 +1,6 @@
 import api from '../axios.config'
 import type {
+  GetReceivedFilesResponse,
   GetSharedFilesByMeResponse,
   GetSharedFoldersByMeResponse,
   ShareFileRequest,
@@ -19,6 +20,9 @@ export default {
       id_archivo: req.id_archivo,
       correo_usuario: req.correo_usuario,
     })
+  },
+  obtenerArchivosRecibidos() {
+    return api().get<GetReceivedFilesResponse>(URL + '/received/files')
   },
   obtenerCarpetasCompartidasPorMi() {
     return api().get<GetSharedFoldersByMeResponse>(URL + '/sent/folders')

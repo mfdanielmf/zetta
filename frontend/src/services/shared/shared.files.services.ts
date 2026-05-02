@@ -22,3 +22,17 @@ export async function shareFileService(data: ShareFileRequest) {
 
   return req.data
 }
+
+export async function getReceivedFilesService() {
+  try {
+    const req = await sharedApi.obtenerArchivosRecibidos()
+
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.detail || 'Error al obtener los archivos recibidos')
+    } else {
+      toast.error('Error al obtener los archivos recibidos')
+    }
+  }
+}
