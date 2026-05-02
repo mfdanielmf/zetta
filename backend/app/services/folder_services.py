@@ -345,9 +345,6 @@ def añadir_carpeta_a_zip(zipf: zipfile.ZipFile, carpeta: Folder, path_base: str
             archivo.path, arcname=f"{path_actual}{archivo.nombre_original}")
 
     # Añadimos las carpetas anidadas
-
-    print(carpeta.carpetas)
-
     for carpeta_anidada in carpeta.carpetas:
         añadir_carpeta_a_zip(
             zipf=zipf, carpeta=carpeta_anidada, path_base=path_actual)
