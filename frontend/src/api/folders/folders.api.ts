@@ -55,4 +55,7 @@ export default {
   obtenerCarpetasAnidadasPapelera(idCarpeta: string) {
     return api().get<GetFoldersAnidadaTrashResponse>(URL + `/trash/${idCarpeta}/folders`)
   },
+  descargarCarpeta(idCarpeta: string) {
+    return api().get(URL + `/${idCarpeta}`, { responseType: 'blob' })
+  },
 }

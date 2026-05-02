@@ -33,6 +33,7 @@ import {
   formatDateService,
   formatearTamañoService,
 } from '@/services/file.services'
+import { downloadFolderService } from '@/services/folder.services'
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
 import { Download, Ellipsis, Folder, FolderPlus, Plus, Share2, Upload } from 'lucide-vue-next'
@@ -164,6 +165,10 @@ function abrirCompartirArchivo(idArchivo: string) {
   compartirArchivoAbierto.value = true
   idArchivoSeleccionado.value = idArchivo
 }
+
+async function descargarCarpeta(id: string, nombre: string) {
+  await downloadFolderService(id, nombre)
+}
 </script>
 
 <template>
@@ -260,7 +265,10 @@ function abrirCompartirArchivo(idArchivo: string) {
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="descargarCarpeta(folder.id, folder.nombre_original)"
+                >
                   <Download />
                   Descargar
                 </DropdownMenuItem>

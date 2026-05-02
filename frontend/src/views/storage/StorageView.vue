@@ -43,6 +43,7 @@ import { useFolderStore } from '@/stores/folder.store'
 import { useShareFolder } from '@/queries/useSharedFoldersQuery'
 import { toast } from 'vue-sonner'
 import { useShareFile } from '@/queries/useSharedFilesQuery'
+import { downloadFolderService } from '@/services/folder.services'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
@@ -174,6 +175,10 @@ function abrirCompartirArchivo(idArchivo: string) {
   compartirArchivoAbierto.value = true
   idArchivoSeleccionado.value = idArchivo
 }
+
+async function descargarCarpeta(id: string, nombre: string) {
+  await downloadFolderService(id, nombre)
+}
 </script>
 
 <template>
@@ -270,7 +275,10 @@ function abrirCompartirArchivo(idArchivo: string) {
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem class="hover:cursor-pointer" @click="console.log('test')">
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="descargarCarpeta(folder.id, folder.nombre_original)"
+                >
                   <Download />
                   Descargar
                 </DropdownMenuItem>
