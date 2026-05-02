@@ -114,3 +114,24 @@ export async function obtenerCarpetasAnidadasPapeleraService(idCarpeta: string) 
     }
   }
 }
+
+export async function downloadFolderService(id: string, nombre: string) {
+  try {
+    const req = await foldersApi.descargarCarpeta(id)
+
+    const blob = new Blob([req.data], {
+      type: req.headers['content-type'],
+    })
+
+    const url = window.URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', nombre)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  } catch {
+    toast.error('Ha ocurrido un error al descargar la carpeta')
+  }
+}

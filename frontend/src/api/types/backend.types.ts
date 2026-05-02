@@ -269,7 +269,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Download Folder */
+        get: operations["download_folder_api_folders__id_carpeta__get"];
         put?: never;
         post?: never;
         /** Add Folder To Trash */
@@ -1233,6 +1234,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FolderBase"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_folder_api_folders__id_carpeta__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id_carpeta: string;
+            };
+            cookie?: {
+                access_token?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
