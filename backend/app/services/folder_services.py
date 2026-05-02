@@ -1,8 +1,10 @@
 import os
-from pathlib import Path
-from datetime import datetime, timezone
+import zipfile
+import io
 import shutil
 import uuid
+from pathlib import Path
+from datetime import datetime, timezone
 
 from fastapi import UploadFile
 from sqlalchemy import or_
@@ -312,3 +314,40 @@ def obtener_carpeta_usuario_permisos(id_carpeta: str, usuario: User, db: Session
 
     raise CarpetaNoEncontradaException(
         f"No se ha encontrado la carpeta con id {id_carpeta}")
+
+
+def descargar_carpeta(id_carpeta: uuid.UUID, usuario: User, db: Session) -> tuple[io.BytesIO, Folder]:
+    """
+    CarpetaNoEncontradaException
+    """
+    carpeta: Folder = obtener_carpeta_usuario_id(
+        id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+    buffer: io.BytesIO = io.BytesIO()
+
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+        añadir_carpeta_a_zip(zipf=zipf, carpeta=carpeta, path_base="")
+
+    buffer.seek(0)
+
+    return buffer, carpeta
+
+
+def añadir_carpeta_a_zip(zipf: zipfile.ZipFile, carpeta: Folder, path_base: str) -> None:
+    path_actual: str = f"{path_base}{carpeta.nombre_original}/"
+
+    # Crear carpeta aunque esté vacía
+    zipf.writestr(path_actual, "")
+
+    # Añadimos los archivos que tenga la carpeta al zip
+    for archivo in carpeta.archivos:
+        zipf.write(
+            archivo.path, arcname=f"{path_actual}{archivo.nombre_original}")
+
+    # Añadimos las carpetas anidadas
+
+    print(carpeta.carpetas)
+
+    for carpeta_anidada in carpeta.carpetas:
+        añadir_carpeta_a_zip(
+            zipf=zipf, carpeta=carpeta_anidada, path_base=path_actual)
