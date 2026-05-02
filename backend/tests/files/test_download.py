@@ -28,7 +28,7 @@ def test_descargar_archivo_id_inexistente():
     usuario = override_get_current_user()
     app.dependency_overrides[get_current_user] = lambda: usuario
 
-    with patch("app.routes.file_routes.obtener_archivo_permisos") as mock_obtener:
+    with patch("app.routes.file_routes.obtener_archivo_id") as mock_obtener:
         mock_obtener.side_effect = ArchivoNoEncontradoException()
 
         id_random: uuid.UUID = uuid.uuid4()
@@ -66,7 +66,7 @@ def test_descargar_archivo_existente():
         usuario=usuario
     )
 
-    with patch("app.routes.file_routes.obtener_archivo_permisos") as mock_obtener:
+    with patch("app.routes.file_routes.obtener_archivo_id") as mock_obtener:
         mock_obtener.return_value = archivo_falso
 
         id_random: uuid.UUID = uuid.uuid4()

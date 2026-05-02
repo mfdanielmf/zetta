@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.database.db import get_db
 
 from app.models.user import User
-from app.services.file_services import eliminar_archivo_permanente, guardar_archivo, obtener_archivos_usuario, obtener_archivo_permisos, añadir_archivo_papelera, restaurar_archivo_papelera, obtener_archivos_papelera_raiz
+from app.services.file_services import eliminar_archivo_permanente, guardar_archivo, obtener_archivos_usuario, obtener_archivo_id, añadir_archivo_papelera, restaurar_archivo_papelera, obtener_archivos_papelera_raiz
 from app.models.exceptions import ArchivoNoEncontradoException, EliminarDiscoException, TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException, ArchivoPapeleraException
 from app.schemas.file_schemas import AddFileTrashResponse, DeleteFilePermanentResponse, FileBase, FileResponse, RestoreFileResponse
 from app.services.auth_services import get_current_user
@@ -105,7 +105,8 @@ def delete_file_permanent(id_archivo: UUID, usuario: User = Depends(get_current_
 @file_router.get("/{id_archivo}", response_class=FileResp)
 def download_files(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
-        archivo: File = obtener_archivo_permisos(id_archivo=id_archivo, usuario=usuario, db=db)
+        archivo: File = obtener_archivo_id(
+            id=id_archivo, usuario=usuario, db=db)
 
         return FileResp(path=archivo.path, filename=archivo.nombre_original)
     except ArchivoNoEncontradoException:
