@@ -62,10 +62,10 @@ def obtener_carpetas_dentro_carpeta(id_carpeta_padre: uuid.UUID, usuario: User, 
     """
     CarpetaNoEncontradaException
     """
-    obtener_carpeta_usuario_id(
+    carpeta: Folder = obtener_carpeta_usuario_permisos(
         id_carpeta=id_carpeta_padre, usuario=usuario, db=db)
 
-    return get_folders_inside_folder(id_carpeta=id_carpeta_padre, id_usuario=usuario.id, db=db)
+    return carpeta.carpetas
 
 
 def obtener_carpeta_usuario_id(id_carpeta: str, usuario: User, db: Session) -> Folder:
@@ -296,8 +296,19 @@ def obtener_carpeta_usuario_permisos(id_carpeta: str, usuario: User, db: Session
     if carpeta.id_usuario == usuario.id:
         return carpeta
 
-    if shared_folder_repo.get_shared_folder(id_carpeta=id_carpeta, id_receptor=usuario.id, db=db):
-        return carpeta
+    carpeta_actual: Folder = carpeta
+
+    # Si la carpeta está anidada, buscamos si algún padre está compartido
+    while carpeta_actual:
+        if shared_folder_repo.get_shared_folder(id_carpeta=carpeta_actual.id, id_receptor=usuario.id, db=db):
+            return carpeta
+
+        # Raíz
+        if not carpeta_actual.id_carpeta:
+            break
+
+        carpeta_actual = get_folder_id(
+            id_carpeta=carpeta_actual.id_carpeta, db=db)
 
     raise CarpetaNoEncontradaException(
         f"No se ha encontrado la carpeta con id {id_carpeta}")
