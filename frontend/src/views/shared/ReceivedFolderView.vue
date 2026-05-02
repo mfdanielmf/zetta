@@ -66,7 +66,7 @@ async function descargarArchivo(id: string, nombre: string) {
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
 
-  router.push({ name: 'carpetaCompartida', params: { id: idCarpeta } })
+  router.push({ name: 'carpetaRecibida', params: { id: idCarpeta } })
 }
 </script>
 
@@ -74,7 +74,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
   <div class="space-y-2">
     <Table>
       <TableCaption v-if="cargando || noData">
-        {{ cargando ? 'Cargando...' : 'Esta carpeta no tiene contenido.' }}
+        {{ cargando ? 'Cargando...' : 'Esta carpeta no tiene contenido' }}
       </TableCaption>
 
       <TableHeader class="bg-neutral-100">

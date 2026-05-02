@@ -17,6 +17,7 @@ const FolderFilesPapeleraView = () => import('@/views/trash/FolderFilesPapeleraV
 const ReceivedView = () => import('@/views/shared/ReceivedView.vue')
 const SentView = () => import('@/views/shared/SentView.vue')
 const SharedFolderView = () => import('@/views/shared/SharedFolderView.vue')
+const ReceivedFolderView = () => import('@/views/shared/ReceivedFolderView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,8 +64,18 @@ const router = createRouter({
           children: [
             {
               path: 'received',
-              name: 'recibidos',
-              component: ReceivedView,
+              children: [
+                {
+                  path: '',
+                  name: 'recibidos',
+                  component: ReceivedView,
+                },
+                {
+                  path: ':id',
+                  name: 'carpetaRecibida',
+                  component: ReceivedFolderView,
+                },
+              ],
             },
             {
               path: 'sent',
