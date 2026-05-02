@@ -13,10 +13,14 @@ client = TestClient(app)
 def test_get_carpetas_papelera_vacia():
     app.dependency_overrides[get_current_user] = override_get_current_user
 
-    response = client.get("/api/folders/trash")
+    response = client.get("/api/folders/trash?page=1&limit=25")
 
     assert response.status_code == 200
-    assert len(response.json()) == 0
+
+    json_response = response.json()
+
+    assert json_response["items"] == []
+    assert json_response["total"] == 0
 
     app.dependency_overrides.clear()
 
@@ -35,19 +39,24 @@ def test_get_papelera_1_carpeta():
         usuario=usuario
     )
 
-    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_papelera_raiz") as mock_obtener:
-        mock_obtener.return_value = [carpeta]
+    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_papelera_raiz_paginadas") as mock_obtener:
+        mock_obtener.return_value = (1, [carpeta])
 
-        response = client.get("/api/folders/trash")
+        response = client.get("/api/folders/trash?page=1&limit=25")
 
     assert response.status_code == 200
+
     json_response = response.json()
 
-    assert len(json_response) == 1
-    assert json_response[0]["nombre_original"] == carpeta.nombre_original
-    assert json_response[0]["nombre_usuario"] == usuario.nombre
-    assert json_response[0]["fecha_eliminacion"] == carpeta.fecha_eliminacion
-    assert json_response[0]["path"] == carpeta.path
+    assert json_response["total"] == 1
+    assert len(json_response["items"]) == 1
+
+    item = json_response["items"][0]
+
+    assert item["nombre_original"] == carpeta.nombre_original
+    assert item["nombre_usuario"] == usuario.nombre
+    assert item["fecha_eliminacion"] == carpeta.fecha_eliminacion
+    assert item["path"] == carpeta.path
 
     app.dependency_overrides.clear()
 
@@ -78,23 +87,26 @@ def test_get_papelera_varias_carpetas():
 
     carpetas_falsas: list[Folder] = [carpeta, carpeta2]
 
-    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_papelera_raiz") as mock_obtener:
-        mock_obtener.return_value = carpetas_falsas
+    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_papelera_raiz_paginadas") as mock_obtener:
+        mock_obtener.return_value = (2, carpetas_falsas)
 
-        response = client.get("/api/folders/trash")
+        response = client.get("/api/folders/trash?page=1&limit=25")
 
     assert response.status_code == 200
+
     json_response = response.json()
-    assert len(json_response) == 2
 
-    assert response.status_code == 200
+    assert json_response["total"] == 2
+    assert len(json_response["items"]) == 2
+
     for i, carpeta in enumerate(carpetas_falsas):
-        assert json_response[i]["id"] == str(carpeta.id)
-        assert json_response[i]["nombre_original"] == carpeta.nombre_original
-        assert json_response[i]["path"] == carpeta.path
-        assert json_response[i]["id_usuario"] == str(carpeta.id_usuario)
-        assert json_response[i]["nombre_usuario"] == usuario.nombre
-        assert json_response[i]["fecha_eliminacion"] == str(
-            carpeta.fecha_eliminacion)
+        item = json_response["items"][i]
+
+        assert item["id"] == str(carpeta.id)
+        assert item["nombre_original"] == carpeta.nombre_original
+        assert item["path"] == carpeta.path
+        assert item["id_usuario"] == str(carpeta.id_usuario)
+        assert item["nombre_usuario"] == usuario.nombre
+        assert item["fecha_eliminacion"] == carpeta.fecha_eliminacion
 
     app.dependency_overrides.clear()

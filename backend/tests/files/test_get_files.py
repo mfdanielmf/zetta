@@ -21,10 +21,15 @@ def test_get_archivos_sin_login():
 def test_get_archivos_usuario_sin_uploads():
     app.dependency_overrides[get_current_user] = override_get_current_user
 
-    response = client.get("/api/files")
+    response = client.get("/api/files?page=1&limit=25")
 
     assert response.status_code == 200
-    assert response.json() == []
+    json_response = response.json()
+
+    assert json_response["items"] == []
+    assert json_response["total"] == 0
+    assert json_response["pagina"] == 1
+    assert json_response["limite"] == 25
 
     app.dependency_overrides.clear()
 
@@ -43,16 +48,20 @@ def test_get_archivos_usuario_con_uploads():
         usuario=usuario
     )
 
-    with patch("app.routes.file_routes.file_services.obtener_archivos_usuario") as mock_obtener:
-        mock_obtener.return_value = [archivo_fake]
+    with patch("app.routes.file_routes.file_services.obtener_archivos_usuario_paginados") as mock_obtener:
+        mock_obtener.return_value = (1, [archivo_fake])
 
-        response = client.get("/api/files")
+        response = client.get("/api/files?page=1&limit=25")
 
     assert response.status_code == 200
     json_response = response.json()
 
-    assert len(json_response) == 1
-    assert json_response[0]["nombre_original"] == "testing.txt"
-    assert json_response[0]["nombre_usuario"] == usuario.nombre
+    assert json_response["total"] == 1
+    assert len(json_response["items"]) == 1
+
+    item = json_response["items"][0]
+
+    assert item["nombre_original"] == "testing.txt"
+    assert item["nombre_usuario"] == usuario.nombre
 
     app.dependency_overrides.clear()

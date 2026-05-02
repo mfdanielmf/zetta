@@ -23,10 +23,14 @@ def test_get_carpetas_sin_login():
 def test_get_carpetas_usuario_sin_uploads():
     app.dependency_overrides[get_current_user] = override_get_current_user
 
-    response = client.get("/api/folders")
+    response = client.get("/api/folders?page=1&limit=25")
 
     assert response.status_code == 200
-    assert response.json() == []
+
+    json_response = response.json()
+
+    assert json_response["items"] == []
+    assert json_response["total"] == 0
 
     app.dependency_overrides.clear()
 
@@ -44,16 +48,21 @@ def test_get_carpetas_usuario_con_uploads():
         usuario=usuario
     )
 
-    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_usuario_raiz") as mock_obtener:
-        mock_obtener.return_value = [carpeta]
+    with patch("app.routes.folder_routes.folder_services.obtener_carpetas_usuario_raiz_paginadas") as mock_obtener:
+        mock_obtener.return_value = (1, [carpeta])
 
-        response = client.get("/api/folders")
+        response = client.get("/api/folders?page=1&limit=25")
 
     assert response.status_code == 200
+
     json_response = response.json()
 
-    assert len(json_response) == 1
-    assert json_response[0]["nombre_original"] == carpeta.nombre_original
-    assert json_response[0]["nombre_usuario"] == usuario.nombre
+    assert json_response["total"] == 1
+    assert len(json_response["items"]) == 1
+
+    item = json_response["items"][0]
+
+    assert item["nombre_original"] == carpeta.nombre_original
+    assert item["nombre_usuario"] == usuario.nombre
 
     app.dependency_overrides.clear()
