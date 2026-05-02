@@ -192,7 +192,7 @@ def obtener_archivo_permisos(id_archivo: uuid.UUID, usuario: User, db: Session) 
             obtener_carpeta_usuario_permisos(
                 id_carpeta=archivo.id_carpeta, usuario=usuario, db=db)
 
-            # Si la carpeta no lanza excepción, tiene permisos
+            # Si la carpeta no lanza excepción, tiene permisos y descargamos
             return archivo
     except CarpetaNoEncontradaException:
         raise ArchivoNoEncontradoException(
