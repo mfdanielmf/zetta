@@ -18,6 +18,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 
 import { useInsertFiles, useMoveFileTrash } from '@/queries/useFilesQuery'
 import {
@@ -45,6 +53,8 @@ import { toast } from 'vue-sonner'
 import { useShareFile } from '@/queries/useSharedFilesQuery'
 import { downloadFolderService } from '@/services/folder.services'
 import { useGetItemsUser } from '@/queries/useItemsQuery'
+import PaginationFirst from '@/components/ui/pagination/PaginationFirst.vue'
+import PaginationLast from '@/components/ui/pagination/PaginationLast.vue'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
@@ -79,7 +89,10 @@ const {
   isPending: pendingCompartirArchivo,
 } = useShareFile()
 
-const { data: dataItems, isLoading: loadingItems } = useGetItemsUser()
+const pagina = ref<number>(1)
+const limite = 25
+
+const { data: dataItems, isLoading: loadingItems } = useGetItemsUser(pagina, limite)
 
 const noData = computed(() => {
   if (!dataItems.value || dataItems.value.total < 1) {
@@ -238,7 +251,11 @@ async function descargarCarpeta(id: string, nombre: string) {
         <TableRow
           v-for="item in dataItems?.items"
           :key="item.id"
-          @click="handleNavigationDetallesCarpeta(item.id, item.nombre_original)"
+          @click="
+            item.tipo === 'folder'
+              ? handleNavigationDetallesCarpeta(item.id, item.nombre_original)
+              : null
+          "
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
           <TableCell class="font-medium">
@@ -306,5 +323,32 @@ async function descargarCarpeta(id: string, nombre: string) {
         </TableRow>
       </TableBody>
     </Table>
+  </div>
+
+  <div class="flex flex-col gap-6 pt-10">
+    <Pagination
+      v-if="dataItems && dataItems.total > 0"
+      v-slot="{ page }"
+      :items-per-page="dataItems.limite"
+      :total="dataItems?.total"
+      v-model:page="pagina"
+    >
+      <PaginationContent v-slot="{ items }">
+        <PaginationPrevious />
+        <PaginationFirst />
+        <template v-for="(item, index) in items" :key="index">
+          <PaginationItem
+            v-if="item.type === 'page'"
+            :value="item.value"
+            :is-active="item.value === page"
+          >
+            {{ item.value }}
+          </PaginationItem>
+        </template>
+        <PaginationEllipsis :index="4" />
+        <PaginationLast />
+        <PaginationNext />
+      </PaginationContent>
+    </Pagination>
   </div>
 </template>

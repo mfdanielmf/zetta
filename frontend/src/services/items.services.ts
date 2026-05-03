@@ -2,9 +2,9 @@ import itemsApi from '@/api/items/items.api'
 import axios from 'axios'
 import { toast } from 'vue-sonner'
 
-export async function getItemsService() {
+export async function getItemsService(pagina: number, limite: number) {
   try {
-    const req = await itemsApi.obtenerItems()
+    const req = await itemsApi.obtenerItems({ pagina, limite })
 
     return req.data
   } catch (e: unknown) {
