@@ -99,3 +99,7 @@ def get_all_files_in_folder_paginados(id_carpeta: uuid.UUID, db: Session, id_usu
 
 def get_files_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[File]:
     return db.query(File).filter(File.id_usuario == id_usuario, File.id_carpeta == None, File.fecha_eliminacion == None).order_by(File.fecha_creacion.desc()).all()
+
+
+def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID) -> list[File]:
+    return db.query(File).filter_by(id_carpeta=id_carpeta, id_usuario=id_usuario).order_by(File.fecha_creacion.desc()).all()

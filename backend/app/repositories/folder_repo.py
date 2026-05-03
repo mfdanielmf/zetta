@@ -104,3 +104,6 @@ def get_folders_inside_folder_paginadas(id_carpeta: uuid.UUID, id_usuario: uuid.
 
 def get_folders_user_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
     return db.query(Folder).filter(Folder.id_usuario == id_usuario, Folder.id_carpeta == None, Folder.fecha_eliminacion == None).order_by(Folder.fecha_creacion.desc()).all()
+
+def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session) -> list[Folder]:
+    return db.query(Folder).filter_by(id_carpeta=id_carpeta, id_usuario=id_usuario).order_by(Folder.fecha_creacion.desc()).all()
