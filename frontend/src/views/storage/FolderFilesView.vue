@@ -10,6 +10,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import DropdownMenuGroup from '@/components/ui/dropdown-menu/DropdownMenuGroup.vue'
+import Pagination from '@/components/ui/pagination/Pagination.vue'
+import PaginationContent from '@/components/ui/pagination/PaginationContent.vue'
+import PaginationEllipsis from '@/components/ui/pagination/PaginationEllipsis.vue'
+import PaginationFirst from '@/components/ui/pagination/PaginationFirst.vue'
+import PaginationItem from '@/components/ui/pagination/PaginationItem.vue'
+import PaginationLast from '@/components/ui/pagination/PaginationLast.vue'
+import PaginationNext from '@/components/ui/pagination/PaginationNext.vue'
+import PaginationPrevious from '@/components/ui/pagination/PaginationPrevious.vue'
 import {
   Table,
   TableBody,
@@ -19,12 +27,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  useCreateFolderAnidada,
-  useGetFilesFolder,
-  useGetFoldersAnidadas,
-  useUploadFileFolder,
-} from '@/queries/useFoldersQuery'
+import { useCreateFolderAnidada, useUploadFileFolder } from '@/queries/useFoldersQuery'
+import { useGetFolderItems } from '@/queries/useItemsQuery'
 import { useShareFile } from '@/queries/useSharedFilesQuery'
 import { useShareFolder } from '@/queries/useSharedFoldersQuery'
 
@@ -55,28 +59,14 @@ const folderStore = useFolderStore()
 
 const idCarpeta = computed(() => route.params.id as string)
 
-const cargando = computed(() => {
-  if (loadingArchivos.value || loadingCarpetasAnidadas.value) {
-    return true
-  }
-
-  return false
-})
-
 const noData = computed(() => {
-  if (
-    (!dataArchivos.value || dataArchivos.value.total < 1) &&
-    (!dataCarpetasAnidadas.value || dataCarpetasAnidadas.value.total < 1)
-  ) {
+  if (!dataItems.value || dataItems.value.total < 1) {
     return true
   }
 
   return false
 })
 
-const { data: dataArchivos, isLoading: loadingArchivos } = useGetFilesFolder(idCarpeta)
-const { data: dataCarpetasAnidadas, isLoading: loadingCarpetasAnidadas } =
-  useGetFoldersAnidadas(idCarpeta)
 const mutacionSubir = useUploadFileFolder()
 const {
   mutateAsync: mutateCreate,
@@ -93,6 +83,11 @@ const {
   isSuccess: successCompartirArchivo,
   isPending: pendingCompartirArchivo,
 } = useShareFile()
+
+const pagina = ref<number>(1)
+const limite = 25
+
+const { data: dataItems, isLoading: loadingItems } = useGetFolderItems(idCarpeta, pagina, limite)
 
 const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
@@ -220,8 +215,8 @@ async function descargarCarpeta(id: string, nombre: string) {
     />
 
     <Table>
-      <TableCaption v-if="cargando || noData">
-        {{ cargando ? 'Cargando...' : 'Los archivos y carpetas que subas se mostrarán aquí.' }}
+      <TableCaption v-if="loadingItems || noData">
+        {{ loadingItems ? 'Cargando...' : 'Los archivos y carpetas que subas se mostrarán aquí.' }}
       </TableCaption>
 
       <TableHeader class="bg-neutral-100">
@@ -235,25 +230,31 @@ async function descargarCarpeta(id: string, nombre: string) {
       </TableHeader>
 
       <TableBody v-if="!noData">
-        <!-- Carpetas -->
         <TableRow
-          v-for="folder in dataCarpetasAnidadas?.items"
-          :key="folder.id"
-          class="hover:cursor-pointer"
-          @click="handleNavigationDetallesCarpeta(folder.id, folder.nombre_original)"
+          v-for="item in dataItems?.items"
+          :key="item.id"
+          @click="
+            item.tipo === 'folder'
+              ? handleNavigationDetallesCarpeta(item.id, item.nombre_original)
+              : null
+          "
+          :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
-              <Folder :size="20" />
-              {{ folder.nombre_original }}
+              <Folder :size="20" v-if="item.tipo === 'folder'" />
+              <component :is="getIconExtension(item.nombre_original)" :size="20" v-else />
+              {{ item.nombre_original }}
             </div>
           </TableCell>
           <TableCell class="font-medium">
-            {{ folder.nombre_usuario }}
+            {{ item.nombre_usuario }}
           </TableCell>
-          <TableCell class="font-medium"> - </TableCell>
           <TableCell class="font-medium">
-            {{ formatDateService(folder.fecha_creacion) }}
+            {{ item.tipo === 'file' ? formatearTamañoService(item.tamaño_bytes) : '-' }}
+          </TableCell>
+          <TableCell class="font-medium">
+            {{ formatDateService(item.fecha_creacion) }}
           </TableCell>
           <TableCell>
             <DropdownMenu>
@@ -267,60 +268,22 @@ async function descargarCarpeta(id: string, nombre: string) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   class="hover:cursor-pointer"
-                  @click="descargarCarpeta(folder.id, folder.nombre_original)"
+                  @click="
+                    item.tipo === 'folder'
+                      ? descargarCarpeta(item.id, item.nombre_original)
+                      : descargarArchivo(item.id, item.nombre_original)
+                  "
                 >
                   <Download />
                   Descargar
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   class="hover:cursor-pointer"
-                  @click="abrirCompartirCarpeta(folder.id)"
-                >
-                  <Share2 />
-                  Compartir
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TableCell>
-        </TableRow>
-
-        <!-- Archivos -->
-        <TableRow v-for="file in dataArchivos?.items" :key="file.id">
-          <TableCell class="font-medium">
-            <div class="flex items-center gap-2">
-              <component :is="getIconExtension(file.nombre_original)" :size="20" />
-              {{ file.nombre_original }}
-            </div>
-          </TableCell>
-          <TableCell class="font-medium">
-            {{ file.nombre_usuario }}
-          </TableCell>
-          <TableCell class="font-medium">
-            {{ formatearTamañoService(file.tamaño_bytes) }}
-          </TableCell>
-          <TableCell class="font-medium">
-            {{ formatDateService(file.fecha_creacion) }}
-          </TableCell>
-          <TableCell>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button variant="outline" size="icon" class="hover:cursor-pointer">
-                  <Ellipsis />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  class="hover:cursor-pointer"
-                  @click="descargarArchivo(file.id, file.nombre_original)"
-                >
-                  <Download />
-                  Descargar
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  class="hover:cursor-pointer"
-                  @click="abrirCompartirArchivo(file.id)"
+                  @click="
+                    item.tipo === 'folder'
+                      ? abrirCompartirCarpeta(item.id)
+                      : abrirCompartirArchivo(item.id)
+                  "
                 >
                   <Share2 />
                   Compartir
@@ -331,5 +294,32 @@ async function descargarCarpeta(id: string, nombre: string) {
         </TableRow>
       </TableBody>
     </Table>
+  </div>
+
+  <div class="flex flex-col gap-6 pt-10">
+    <Pagination
+      v-if="dataItems && dataItems.total > 0"
+      v-slot="{ page }"
+      :items-per-page="dataItems.limite"
+      :total="dataItems?.total"
+      v-model:page="pagina"
+    >
+      <PaginationContent v-slot="{ items }">
+        <PaginationPrevious />
+        <PaginationFirst />
+        <template v-for="(item, index) in items" :key="index">
+          <PaginationItem
+            v-if="item.type === 'page'"
+            :value="item.value"
+            :is-active="item.value === page"
+          >
+            {{ item.value }}
+          </PaginationItem>
+        </template>
+        <PaginationEllipsis :index="4" />
+        <PaginationLast />
+        <PaginationNext />
+      </PaginationContent>
+    </Pagination>
   </div>
 </template>
