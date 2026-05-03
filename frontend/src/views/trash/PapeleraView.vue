@@ -18,20 +18,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { useDeleteFilePermanent, useGetFilesTrash, useRestoreFile } from '@/queries/useFilesQuery'
+import { useDeleteFilePermanent, useRestoreFile } from '@/queries/useFilesQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { Ellipsis, Folder, RefreshCcw, Trash2 } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
-import {
-  useDeleteFolderPermanent,
-  useGetFoldersTrash,
-  useRestoreFolder,
-} from '@/queries/useFoldersQuery'
+import { useDeleteFolderPermanent, useRestoreFolder } from '@/queries/useFoldersQuery'
 import getIconExtension from '@/utils/iconMap'
 import { useRouter } from 'vue-router'
 import { useFolderStore } from '@/stores/folder.store'
 import DialogEliminarArchivo from '@/components/files/DialogEliminarArchivo.vue'
 import DialogEliminarCarpeta from '@/components/folders/DialogEliminarCarpeta.vue'
+import { useGetItemsPapelera } from '@/queries/useItemsQuery'
+import PaginationContent from '@/components/ui/pagination/PaginationContent.vue'
+import Pagination from '@/components/ui/pagination/Pagination.vue'
+import PaginationFirst from '@/components/ui/pagination/PaginationFirst.vue'
+import PaginationItem from '@/components/ui/pagination/PaginationItem.vue'
+import PaginationEllipsis from '@/components/ui/pagination/PaginationEllipsis.vue'
+import PaginationLast from '@/components/ui/pagination/PaginationLast.vue'
+import PaginationNext from '@/components/ui/pagination/PaginationNext.vue'
+import PaginationPrevious from '@/components/ui/pagination/PaginationPrevious.vue'
 
 const router = useRouter()
 const folderStore = useFolderStore()
@@ -39,9 +44,9 @@ const folderStore = useFolderStore()
 const eliminarArchivoAbierto = ref<boolean>(false)
 const eliminarCarpetaAbierto = ref<boolean>(false)
 const idEliminar = ref<string>('')
+const pagina = ref<number>(1)
+const limite = 25
 
-const { data: dataFolders, isLoading: loadingFolders } = useGetFoldersTrash()
-const { data: dataFiles, isLoading: loadingFiles } = useGetFilesTrash()
 const { mutateAsync: mutateRestoreFile } = useRestoreFile()
 const { mutateAsync: mutateRestoreFolder } = useRestoreFolder()
 const {
@@ -55,19 +60,10 @@ const {
   isSuccess: successDeleteFolder,
 } = useDeleteFolderPermanent()
 
-const cargando = computed(() => {
-  if (loadingFiles.value || loadingFolders.value) {
-    return true
-  }
-
-  return false
-})
+const { data: dataItems, isLoading: loadingItems } = useGetItemsPapelera(pagina, limite)
 
 const noData = computed(() => {
-  if (
-    (!dataFiles.value || dataFiles.value.length < 1) &&
-    (!dataFolders.value || dataFolders.value.length < 1)
-  ) {
+  if (!dataItems.value || dataItems.value.total < 1) {
     return true
   }
 
@@ -133,9 +129,9 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
 
   <div class="space-y-2">
     <Table>
-      <TableCaption v-if="cargando || noData">
+      <TableCaption v-if="loadingItems || noData">
         {{
-          cargando
+          loadingItems
             ? 'Cargando...'
             : 'Los archivos y carpetas que mandes a la papelera se mostrarán aquí.'
         }}
@@ -154,23 +150,30 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
       <TableBody v-if="!noData">
         <!-- Carpetas -->
         <TableRow
-          v-for="folder in dataFolders"
-          :key="folder.id"
-          @click="handleNavigationDetallesCarpeta(folder.id, folder.nombre_original)"
-          class="hover:cursor-pointer"
+          v-for="item in dataItems?.items"
+          :key="item.id"
+          @click="
+            item.tipo === 'folder'
+              ? handleNavigationDetallesCarpeta(item.id, item.nombre_original)
+              : null
+          "
+          :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
-              <Folder :size="20" />
-              {{ folder.nombre_original }}
+              <Folder :size="20" v-if="item.tipo === 'folder'" />
+              <component :is="getIconExtension(item.nombre_original)" :size="20" v-else />
+              {{ item.nombre_original }}
             </div>
           </TableCell>
           <TableCell class="font-medium">
-            {{ folder.nombre_usuario }}
+            {{ item.nombre_usuario }}
           </TableCell>
-          <TableCell class="font-medium"> - </TableCell>
           <TableCell class="font-medium">
-            {{ folder.fecha_eliminacion ? formatDateService(folder.fecha_eliminacion) : '-' }}
+            {{ item.tipo === 'file' ? formatearTamañoService(item.tamaño_bytes) : '-' }}
+          </TableCell>
+          <TableCell class="font-medium">
+            {{ item.fecha_eliminacion ? formatDateService(item.fecha_eliminacion) : '-' }}
           </TableCell>
           <TableCell>
             <DropdownMenu>
@@ -182,56 +185,22 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem class="hover:cursor-pointer" @click="restaurarCarpeta(folder.id)">
-                  <RefreshCcw />
-                  Restaurar
-                </DropdownMenuItem>
                 <DropdownMenuItem
                   class="hover:cursor-pointer"
-                  @click="handleOpenDialogCarpeta(folder.id)"
+                  @click="
+                    item.tipo === 'folder' ? restaurarCarpeta(item.id) : restaurarArchivo(item.id)
+                  "
                 >
-                  <Trash2 />
-                  Eliminar definitivamente
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TableCell>
-        </TableRow>
-
-        <!-- Archivos -->
-        <TableRow v-for="file in dataFiles" :key="file.id">
-          <TableCell class="font-medium">
-            <div class="flex items-center gap-2">
-              <component :is="getIconExtension(file.nombre_original)" :size="20" />
-              {{ file.nombre_original }}
-            </div>
-          </TableCell>
-          <TableCell class="font-medium">
-            {{ file.nombre_usuario }}
-          </TableCell>
-          <TableCell class="font-medium">
-            {{ formatearTamañoService(file.tamaño_bytes) }}
-          </TableCell>
-          <TableCell class="font-medium">
-            {{ file.fecha_eliminacion ? formatDateService(file.fecha_eliminacion) : '-' }}
-          </TableCell>
-          <TableCell>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button variant="outline" size="icon" class="hover:cursor-pointer">
-                  <Ellipsis />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem class="hover:cursor-pointer" @click="restaurarArchivo(file.id)">
                   <RefreshCcw />
                   Restaurar
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   class="hover:cursor-pointer"
-                  @click="handleOpenDialogArchivo(file.id)"
+                  @click="
+                    item.tipo === 'folder'
+                      ? handleOpenDialogCarpeta(item.id)
+                      : handleOpenDialogArchivo(item.id)
+                  "
                 >
                   <Trash2 />
                   Eliminar definitivamente
@@ -242,5 +211,32 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
         </TableRow>
       </TableBody>
     </Table>
+  </div>
+
+  <div class="flex flex-col gap-6 pt-10">
+    <Pagination
+      v-if="dataItems && dataItems.total > 0"
+      v-slot="{ page }"
+      :items-per-page="dataItems.limite"
+      :total="dataItems?.total"
+      v-model:page="pagina"
+    >
+      <PaginationContent v-slot="{ items }">
+        <PaginationPrevious />
+        <PaginationFirst />
+        <template v-for="(item, index) in items" :key="index">
+          <PaginationItem
+            v-if="item.type === 'page'"
+            :value="item.value"
+            :is-active="item.value === page"
+          >
+            {{ item.value }}
+          </PaginationItem>
+        </template>
+        <PaginationEllipsis :index="4" />
+        <PaginationLast />
+        <PaginationNext />
+      </PaginationContent>
+    </Pagination>
   </div>
 </template>

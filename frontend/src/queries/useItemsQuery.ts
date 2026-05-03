@@ -1,4 +1,8 @@
-import { getItemsFolderService, getItemsService } from '@/services/items.services'
+import {
+  getItemsFolderService,
+  getItemsService,
+  getItemsTrashService,
+} from '@/services/items.services'
 import { useAuthStore } from '@/stores/auth.store'
 import { useQuery } from '@tanstack/vue-query'
 import { computed, type ComputedRef, type Ref } from 'vue'
@@ -24,5 +28,15 @@ export function useGetFolderItems(
     queryKey: ['itemsCarpeta', authStore.usuario?.id, idCarpeta, pagina],
     queryFn: () => getItemsFolderService(idCarpeta.value, pagina.value, limite),
     enabled: computed(() => !!authStore.usuario?.id && !!idCarpeta.value),
+  })
+}
+
+export function useGetItemsPapelera(pagina: Ref<number>, limite: number = 25) {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['itemsPapelera', authStore.usuario?.id, pagina],
+    queryFn: () => getItemsTrashService(pagina.value, limite),
+    enabled: !!authStore.usuario?.id,
   })
 }
