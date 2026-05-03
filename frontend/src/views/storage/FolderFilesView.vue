@@ -85,7 +85,7 @@ const {
 } = useShareFile()
 
 const pagina = ref<number>(1)
-const limite = 1
+const limite = 25
 
 const { data: dataItems, isLoading: loadingItems } = useGetFolderItems(idCarpeta, pagina, limite)
 
