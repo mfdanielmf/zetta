@@ -107,3 +107,6 @@ def get_folders_user_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[Fol
 
 def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session) -> list[Folder]:
     return db.query(Folder).filter_by(id_carpeta=id_carpeta, id_usuario=id_usuario).order_by(Folder.fecha_creacion.desc()).all()
+
+def get_all_folders_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
+    return db.query(Folder).filter(Folder.id_usuario == id_usuario, Folder.fecha_eliminacion != None, Folder.id_carpeta == None).order_by(Folder.fecha_eliminacion.desc()).all()
