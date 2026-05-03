@@ -60,14 +60,13 @@ export function useGetFilesFolder(idCarpeta: ComputedRef<string>) {
 
 export function useUploadFileFolder() {
   const queryClient = useQueryClient()
-  const authStore = useAuthStore()
 
   return useMutation({
     mutationFn: ({ idCarpeta, data }: { idCarpeta: string; data: FormData }) =>
       subirArchivoCarpetaService(idCarpeta, data),
-    onSuccess: (data, variables) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ['archivosCarpeta', authStore.usuario?.id, variables.idCarpeta],
+        queryKey: ['itemsCarpeta'],
       })
 
       toast.success(data?.msg || 'Se han subido los archivos correctamente')
@@ -84,7 +83,6 @@ export function useUploadFileFolder() {
 
 export function useCreateFolderAnidada() {
   const queryClient = useQueryClient()
-  const authStore = useAuthStore()
 
   return useMutation({
     mutationFn: ({
@@ -94,9 +92,9 @@ export function useCreateFolderAnidada() {
       idCarpetaPadre: string
       nombreCarpeta: string
     }) => crearCarpetaAnidadaService(idCarpetaPadre, nombreCarpeta),
-    onSuccess: (data, variables) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ['carpetasAnidadas', authStore.usuario?.id, variables.idCarpetaPadre],
+        queryKey: ['itemsCarpeta'],
       })
 
       toast.success(data?.msg || 'Carpeta creada correctamente')
@@ -127,7 +125,7 @@ export function useMoveFolderTrash() {
 
   return useMutation({
     mutationFn: (idCarpeta: string) => sendFolderTrashService(idCarpeta),
-    onSuccess: (data, idCarpeta) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ['items'],
       })
@@ -137,11 +135,7 @@ export function useMoveFolderTrash() {
       })
 
       queryClient.invalidateQueries({
-        queryKey: ['archivosCarpeta', authStore.usuario?.id, idCarpeta],
-      })
-
-      queryClient.invalidateQueries({
-        queryKey: ['carpetasAnidadas', authStore.usuario?.id, idCarpeta],
+        queryKey: ['itemsCarpeta'],
       })
 
       toast.success(data?.msg || 'Carpeta eliminada correctamente. Puedes verla en la papelera')
@@ -172,7 +166,7 @@ export function useRestoreFolder() {
 
   return useMutation({
     mutationFn: (idCarpeta: string) => restoreFolderService(idCarpeta),
-    onSuccess: (data, idCarpeta) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ['items'],
       })
@@ -182,11 +176,7 @@ export function useRestoreFolder() {
       })
 
       queryClient.invalidateQueries({
-        queryKey: ['archivosCarpeta', authStore.usuario?.id, idCarpeta],
-      })
-
-      queryClient.invalidateQueries({
-        queryKey: ['carpetasAnidadas', authStore.usuario?.id, idCarpeta],
+        queryKey: ['itemsCarpeta'],
       })
 
       toast.success(data?.msg || 'Carpeta restaurada correctamente')
