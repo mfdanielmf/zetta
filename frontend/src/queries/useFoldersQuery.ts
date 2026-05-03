@@ -20,12 +20,11 @@ import { toast } from 'vue-sonner'
 
 export function useCreateFolder() {
   const queryClient = useQueryClient()
-  const authStore = useAuthStore()
 
   return useMutation({
     mutationFn: (nombre: string) => crearCarpetasService(nombre),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['carpetas', authStore.usuario?.id] })
+      queryClient.invalidateQueries({ queryKey: ['items'] })
 
       toast.success(data?.msg || 'Se ha creado la carpeta correctamente')
     },
@@ -130,7 +129,7 @@ export function useMoveFolderTrash() {
     mutationFn: (idCarpeta: string) => sendFolderTrashService(idCarpeta),
     onSuccess: (data, idCarpeta) => {
       queryClient.invalidateQueries({
-        queryKey: ['carpetas', authStore.usuario?.id],
+        queryKey: ['items'],
       })
 
       queryClient.invalidateQueries({
@@ -175,7 +174,7 @@ export function useRestoreFolder() {
     mutationFn: (idCarpeta: string) => restoreFolderService(idCarpeta),
     onSuccess: (data, idCarpeta) => {
       queryClient.invalidateQueries({
-        queryKey: ['carpetas', authStore.usuario?.id],
+        queryKey: ['items'],
       })
 
       queryClient.invalidateQueries({
