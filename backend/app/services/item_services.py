@@ -48,3 +48,20 @@ def obtener_items_carpeta_paginados(id_carpeta: UUID, usuario: User, db: Session
     items_paginados = items[offset: offset + limite]
 
     return total, items_paginados
+
+
+def obtener_items_papelera_paginados(usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[Union[Folder, File]]]:
+    offset: int = (pagina - 1) * limite
+
+    carpetas: list[Folder] = folder_repo.get_all_folders_trash_raiz_sorted(
+        id_usuario=usuario.id, db=db)
+    archivos: list[File] = file_repo.get_all_files_trash_raiz_sorted(
+        id_usuario=usuario.id, db=db)
+
+    items: list[Union[Folder, File]] = carpetas + archivos
+
+    total: int = len(items)
+
+    items_paginados = items[offset: offset + limite]
+
+    return total, items_paginados
