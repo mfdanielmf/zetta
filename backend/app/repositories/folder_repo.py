@@ -100,3 +100,7 @@ def get_folders_inside_folder_paginadas(id_carpeta: uuid.UUID, id_usuario: uuid.
         Folder.fecha_creacion.desc()).offset(offset).limit(limit).all()
 
     return total, carpetas
+
+
+def get_folders_user_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
+    return db.query(Folder).filter(Folder.id_usuario == id_usuario, Folder.id_carpeta == None, Folder.fecha_eliminacion == None).order_by(Folder.fecha_creacion.desc()).all()
