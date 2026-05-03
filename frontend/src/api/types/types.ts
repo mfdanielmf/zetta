@@ -10,7 +10,7 @@ export type MeResponse = components['schemas']['MeResponse']
 export type LogoutResponse = components['schemas']['LogoutResponse']
 
 // FILES
-export type GetFilesResponse = components['schemas']['FileBase'][]
+export type GetFilesResponse = components['schemas']['PaginatedFileResponse']
 export type PostFilesResponse = components['schemas']['FileResponse']
 export type SendFileTrashResponse = components['schemas']['AddFileTrashResponse']
 export type GetFilesTrashResponse = components['schemas']['FileBase'][]
@@ -19,11 +19,11 @@ export type DeleteFilePermanentResponse = components['schemas']['DeleteFilePerma
 
 // FOLDERS
 export type CreateFolderResponse = components['schemas']['FolderResponse']
-export type GetFoldersResponse = components['schemas']['FolderBase'][]
-export type GetFilesFolderResponse = components['schemas']['FileBase'][]
+export type GetFoldersResponse = components['schemas']['PaginatedFolderResponse']
+export type GetFilesFolderResponse = components['schemas']['PaginatedFileResponse']
 export type UploadFileFolderResponse = components['schemas']['UploadFileFolderResponse']
 export type CreateFolderAnidadaResponse = components['schemas']['FolderResponse']
-export type GetFoldersAnidada = components['schemas']['FolderBase'][]
+export type GetFoldersAnidada = components['schemas']['PaginatedFolderResponse']
 export type SendFolderTrashResponse = components['schemas']['AddFolderTrashResponse']
 export type GetFoldersTrashResponse = components['schemas']['FolderBase'][]
 export type RestoreFolderResponse = components['schemas']['RestoreFolderResponse']
@@ -40,3 +40,6 @@ export type ShareFileResponse = components['schemas']['ShareFileResponse']
 export type ShareFolderRequest = components['schemas']['ShareFolderRequest']
 export type ShareFolderResponse = components['schemas']['ShareFolderResponse']
 export type GetReceivedFoldersResponse = components['schemas']['CarpetaCompartidaBase'][]
+
+//ITEMS
+export type GetItemsResponse = components['schemas']['PaginatedItemResponse']

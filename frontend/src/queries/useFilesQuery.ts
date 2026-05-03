@@ -23,12 +23,12 @@ export function useGetFilesUser() {
 
 export function useInsertFiles() {
   const queryClient = useQueryClient()
-  const authStore = useAuthStore()
+  // const authStore = useAuthStore()
 
   return useMutation({
     mutationFn: (data: FormData) => insertarFilesService(data),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['archivos', authStore.usuario?.id] })
+      queryClient.invalidateQueries({ queryKey: ['items'] })
 
       toast.success(data?.msg || 'Se han subido los archivos correctamente')
     },
@@ -51,7 +51,7 @@ export function useMoveFileTrash() {
     onSuccess: (data) => {
       //Invalidar archivos del almacenamiento y archivos de la papelera
       queryClient.invalidateQueries({
-        queryKey: ['archivos', authStore.usuario?.id],
+        queryKey: ['items', authStore.usuario?.id],
       })
 
       queryClient.invalidateQueries({
@@ -89,7 +89,7 @@ export function useRestoreFile() {
     onSuccess: (data) => {
       //Invalidar archivos del almacenamiento y archivos de la papelera
       queryClient.invalidateQueries({
-        queryKey: ['archivos', authStore.usuario?.id],
+        queryKey: ['items', authStore.usuario?.id],
       })
 
       queryClient.invalidateQueries({
