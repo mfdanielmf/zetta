@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Literal, Union
 
 from pydantic import BaseModel
 
@@ -7,11 +7,11 @@ from app.schemas.folder_schemas import FolderBase
 
 
 class FileItem(FileBase):
-    tipo: str = "file"
+    tipo: Literal["file"] = "file"
 
 
 class FolderItem(FolderBase):
-    tipo: str = "folder"
+    tipo: Literal["folder"] = "folder"
 
 
 class PaginatedItemResponse(BaseModel):

@@ -403,6 +403,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Items */
+        get: operations["get_items_api_v2_items_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -507,6 +524,42 @@ export interface components {
             /** Fecha Eliminacion */
             fecha_eliminacion?: string | null;
         };
+        /** FileItem */
+        FileItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Nombre Original */
+            nombre_original: string;
+            /** Path */
+            path: string;
+            /**
+             * Fecha Creacion
+             * Format: date-time
+             */
+            fecha_creacion: string;
+            /** Tamaño Bytes */
+            "tama\u00F1o_bytes": number;
+            /**
+             * Id Usuario
+             * Format: uuid
+             */
+            id_usuario: string;
+            /** Id Carpeta */
+            id_carpeta?: string | null;
+            /** Nombre Usuario */
+            nombre_usuario: string;
+            /** Fecha Eliminacion */
+            fecha_eliminacion?: string | null;
+            /**
+             * Tipo
+             * @default file
+             * @constant
+             */
+            tipo: "file";
+        };
         /** FileResponse */
         FileResponse: {
             /** Msg */
@@ -541,6 +594,40 @@ export interface components {
             id_carpeta?: string | null;
             /** Fecha Eliminacion */
             fecha_eliminacion?: string | null;
+        };
+        /** FolderItem */
+        FolderItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Nombre Original */
+            nombre_original: string;
+            /** Path */
+            path: string;
+            /**
+             * Fecha Creacion
+             * Format: date-time
+             */
+            fecha_creacion: string;
+            /**
+             * Id Usuario
+             * Format: uuid
+             */
+            id_usuario: string;
+            /** Nombre Usuario */
+            nombre_usuario: string;
+            /** Id Carpeta */
+            id_carpeta?: string | null;
+            /** Fecha Eliminacion */
+            fecha_eliminacion?: string | null;
+            /**
+             * Tipo
+             * @default folder
+             * @constant
+             */
+            tipo: "folder";
         };
         /** FolderRequest */
         FolderRequest: {
@@ -595,6 +682,17 @@ export interface components {
         PaginatedFolderResponse: {
             /** Items */
             items: components["schemas"]["FolderBase"][];
+            /** Total */
+            total: number;
+            /** Pagina */
+            pagina: number;
+            /** Limite */
+            limite: number;
+        };
+        /** PaginatedItemResponse */
+        PaginatedItemResponse: {
+            /** Items */
+            items: (components["schemas"]["FolderItem"] | components["schemas"]["FileItem"])[];
             /** Total */
             total: number;
             /** Pagina */
@@ -1747,6 +1845,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedSharedFolderResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_items_api_v2_items_get: {
+        parameters: {
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: {
+                access_token?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedItemResponse"];
                 };
             };
             /** @description Validation Error */

@@ -40,3 +40,6 @@ export type ShareFileResponse = components['schemas']['ShareFileResponse']
 export type ShareFolderRequest = components['schemas']['ShareFolderRequest']
 export type ShareFolderResponse = components['schemas']['ShareFolderResponse']
 export type GetReceivedFoldersResponse = components['schemas']['CarpetaCompartidaBase'][]
+
+//ITEMS
+export type GetItemsResponse = components['schemas']['PaginatedItemResponse']
