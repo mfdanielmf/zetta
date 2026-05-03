@@ -90,8 +90,8 @@ const cargando = computed(() => {
 
 const noData = computed(() => {
   if (
-    (!dataFiles.value || dataFiles.value.length < 1) &&
-    (!dataFolders.value || dataFolders.value.length < 1)
+    (!dataFiles.value || dataFiles.value.total < 1) &&
+    (!dataFolders.value || dataFolders.value.total < 1)
   ) {
     return true
   }
@@ -247,7 +247,7 @@ async function descargarCarpeta(id: string, nombre: string) {
       <TableBody v-if="!noData">
         <!-- Carpetas -->
         <TableRow
-          v-for="folder in dataFolders"
+          v-for="folder in dataFolders?.items"
           :key="folder.id"
           @click="handleNavigationDetallesCarpeta(folder.id, folder.nombre_original)"
           class="hover:cursor-pointer"
@@ -302,7 +302,7 @@ async function descargarCarpeta(id: string, nombre: string) {
         </TableRow>
 
         <!-- Archivos -->
-        <TableRow v-for="file in dataFiles" :key="file.id">
+        <TableRow v-for="file in dataFiles?.items" :key="file.id">
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
               <component :is="getIconExtension(file.nombre_original)" :size="20" />

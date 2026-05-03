@@ -580,6 +580,50 @@ export interface components {
         MeResponse: {
             usuario: components["schemas"]["UserReturn"];
         };
+        /** PaginatedFileResponse */
+        PaginatedFileResponse: {
+            /** Items */
+            items: components["schemas"]["FileBase"][];
+            /** Total */
+            total: number;
+            /** Pagina */
+            pagina: number;
+            /** Limite */
+            limite: number;
+        };
+        /** PaginatedFolderResponse */
+        PaginatedFolderResponse: {
+            /** Items */
+            items: components["schemas"]["FolderBase"][];
+            /** Total */
+            total: number;
+            /** Pagina */
+            pagina: number;
+            /** Limite */
+            limite: number;
+        };
+        /** PaginatedSharedFileResponse */
+        PaginatedSharedFileResponse: {
+            /** Items */
+            items: components["schemas"]["ArchivoCompartidoBase"][];
+            /** Total */
+            total: number;
+            /** Pagina */
+            pagina: number;
+            /** Limite */
+            limite: number;
+        };
+        /** PaginatedSharedFolderResponse */
+        PaginatedSharedFolderResponse: {
+            /** Items */
+            items: components["schemas"]["CarpetaCompartidaBase"][];
+            /** Total */
+            total: number;
+            /** Pagina */
+            pagina: number;
+            /** Limite */
+            limite: number;
+        };
         /** RegisterResponse */
         RegisterResponse: {
             /** Msg */
@@ -826,7 +870,10 @@ export interface operations {
     };
     get_files_api_files_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path?: never;
             cookie?: {
@@ -841,7 +888,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FileBase"][];
+                    "application/json": components["schemas"]["PaginatedFileResponse"];
                 };
             };
             /** @description Validation Error */
@@ -892,7 +939,10 @@ export interface operations {
     };
     get_files_trash_api_files_trash_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path?: never;
             cookie?: {
@@ -907,7 +957,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FileBase"][];
+                    "application/json": components["schemas"]["PaginatedFileResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1053,7 +1103,10 @@ export interface operations {
     };
     get_folders_api_folders_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path?: never;
             cookie?: {
@@ -1068,7 +1121,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FolderBase"][];
+                    "application/json": components["schemas"]["PaginatedFolderResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1119,7 +1172,10 @@ export interface operations {
     };
     get_folders_trash_api_folders_trash_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path?: never;
             cookie?: {
@@ -1134,7 +1190,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FolderBase"][];
+                    "application/json": components["schemas"]["PaginatedFolderResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1183,7 +1239,10 @@ export interface operations {
     };
     get_files_of_folder_on_trash_api_folders_trash__id_carpeta__files_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path: {
                 id_carpeta: string;
@@ -1200,7 +1259,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FileBase"][];
+                    "application/json": components["schemas"]["PaginatedFileResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1216,7 +1275,10 @@ export interface operations {
     };
     get_folders_inside_folder_on_trash_api_folders_trash__id_carpeta__folders_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path: {
                 id_carpeta: string;
@@ -1233,7 +1295,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FolderBase"][];
+                    "application/json": components["schemas"]["PaginatedFolderResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1348,7 +1410,10 @@ export interface operations {
     };
     get_files_of_folder_api_folders__id_carpeta__files_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path: {
                 id_carpeta: string;
@@ -1365,7 +1430,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FileBase"][];
+                    "application/json": components["schemas"]["PaginatedFileResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1418,7 +1483,10 @@ export interface operations {
     };
     get_folders_of_folder_api_folders__id_carpeta__folders_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path: {
                 id_carpeta: string;
@@ -1435,7 +1503,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FolderBase"][];
+                    "application/json": components["schemas"]["PaginatedFolderResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1488,7 +1556,10 @@ export interface operations {
     };
     get_shared_files_by_user_api_shared_sent_files_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path?: never;
             cookie?: {
@@ -1503,7 +1574,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ArchivoCompartidoBase"][];
+                    "application/json": components["schemas"]["PaginatedSharedFileResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1554,7 +1625,10 @@ export interface operations {
     };
     get_shared_folders_by_user_api_shared_sent_folders_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path?: never;
             cookie?: {
@@ -1569,7 +1643,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CarpetaCompartidaBase"][];
+                    "application/json": components["schemas"]["PaginatedSharedFolderResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1620,7 +1694,10 @@ export interface operations {
     };
     get_shared_files_with_user_api_shared_received_files_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path?: never;
             cookie?: {
@@ -1635,7 +1712,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ArchivoCompartidoBase"][];
+                    "application/json": components["schemas"]["PaginatedSharedFileResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1651,7 +1728,10 @@ export interface operations {
     };
     get_shared_folders_by_user_api_shared_received_folders_get: {
         parameters: {
-            query?: never;
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
             header?: never;
             path?: never;
             cookie?: {
@@ -1666,7 +1746,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CarpetaCompartidaBase"][];
+                    "application/json": components["schemas"]["PaginatedSharedFolderResponse"];
                 };
             };
             /** @description Validation Error */
