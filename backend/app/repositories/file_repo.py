@@ -95,3 +95,7 @@ def get_all_files_in_folder_paginados(id_carpeta: uuid.UUID, db: Session, id_usu
         File.fecha_creacion.desc()).offset(offset).limit(limit).all()
 
     return total, archivos
+
+
+def get_files_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[File]:
+    return db.query(File).filter(File.id_usuario == id_usuario, File.id_carpeta == None, File.fecha_eliminacion == None).order_by(File.fecha_creacion.desc()).all()
