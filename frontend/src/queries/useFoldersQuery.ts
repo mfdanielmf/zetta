@@ -131,7 +131,7 @@ export function useMoveFolderTrash() {
       })
 
       queryClient.invalidateQueries({
-        queryKey: ['carpetasPapelera', authStore.usuario?.id],
+        queryKey: ['itemsPapelera', authStore.usuario?.id],
       })
 
       queryClient.invalidateQueries({
@@ -161,7 +161,6 @@ export function useGetFoldersTrash() {
 }
 
 export function useRestoreFolder() {
-  const authStore = useAuthStore()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -172,7 +171,7 @@ export function useRestoreFolder() {
       })
 
       queryClient.invalidateQueries({
-        queryKey: ['carpetasPapelera', authStore.usuario?.id],
+        queryKey: ['itemsPapelera'],
       })
 
       queryClient.invalidateQueries({
@@ -199,7 +198,7 @@ export function useDeleteFolderPermanent() {
     mutationFn: (idCarpeta: string) => deleteFolderPermanentService(idCarpeta),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ['carpetasPapelera', authStore.usuario?.id],
+        queryKey: ['itemsPapelera'],
       })
 
       queryClient.invalidateQueries({
