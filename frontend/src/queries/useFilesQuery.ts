@@ -23,7 +23,6 @@ export function useGetFilesUser() {
 
 export function useInsertFiles() {
   const queryClient = useQueryClient()
-  // const authStore = useAuthStore()
 
   return useMutation({
     mutationFn: (data: FormData) => insertarFilesService(data),

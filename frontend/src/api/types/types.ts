@@ -43,3 +43,4 @@ export type GetReceivedFoldersResponse = components['schemas']['CarpetaCompartid
 
 //ITEMS
 export type GetItemsResponse = components['schemas']['PaginatedItemResponse']
+export type GetFolderItemsResponse = components["schemas"]["PaginatedItemResponse"]
