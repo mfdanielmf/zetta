@@ -4,6 +4,7 @@ import type {
   GetItemsFolderTrashResponse,
   GetItemsResponse,
   GetItemsTrashResponse,
+  GetReceivedItemsResponse,
 } from '../types/types'
 
 const URL = '/api/v2/items'
@@ -18,7 +19,12 @@ export default {
   obtenerItemsPapelera(params: { pagina: number; limite: number }) {
     return api().get<GetItemsTrashResponse>(URL + '/trash', { params: params })
   },
-  obtenerItemsCarpetaPapelera(idCarpeta: string, params: { pagina: number; limite: number }){
-    return api().get<GetItemsFolderTrashResponse>(URL + `/trash/${idCarpeta}/items`, { params: params })
-  }
+  obtenerItemsCarpetaPapelera(idCarpeta: string, params: { pagina: number; limite: number }) {
+    return api().get<GetItemsFolderTrashResponse>(URL + `/trash/${idCarpeta}/items`, {
+      params: params,
+    })
+  },
+  obtenerItemsRecibidos(params: { pagina: number; limite: number }) {
+    return api().get<GetReceivedItemsResponse>(URL + '/shared/received', { params: params })
+  },
 }

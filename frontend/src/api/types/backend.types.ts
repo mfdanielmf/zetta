@@ -444,8 +444,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Items Folder In Trash */
-        get: operations["get_items_folder_in_trash_api_v2_items_trash_get"];
+        /** Get Items Trash */
+        get: operations["get_items_trash_api_v2_items_trash_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -461,8 +461,42 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Items */
-        get: operations["get_items_api_v2_items_trash__id_carpeta__items_get"];
+        /** Get Items Folder In Trash */
+        get: operations["get_items_folder_in_trash_api_v2_items_trash__id_carpeta__items_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/items/shared/sent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Sent Items */
+        get: operations["get_sent_items_api_v2_items_shared_sent_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/items/shared/received": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Received Items */
+        get: operations["get_received_items_api_v2_items_shared_received_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -773,6 +807,17 @@ export interface components {
             /** Limite */
             limite: number;
         };
+        /** PaginatedSharedItemResponse */
+        PaginatedSharedItemResponse: {
+            /** Items */
+            items: (components["schemas"]["SharedFolderItem"] | components["schemas"]["SharedFileItem"])[];
+            /** Total */
+            total: number;
+            /** Pagina */
+            pagina: number;
+            /** Limite */
+            limite: number;
+        };
         /** RegisterResponse */
         RegisterResponse: {
             /** Msg */
@@ -834,6 +879,50 @@ export interface components {
              */
             msg: string;
             carpeta_compartida: components["schemas"]["CarpetaCompartidaBase"];
+        };
+        /** SharedFileItem */
+        SharedFileItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Fecha Compartido
+             * Format: date-time
+             */
+            fecha_compartido: string;
+            propietario: components["schemas"]["UserReturn"];
+            receptor: components["schemas"]["UserReturn"];
+            archivo: components["schemas"]["FileBase"];
+            /**
+             * Tipo
+             * @default file
+             * @constant
+             */
+            tipo: "file";
+        };
+        /** SharedFolderItem */
+        SharedFolderItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Fecha Compartido
+             * Format: date-time
+             */
+            fecha_compartido: string;
+            propietario: components["schemas"]["UserReturn"];
+            receptor: components["schemas"]["UserReturn"];
+            carpeta: components["schemas"]["FolderBase"];
+            /**
+             * Tipo
+             * @default folder
+             * @constant
+             */
+            tipo: "folder";
         };
         /** UploadFileFolderResponse */
         UploadFileFolderResponse: {
@@ -1979,7 +2068,7 @@ export interface operations {
             };
         };
     };
-    get_items_folder_in_trash_api_v2_items_trash_get: {
+    get_items_trash_api_v2_items_trash_get: {
         parameters: {
             query?: {
                 pagina?: number;
@@ -2013,7 +2102,7 @@ export interface operations {
             };
         };
     };
-    get_items_api_v2_items_trash__id_carpeta__items_get: {
+    get_items_folder_in_trash_api_v2_items_trash__id_carpeta__items_get: {
         parameters: {
             query?: {
                 pagina?: number;
@@ -2036,6 +2125,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedItemResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_sent_items_api_v2_items_shared_sent_get: {
+        parameters: {
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: {
+                access_token?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedSharedItemResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_received_items_api_v2_items_shared_received_get: {
+        parameters: {
+            query?: {
+                pagina?: number;
+                limite?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: {
+                access_token?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedSharedItemResponse"];
                 };
             };
             /** @description Validation Error */
