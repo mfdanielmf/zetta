@@ -8,13 +8,26 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useGetFilesFolderTrash, useGetFoldersAnidadasPapelera } from '@/queries/useFoldersQuery'
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationFirst,
+  PaginationItem,
+  PaginationLast,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
+
+import config from '@/config/config'
+import { useGetFolderTrashItems } from '@/queries/useItemsQuery'
 
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
 import { Folder } from 'lucide-vue-next'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
@@ -23,28 +36,22 @@ const folderStore = useFolderStore()
 
 const idCarpeta = computed(() => route.params.id as string)
 
-const cargando = computed(() => {
-  if (loadingArchivos.value || loadingCarpetasAnidadas.value) {
-    return true
-  }
-
-  return false
-})
-
 const noData = computed(() => {
-  if (
-    (!dataArchivos.value || dataArchivos.value?.length < 1) &&
-    (!dataCarpetasAnidadas.value || dataCarpetasAnidadas.value?.length < 1)
-  ) {
+  if (!dataItems.value || dataItems.value.total < 1) {
     return true
   }
 
   return false
 })
 
-const { data: dataArchivos, isLoading: loadingArchivos } = useGetFilesFolderTrash(idCarpeta)
-const { data: dataCarpetasAnidadas, isLoading: loadingCarpetasAnidadas } =
-  useGetFoldersAnidadasPapelera(idCarpeta)
+const pagina = ref<number>(1)
+const limite = config.LIMITE_FETCH
+
+const { data: dataItems, isLoading: loadingItems } = useGetFolderTrashItems(
+  idCarpeta,
+  pagina,
+  limite,
+)
 
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
@@ -56,8 +63,8 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
 <template>
   <div class="space-y-2">
     <Table>
-      <TableCaption v-if="cargando || noData">
-        {{ cargando ? 'Cargando...' : 'Esta carpeta no tiene contenido.' }}
+      <TableCaption v-if="loadingItems || noData">
+        {{ loadingItems ? 'Cargando...' : 'Esta carpeta no tiene contenido.' }}
       </TableCaption>
 
       <TableHeader class="bg-neutral-100">
@@ -69,47 +76,63 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
         </TableRow>
       </TableHeader>
       <TableBody v-if="!noData">
-        <!-- Carpetas -->
         <TableRow
-          v-for="folder in dataCarpetasAnidadas"
-          :key="folder.id"
-          class="hover:cursor-pointer h-13.25"
-          @click="handleNavigationDetallesCarpeta(folder.id, folder.nombre_original)"
+          v-for="item in dataItems?.items"
+          :key="item.id"
+          @click="
+            item.tipo === 'folder'
+              ? handleNavigationDetallesCarpeta(item.id, item.nombre_original)
+              : null
+          "
+          class="h-13.25"
+          :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
-              <Folder :size="20" />
-              {{ folder.nombre_original }}
+              <Folder :size="20" v-if="item.tipo === 'folder'" />
+              <component :is="getIconExtension(item.nombre_original)" :size="20" v-else />
+              {{ item.nombre_original }}
             </div>
           </TableCell>
           <TableCell class="font-medium">
-            {{ folder.nombre_usuario }}
-          </TableCell>
-          <TableCell class="font-medium"> - </TableCell>
-          <TableCell class="font-medium">
-            {{ folder.fecha_eliminacion ? formatDateService(folder.fecha_eliminacion) : '-' }}
-          </TableCell>
-        </TableRow>
-
-        <!-- Archivos -->
-        <TableRow v-for="file in dataArchivos" :key="file.id" class="h-13.25">
-          <TableCell class="font-medium">
-            <div class="flex items-center gap-2">
-              <component :is="getIconExtension(file.nombre_original)" :size="20" />
-              {{ file.nombre_original }}
-            </div>
+            {{ item.nombre_usuario }}
           </TableCell>
           <TableCell class="font-medium">
-            {{ file.nombre_usuario }}
+            {{ item.tipo === 'file' ? formatearTamañoService(item.tamaño_bytes) : '-' }}
           </TableCell>
           <TableCell class="font-medium">
-            {{ formatearTamañoService(file.tamaño_bytes) }}
-          </TableCell>
-          <TableCell class="font-medium">
-            {{ file.fecha_eliminacion ? formatDateService(file.fecha_eliminacion) : '-' }}
+            {{ item.fecha_eliminacion ? formatDateService(item.fecha_eliminacion) : '-' }}
           </TableCell>
         </TableRow>
       </TableBody>
     </Table>
+  </div>
+
+  <div class="flex flex-col gap-6 pt-10">
+    <Pagination
+      v-if="dataItems && dataItems.total > 0"
+      v-slot="{ page }"
+      :items-per-page="dataItems.limite"
+      :total="dataItems?.total"
+      v-model:page="pagina"
+    >
+      <PaginationContent v-slot="{ items }">
+        <PaginationPrevious class="hover:cursor-pointer" />
+        <PaginationFirst class="hover:cursor-pointer" />
+        <template v-for="(item, index) in items" :key="index">
+          <PaginationItem
+            v-if="item.type === 'page'"
+            :value="item.value"
+            :is-active="item.value === page"
+            class="hover:cursor-pointer"
+          >
+            {{ item.value }}
+          </PaginationItem>
+        </template>
+        <PaginationEllipsis :index="4" />
+        <PaginationLast class="hover:cursor-pointer" />
+        <PaginationNext class="hover:cursor-pointer" />
+      </PaginationContent>
+    </Pagination>
   </div>
 </template>

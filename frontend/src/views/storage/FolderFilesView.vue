@@ -8,16 +8,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu'
-import DropdownMenuGroup from '@/components/ui/dropdown-menu/DropdownMenuGroup.vue'
-import Pagination from '@/components/ui/pagination/Pagination.vue'
-import PaginationContent from '@/components/ui/pagination/PaginationContent.vue'
-import PaginationEllipsis from '@/components/ui/pagination/PaginationEllipsis.vue'
-import PaginationFirst from '@/components/ui/pagination/PaginationFirst.vue'
-import PaginationItem from '@/components/ui/pagination/PaginationItem.vue'
-import PaginationLast from '@/components/ui/pagination/PaginationLast.vue'
-import PaginationNext from '@/components/ui/pagination/PaginationNext.vue'
-import PaginationPrevious from '@/components/ui/pagination/PaginationPrevious.vue'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationFirst,
+  PaginationItem,
+  PaginationLast,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
+
 import {
   Table,
   TableBody,
@@ -27,16 +30,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
 import { useCreateFolderAnidada, useUploadFileFolder } from '@/queries/useFoldersQuery'
 import { useGetFolderItems } from '@/queries/useItemsQuery'
 import { useShareFile } from '@/queries/useSharedFilesQuery'
 import { useShareFolder } from '@/queries/useSharedFoldersQuery'
-
 import {
   downloadFileService,
   formatDateService,
   formatearTamañoService,
 } from '@/services/file.services'
+
+import config from '@/config/config'
 import { downloadFolderService } from '@/services/folder.services'
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
@@ -85,7 +90,7 @@ const {
 } = useShareFile()
 
 const pagina = ref<number>(1)
-const limite = 25
+const limite = config.LIMITE_FETCH
 
 const { data: dataItems, isLoading: loadingItems } = useGetFolderItems(idCarpeta, pagina, limite)
 
@@ -305,20 +310,21 @@ async function descargarCarpeta(id: string, nombre: string) {
       v-model:page="pagina"
     >
       <PaginationContent v-slot="{ items }">
-        <PaginationPrevious />
-        <PaginationFirst />
+        <PaginationPrevious class="hover:cursor-pointer" />
+        <PaginationFirst class="hover:cursor-pointer" />
         <template v-for="(item, index) in items" :key="index">
           <PaginationItem
             v-if="item.type === 'page'"
             :value="item.value"
             :is-active="item.value === page"
+            class="hover:cursor-pointer"
           >
             {{ item.value }}
           </PaginationItem>
         </template>
         <PaginationEllipsis :index="4" />
-        <PaginationLast />
-        <PaginationNext />
+        <PaginationLast class="hover:cursor-pointer" />
+        <PaginationNext class="hover:cursor-pointer" />
       </PaginationContent>
     </Pagination>
   </div>
