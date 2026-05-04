@@ -4,6 +4,7 @@ import {
   getItemsService,
   getItemsTrashService,
   getReceivedItemsService,
+  getSentItemsService,
 } from '@/services/items.services'
 import { useAuthStore } from '@/stores/auth.store'
 import { useQuery } from '@tanstack/vue-query'
@@ -63,6 +64,16 @@ export function useGetReceivedItems(pagina: Ref<number>, limite: number = 25) {
   return useQuery({
     queryKey: ['itemsRecibidos', authStore.usuario?.id, pagina],
     queryFn: () => getReceivedItemsService(pagina.value, limite),
+    enabled: !!authStore.usuario?.id,
+  })
+}
+
+export function useGetSentItems(pagina: Ref<number>, limite: number = 25) {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['itemsCompartidos', authStore.usuario?.id, pagina],
+    queryFn: () => getSentItemsService(pagina.value, limite),
     enabled: !!authStore.usuario?.id,
   })
 }

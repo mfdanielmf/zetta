@@ -21,12 +21,13 @@ export function useGetSharedFoldersByMe() {
 
 export function useShareFolder() {
   const queryClient = useQueryClient()
-  const authStore = useAuthStore()
 
   return useMutation({
     mutationFn: (data: ShareFolderRequest) => shareFolderService(data),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['carpetasCompartidas', authStore.usuario?.id] })
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCompartidos'],
+      })
 
       toast.success(data?.msg || 'Se ha compartido la carpeta correctamente')
     },

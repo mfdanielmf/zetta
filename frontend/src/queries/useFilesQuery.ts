@@ -109,7 +109,6 @@ export function useRestoreFile() {
 
 export function useDeleteFilePermanent() {
   const queryClient = useQueryClient()
-  const authStore = useAuthStore()
 
   return useMutation({
     mutationFn: (idArchivo: string) => deleteFilePermanentService(idArchivo),
@@ -119,7 +118,7 @@ export function useDeleteFilePermanent() {
       })
 
       queryClient.invalidateQueries({
-        queryKey: ['archivosCompartidos', authStore.usuario?.id],
+        queryKey: ['itemsCompartidos'],
       })
 
       toast.success(data?.msg || 'Archivo eliminado correctamente')

@@ -47,3 +47,4 @@ export type GetFolderItemsResponse = components['schemas']['PaginatedItemRespons
 export type GetItemsTrashResponse = components['schemas']['PaginatedItemResponse']
 export type GetItemsFolderTrashResponse = components['schemas']['PaginatedItemResponse']
 export type GetReceivedItemsResponse = components['schemas']['PaginatedSharedItemResponse']
+export type GetSentItemsResponse = components['schemas']['PaginatedSharedItemResponse']
