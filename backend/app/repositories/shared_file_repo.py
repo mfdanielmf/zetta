@@ -78,3 +78,17 @@ def get_all_received_files_raiz_paginados(id_usuario: UUID, db: Session, offset:
         ArchivoCompartido.fecha_compartido.desc()).offset(offset).limit(limit).all()
 
     return total, archivos_recibidos
+
+
+def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session) -> list[ArchivoCompartido]:
+    return (
+        db.query(ArchivoCompartido)
+        .options(
+            joinedload(ArchivoCompartido.propietario),
+            joinedload(ArchivoCompartido.receptor),
+            joinedload(ArchivoCompartido.archivo)
+        )
+        .filter_by(id_propietario=id_usuario)
+        .order_by(ArchivoCompartido.fecha_compartido.desc())
+        .all()
+    )
