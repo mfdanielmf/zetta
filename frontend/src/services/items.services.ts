@@ -43,3 +43,17 @@ export async function getItemsTrashService(pagina: number, limite: number) {
     }
   }
 }
+
+export async function getItemsFolderTrashService(idCarpeta: string, pagina: number, limite: number) {
+  try {
+    const req = await itemsApi.obtenerItemsCarpetaPapelera(idCarpeta, { pagina, limite })
+
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.detail || 'Error al obtener los detalles de la carpeta')
+    } else {
+      toast.error('Error al obtener los detalles de la carpeta')
+    }
+  }
+}

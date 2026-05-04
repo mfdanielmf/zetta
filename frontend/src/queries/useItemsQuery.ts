@@ -1,5 +1,6 @@
 import {
   getItemsFolderService,
+  getItemsFolderTrashService,
   getItemsService,
   getItemsTrashService,
 } from '@/services/items.services'
@@ -38,5 +39,19 @@ export function useGetItemsPapelera(pagina: Ref<number>, limite: number = 25) {
     queryKey: ['itemsPapelera', authStore.usuario?.id, pagina],
     queryFn: () => getItemsTrashService(pagina.value, limite),
     enabled: !!authStore.usuario?.id,
+  })
+}
+
+export function useGetFolderTrashItems(
+  idCarpeta: ComputedRef<string>,
+  pagina: Ref<number>,
+  limite: number = 25,
+) {
+  const authStore = useAuthStore()
+
+  return useQuery({
+    queryKey: ['itemsCarpetaPapelera', authStore.usuario?.id, idCarpeta, pagina],
+    queryFn: () => getItemsFolderTrashService(idCarpeta.value, pagina.value, limite),
+    enabled: computed(() => !!authStore.usuario?.id && !!idCarpeta.value),
   })
 }

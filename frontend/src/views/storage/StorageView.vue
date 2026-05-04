@@ -55,6 +55,7 @@ import { downloadFolderService } from '@/services/folder.services'
 import { useGetItemsUser } from '@/queries/useItemsQuery'
 import PaginationFirst from '@/components/ui/pagination/PaginationFirst.vue'
 import PaginationLast from '@/components/ui/pagination/PaginationLast.vue'
+import config from '@/config/config'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
@@ -90,7 +91,7 @@ const {
 } = useShareFile()
 
 const pagina = ref<number>(1)
-const limite = 25
+const limite = config.LIMITE_FETCH
 
 const { data: dataItems, isLoading: loadingItems } = useGetItemsUser(pagina, limite)
 
@@ -334,20 +335,21 @@ async function descargarCarpeta(id: string, nombre: string) {
       v-model:page="pagina"
     >
       <PaginationContent v-slot="{ items }">
-        <PaginationPrevious />
-        <PaginationFirst />
+        <PaginationPrevious class="hover:cursor-pointer" />
+        <PaginationFirst class="hover:cursor-pointer" />
         <template v-for="(item, index) in items" :key="index">
           <PaginationItem
             v-if="item.type === 'page'"
             :value="item.value"
             :is-active="item.value === page"
+            class="hover:cursor-pointer"
           >
             {{ item.value }}
           </PaginationItem>
         </template>
         <PaginationEllipsis :index="4" />
-        <PaginationLast />
-        <PaginationNext />
+        <PaginationLast class="hover:cursor-pointer" />
+        <PaginationNext class="hover:cursor-pointer" />
       </PaginationContent>
     </Pagination>
   </div>

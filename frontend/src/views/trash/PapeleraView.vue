@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue'
+
 import {
   Table,
   TableBody,
@@ -9,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +19,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationFirst,
+  PaginationItem,
+  PaginationLast,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 
 import { useDeleteFilePermanent, useRestoreFile } from '@/queries/useFilesQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
@@ -29,14 +42,6 @@ import { useFolderStore } from '@/stores/folder.store'
 import DialogEliminarArchivo from '@/components/files/DialogEliminarArchivo.vue'
 import DialogEliminarCarpeta from '@/components/folders/DialogEliminarCarpeta.vue'
 import { useGetItemsPapelera } from '@/queries/useItemsQuery'
-import PaginationContent from '@/components/ui/pagination/PaginationContent.vue'
-import Pagination from '@/components/ui/pagination/Pagination.vue'
-import PaginationFirst from '@/components/ui/pagination/PaginationFirst.vue'
-import PaginationItem from '@/components/ui/pagination/PaginationItem.vue'
-import PaginationEllipsis from '@/components/ui/pagination/PaginationEllipsis.vue'
-import PaginationLast from '@/components/ui/pagination/PaginationLast.vue'
-import PaginationNext from '@/components/ui/pagination/PaginationNext.vue'
-import PaginationPrevious from '@/components/ui/pagination/PaginationPrevious.vue'
 
 const router = useRouter()
 const folderStore = useFolderStore()
@@ -222,20 +227,21 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
       v-model:page="pagina"
     >
       <PaginationContent v-slot="{ items }">
-        <PaginationPrevious />
-        <PaginationFirst />
+        <PaginationPrevious class="hover:cursor-pointer" />
+        <PaginationFirst class="hover:cursor-pointer" />
         <template v-for="(item, index) in items" :key="index">
           <PaginationItem
             v-if="item.type === 'page'"
             :value="item.value"
             :is-active="item.value === page"
+            class="hover:cursor-pointer"
           >
             {{ item.value }}
           </PaginationItem>
         </template>
         <PaginationEllipsis :index="4" />
-        <PaginationLast />
-        <PaginationNext />
+        <PaginationLast class="hover:cursor-pointer" />
+        <PaginationNext class="hover:cursor-pointer" />
       </PaginationContent>
     </Pagination>
   </div>
