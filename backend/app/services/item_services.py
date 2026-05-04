@@ -35,7 +35,7 @@ def obtener_items_carpeta_paginados(id_carpeta: UUID, usuario: User, db: Session
     """
     offset: int = (pagina - 1) * limite
 
-    folder_services.obtener_carpeta_usuario_id(
+    folder_services.obtener_carpeta_usuario_permisos(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
     carpetas: list[Folder] = folder_repo.get_folders_inside_folder_sorted(
