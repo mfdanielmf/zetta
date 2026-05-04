@@ -153,7 +153,6 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
       </TableHeader>
 
       <TableBody v-if="!noData">
-        <!-- Carpetas -->
         <TableRow
           v-for="item in dataItems?.items"
           :key="item.id"

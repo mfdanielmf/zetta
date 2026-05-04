@@ -43,6 +43,7 @@ export type GetReceivedFoldersResponse = components['schemas']['CarpetaCompartid
 
 //ITEMS
 export type GetItemsResponse = components['schemas']['PaginatedItemResponse']
-export type GetFolderItemsResponse = components["schemas"]["PaginatedItemResponse"]
-export type GetItemsTrashResponse = components["schemas"]["PaginatedItemResponse"]
-export type GetItemsFolderTrashResponse = components["schemas"]["PaginatedItemResponse"]
+export type GetFolderItemsResponse = components['schemas']['PaginatedItemResponse']
+export type GetItemsTrashResponse = components['schemas']['PaginatedItemResponse']
+export type GetItemsFolderTrashResponse = components['schemas']['PaginatedItemResponse']
+export type GetReceivedItemsResponse = components['schemas']['PaginatedSharedItemResponse']

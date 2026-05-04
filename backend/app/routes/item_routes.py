@@ -214,7 +214,7 @@ def get_items_folder_in_trash(id_carpeta: UUID, usuario: User = Depends(get_curr
             404, detail=f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera")
 
 
-@item_router.get("/sent", response_model=item_schemas.PaginatedSharedItemResponse)
+@item_router.get("/shared/sent", response_model=item_schemas.PaginatedSharedItemResponse)
 def get_sent_items(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
     pagina, limite = paginacion
 
@@ -273,7 +273,7 @@ def get_sent_items(usuario: User = Depends(get_current_user), db: Session = Depe
     }
 
 
-@item_router.get("/received", response_model=item_schemas.PaginatedSharedItemResponse)
+@item_router.get("/shared/received", response_model=item_schemas.PaginatedSharedItemResponse)
 def get_received_items(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
     pagina, limite = paginacion
 
