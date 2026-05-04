@@ -1,4 +1,8 @@
 import uuid
+
+from sqlalchemy import or_
+from app.models.archivo_compartido import ArchivoCompartido
+from app.models.carpeta_compartida import CarpetaCompartida
 from app.models.file import File
 from sqlalchemy.orm import Session
 
@@ -86,8 +90,20 @@ def get_all_files_trash_raiz_paginados(id_usuario: uuid.UUID, db: Session, offse
 
 
 def get_all_files_in_folder_paginados(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, offset: int, limit: int) -> tuple[int, list[File]]:
-    query = db.query(File).filter(File.id_carpeta ==
-                                  id_carpeta, File.id_usuario == id_usuario)
+    query = (
+        db.query(File)
+        .outerjoin(ArchivoCompartido, ArchivoCompartido.id_archivo == File.id)
+        .filter(
+            File.id_carpeta == id_carpeta,
+            or_(
+                File.id_usuario == id_usuario,
+                ArchivoCompartido.id_receptor == id_usuario,
+                File.id_carpeta.in_(
+                    db.query(CarpetaCompartida.id_carpeta).filter(CarpetaCompartida.id_receptor == id_usuario)
+                )
+            )
+        )
+    )
 
     total: int = query.count()
 
@@ -101,8 +117,24 @@ def get_files_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[File]:
     return db.query(File).filter(File.id_usuario == id_usuario, File.id_carpeta == None, File.fecha_eliminacion == None).order_by(File.fecha_creacion.desc()).all()
 
 
+# O propietario o usuario con permisos (acordarme de cambiarlo en algún momento en el resto de queries antiguas)
 def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID) -> list[File]:
-    return db.query(File).filter_by(id_carpeta=id_carpeta, id_usuario=id_usuario).order_by(File.fecha_creacion.desc()).all()
+    return (
+        db.query(File)
+        .outerjoin(ArchivoCompartido, ArchivoCompartido.id_archivo == File.id)
+        .filter(
+            File.id_carpeta == id_carpeta,
+            or_(
+                File.id_usuario == id_usuario,
+                ArchivoCompartido.id_receptor == id_usuario,
+                File.id_carpeta.in_(
+                    db.query(CarpetaCompartida.id_carpeta).filter(CarpetaCompartida.id_receptor == id_usuario)
+                )
+            )
+        )
+        .order_by(File.fecha_creacion.desc())
+        .all()
+    )
 
 def get_all_files_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[File]:
     return db.query(File).filter(File.id_usuario == id_usuario, File.fecha_eliminacion != None, File.id_carpeta == None).order_by(File.fecha_eliminacion.desc()).all()
