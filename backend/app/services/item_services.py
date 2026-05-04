@@ -108,3 +108,21 @@ def obtener_items_compartidos_paginados(usuario: User, db: Session, pagina: int,
     items_paginados = items[offset: offset + limite]
 
     return total, items_paginados
+
+
+def obtener_items_recibidos_paginados(usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[Union[CarpetaCompartida, ArchivoCompartido]]]:
+    offset: int = (pagina - 1) * limite
+
+    carpetas: list[CarpetaCompartida] = shared_folder_repo.get_all_received_folders_raiz_sorted(
+        id_usuario=usuario.id, db=db)
+    archivos: list[ArchivoCompartido] = shared_file_repo.get_all_received_files_raiz_sorted(
+        id_usuario=usuario.id, db=db)
+
+    items: list[Union[CarpetaCompartida, ArchivoCompartido]
+                ] = carpetas + archivos
+
+    total: int = len(items)
+
+    items_paginados = items[offset: offset + limite]
+
+    return total, items_paginados

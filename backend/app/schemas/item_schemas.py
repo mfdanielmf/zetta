@@ -32,7 +32,7 @@ class PaginatedItemResponse(BaseModel):
 
 
 class PaginatedSharedItemResponse(BaseModel):
-    items: list[Union[CarpetaCompartidaBase, ArchivoCompartidoBase]]
+    items: list[Union[SharedFolderItem, SharedFileItem]]
     total: int
     pagina: int
     limite: int
