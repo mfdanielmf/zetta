@@ -5,6 +5,7 @@ import type {
   GetItemsResponse,
   GetItemsTrashResponse,
   GetReceivedItemsResponse,
+  GetSentItemsResponse,
 } from '../types/types'
 
 const URL = '/api/v2/items'
@@ -26,5 +27,8 @@ export default {
   },
   obtenerItemsRecibidos(params: { pagina: number; limite: number }) {
     return api().get<GetReceivedItemsResponse>(URL + '/shared/received', { params: params })
+  },
+  obtenerItemsCompartidos(params: { pagina: number; limite: number }) {
+    return api().get<GetSentItemsResponse>(URL + '/shared/sent', { params: params })
   },
 }

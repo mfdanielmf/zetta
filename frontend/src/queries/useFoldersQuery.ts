@@ -192,7 +192,6 @@ export function useRestoreFolder() {
 
 export function useDeleteFolderPermanent() {
   const queryClient = useQueryClient()
-  const authStore = useAuthStore()
 
   return useMutation({
     mutationFn: (idCarpeta: string) => deleteFolderPermanentService(idCarpeta),
@@ -202,7 +201,7 @@ export function useDeleteFolderPermanent() {
       })
 
       queryClient.invalidateQueries({
-        queryKey: ['carpetasCompartidas', authStore.usuario?.id],
+        queryKey: ['itemsCompartidos'],
       })
 
       toast.success(data?.msg || 'Carpeta eliminada correctamente')

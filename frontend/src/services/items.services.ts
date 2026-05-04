@@ -75,3 +75,19 @@ export async function getReceivedItemsService(pagina: number, limite: number) {
     }
   }
 }
+
+export async function getSentItemsService(pagina: number, limite: number) {
+  try {
+    const req = await itemsApi.obtenerItemsCompartidos({ pagina, limite })
+
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(
+        e.response?.data?.detail || 'Error al obtener los archivos y carpetas compartidos',
+      )
+    } else {
+      toast.error('Error al obtener los archivos y carpetas compartidos')
+    }
+  }
+}

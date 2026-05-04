@@ -21,12 +21,13 @@ export function useGetSharedFilesByMe() {
 
 export function useShareFile() {
   const queryClient = useQueryClient()
-  const authStore = useAuthStore()
 
   return useMutation({
     mutationFn: (data: ShareFileRequest) => shareFileService(data),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['archivosCompartidos', authStore.usuario?.id] })
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCompartidos'],
+      })
 
       toast.success(data?.msg || 'Se ha compartido el archivo correctamente')
     },
