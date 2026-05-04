@@ -92,3 +92,17 @@ def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session) -> list[Arch
         .order_by(ArchivoCompartido.fecha_compartido.desc())
         .all()
     )
+
+
+def get_all_received_files_raiz_sorted(id_usuario: UUID, db: Session) -> list[ArchivoCompartido]:
+    return (
+        db.query(ArchivoCompartido)
+        .options(
+            joinedload(ArchivoCompartido.propietario),
+            joinedload(ArchivoCompartido.receptor),
+            joinedload(ArchivoCompartido.archivo)
+        )
+        .filter_by(id_receptor=id_usuario)
+        .order_by(ArchivoCompartido.fecha_compartido.desc())
+        .all()
+    )
