@@ -79,3 +79,17 @@ def get_all_received_folders_raiz_paginadas(id_usuario: UUID, db: Session, offse
         CarpetaCompartida.fecha_compartido.desc()).offset(offset).limit(limit).all()
 
     return total, carpetas_recibidas
+
+
+def get_all_shared_folders_raiz_sorted(id_usuario: UUID, db: Session) -> list[CarpetaCompartida]:
+    return (
+        db.query(CarpetaCompartida)
+        .options(
+            joinedload(CarpetaCompartida.propietario),
+            joinedload(CarpetaCompartida.receptor),
+            joinedload(CarpetaCompartida.carpeta)
+        )
+        .filter_by(id_propietario=id_usuario)
+        .order_by(CarpetaCompartida.fecha_compartido.desc())
+        .all()
+    )
