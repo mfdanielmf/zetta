@@ -54,7 +54,7 @@ export function useMoveFileTrash() {
       })
 
       queryClient.invalidateQueries({
-        queryKey: ['archivosPapelera', authStore.usuario?.id],
+        queryKey: ['itemsPapelera'],
       })
 
       toast.success(data?.msg || 'Archivo eliminado correctamente. Puedes verlo en la papelera')
@@ -92,7 +92,7 @@ export function useRestoreFile() {
       })
 
       queryClient.invalidateQueries({
-        queryKey: ['archivosPapelera', authStore.usuario?.id],
+        queryKey: ['itemsPapelera'],
       })
 
       toast.success(data?.msg || 'Archivo restaurado correctamente')
@@ -115,7 +115,7 @@ export function useDeleteFilePermanent() {
     mutationFn: (idArchivo: string) => deleteFilePermanentService(idArchivo),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ['archivosPapelera', authStore.usuario?.id],
+        queryKey: ['itemsPapelera'],
       })
 
       queryClient.invalidateQueries({

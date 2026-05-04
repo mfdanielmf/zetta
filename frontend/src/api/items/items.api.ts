@@ -1,5 +1,9 @@
 import api from '../axios.config'
-import type { GetFolderItemsResponse, GetItemsResponse } from '../types/types'
+import type {
+  GetFolderItemsResponse,
+  GetItemsResponse,
+  GetItemsTrashResponse,
+} from '../types/types'
 
 const URL = '/api/v2/items'
 
@@ -9,5 +13,8 @@ export default {
   },
   obtenerItemsCarpeta(idCarpeta: string, params: { pagina: number; limite: number }) {
     return api().get<GetFolderItemsResponse>(URL + `/${idCarpeta}/items`, { params: params })
+  },
+  obtenerItemsPapelera(params: { pagina: number; limite: number }) {
+    return api().get<GetItemsTrashResponse>(URL + '/trash', { params: params })
   },
 }

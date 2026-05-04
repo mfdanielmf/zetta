@@ -29,3 +29,17 @@ export async function getItemsFolderService(idCarpeta: string, pagina: number, l
     }
   }
 }
+
+export async function getItemsTrashService(pagina: number, limite: number) {
+  try {
+    const req = await itemsApi.obtenerItemsPapelera({ pagina, limite })
+
+    return req.data
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.detail || 'Error al obtener los detalles de la papelera')
+    } else {
+      toast.error('Error al obtener los detalles de la papelera')
+    }
+  }
+}
