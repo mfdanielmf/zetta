@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useUploadStore } from '@/stores/upload.store'
-import Spinner from './ui/spinner/Spinner.vue'
+import Spinner from '../ui/spinner/Spinner.vue'
 import { Check, X } from 'lucide-vue-next'
-import Button from './ui/button/Button.vue'
+import Button from '../ui/button/Button.vue'
 
 const uploadStore = useUploadStore()
 
@@ -14,7 +14,7 @@ function cerrar() {
 <template>
   <div class="fixed bottom-5 right-5 w-72 bg-white border rounded-xl shadow-sm p-4 z-50">
     <div class="flex justify-between items-center mb-2">
-      <p class="font-semibold">Progreso de la subida:</p>
+      <p class="font-semibold truncate">Progreso de la subida:</p>
 
       <Button
         class="cursor-pointer rounded-full"
@@ -45,7 +45,10 @@ function cerrar() {
       </span>
     </div>
 
-    <div class="w-full h-2 rounded-full overflow-hidden" v-if="uploadStore.estado !== 'error'">
+    <div
+      class="w-full h-2 rounded-full overflow-hidden bg-gray-200"
+      v-if="uploadStore.estado !== 'error'"
+    >
       <div
         class="h-full bg-green-500 transition-all duration-200"
         :style="{ width: uploadStore.porcentaje + '%' }"

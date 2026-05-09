@@ -40,7 +40,7 @@ export async function insertarFilesService(data: FormData) {
 
 export async function downloadFileService(id: string, nombre: string) {
   try {
-    const req = await filesApi.descargarArchivo(id)
+    const req = await filesApi.descargarArchivo(id, nombre)
 
     const blob = new Blob([req.data], {
       type: req.headers['content-type'],

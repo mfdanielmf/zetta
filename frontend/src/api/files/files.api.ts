@@ -8,6 +8,7 @@ import type {
   RestoreFileResponse,
   SendFileTrashResponse,
 } from '../types/types'
+import { useDownloadStore } from '@/stores/download.store'
 
 const URL = '/api/files'
 
@@ -35,8 +36,28 @@ export default {
       throw e
     }
   },
-  descargarArchivo(id: string) {
-    return api().get(URL + `/${id}`, { responseType: 'blob' })
+  async descargarArchivo(id: string, nombre: string) {
+    const downloadStore = useDownloadStore()
+    downloadStore.reset()
+    downloadStore.estado = 'descargando'
+    downloadStore.nombreDescarga = nombre
+
+    try {
+      const res = await api().get(URL + `/${id}`, {
+        responseType: 'blob',
+        onDownloadProgress: ({ loaded, total }) => {
+          downloadStore.setPorcentaje(loaded, total ?? 0)
+        },
+      })
+
+      downloadStore.estado = 'completado'
+
+      return res
+    } catch (e: unknown) {
+      downloadStore.estado = 'error'
+
+      throw e
+    }
   },
   mandarArchivoPapelera(idArchivo: string) {
     return api().delete<SendFileTrashResponse>(URL + `/${idArchivo}`)
