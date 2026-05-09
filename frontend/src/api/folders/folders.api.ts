@@ -13,6 +13,7 @@ import type {
   SendFolderTrashResponse,
   UploadFileFolderResponse,
 } from '../types/types'
+import { useDownloadStore } from '@/stores/download.store'
 
 const URL = '/api/folders'
 
@@ -55,7 +56,27 @@ export default {
   obtenerCarpetasAnidadasPapelera(idCarpeta: string) {
     return api().get<GetFoldersAnidadaTrashResponse>(URL + `/trash/${idCarpeta}/folders`)
   },
-  descargarCarpeta(idCarpeta: string) {
-    return api().get(URL + `/${idCarpeta}`, { responseType: 'blob' })
+  async descargarCarpeta(idCarpeta: string) {
+    const downloadStore = useDownloadStore()
+    downloadStore.reset()
+    downloadStore.estado = 'descargando'
+    downloadStore.esCarpeta = true
+
+    try {
+      const res = await api().get(URL + `/${idCarpeta}`, {
+        responseType: 'blob',
+        onDownloadProgress: ({ loaded, total }) => {
+          downloadStore.setPorcentaje(loaded, total ?? 0)
+        },
+      })
+
+      downloadStore.estado = 'completado'
+
+      return res
+    } catch (e: unknown) {
+      downloadStore.estado = 'error'
+
+      throw e
+    }
   },
 }
