@@ -12,7 +12,7 @@ function cerrar() {
 </script>
 
 <template>
-  <div class="fixed bottom-5 right-5 w-72 bg-white border rounded-xl shadow-sm p-4 z-50">
+  <div class="w-72 bg-white border rounded-xl shadow-sm p-4 z-50">
     <div class="flex justify-between items-center mb-2">
       <p class="font-semibold truncate">Progreso de la subida:</p>
 
