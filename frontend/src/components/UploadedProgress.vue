@@ -2,13 +2,31 @@
 import { useUploadStore } from '@/stores/upload.store'
 import Spinner from './ui/spinner/Spinner.vue'
 import { Check, X } from 'lucide-vue-next'
+import Button from './ui/button/Button.vue'
 
 const uploadStore = useUploadStore()
+
+function cerrar() {
+  uploadStore.reset()
+}
 </script>
 
 <template>
-  <div class="fixed bottom-5 right-5 w-72 bg-white rounded-xl shadow-lg p-4 z-50">
-    <p class="font-semibold mb-2">Progreso de la subida:</p>
+  <div class="fixed bottom-5 right-5 w-72 bg-white border rounded-xl shadow-sm p-4 z-50">
+    <div class="flex justify-between items-center mb-2">
+      <p class="font-semibold">Progreso de la subida:</p>
+
+      <Button
+        class="cursor-pointer rounded-full"
+        size="icon-sm"
+        aria-label="Submit"
+        variant="outline"
+        @click="cerrar"
+        v-if="uploadStore.estado === 'completado' || uploadStore.estado === 'error'"
+      >
+        <X />
+      </Button>
+    </div>
 
     <div class="text-sm mb-3 text-gray-700">
       <span v-if="uploadStore.estado === 'subiendo'" class="flex items-center gap-1">

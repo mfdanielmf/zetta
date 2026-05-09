@@ -4,6 +4,7 @@ import { toast } from 'vue-sonner'
 import { useQueryClient } from '@tanstack/vue-query'
 import { obtenerArchivosCarpetaService } from '@/services/folder.services'
 import { useFolderStore } from '@/stores/folder.store'
+import { useUploadStore } from '@/stores/upload.store'
 
 const MainLayout = () => import('@/layouts/MainLayout.vue')
 const AuthLayout = () => import('@/layouts/AuthLayout.vue')
@@ -118,6 +119,7 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
+  const uploadStore = useUploadStore()
   const queryClient = useQueryClient()
 
   if (to.meta.authRequired) {
@@ -127,6 +129,9 @@ router.beforeEach(async (to) => {
 
     if (!logueado) {
       toast.info('Inicia sesión para acceder aquí')
+
+      uploadStore.reset()
+
       return { name: 'login' }
     }
   }
@@ -143,6 +148,10 @@ router.beforeEach(async (to) => {
     } catch {
       return { name: 'archivos', replace: true }
     }
+  }
+
+  if (to.name === 'login' || to.name === 'register') {
+    uploadStore.reset()
   }
 })
 
