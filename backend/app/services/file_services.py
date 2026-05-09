@@ -106,39 +106,6 @@ async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -
     return archivo_db
 
 
-# def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario: User) -> tuple[File, str]:
-#     """
-#     IdYaUsadaException, NombreYaUsadoException
-#     """
-
-#     # Si hay un archivo con el mismo nombre en la raiz (no tiene id_carpeta), salimos
-#     if file_repo.get_file_by_name_in_folder(nombre_original=nombre_original, usuario=usuario, db=db):
-#         raise ex.NombreYaUsadoException(
-#             f"Ya hay un archivo con el nombre '{nombre_original}'. Cambia el nombre")
-
-#     id: uuid.UUID = uuid.uuid4()
-
-#     # Por si se genera un UUID ya usado
-#     if file_repo.get_file_by_id(id_archivo=id, db=db):
-#         raise ex.IdYaUsadaException(
-#             f"Ya se ha usado la ID {id}. Vuelve a subir el archivo")
-
-#     extension = nombre_original.split(".").pop()  # png, jpg, txt...
-
-#     # Crear la carpeta si no existe
-#     ruta_usuario = UPLOAD_DIR / str(usuario.id)
-#     ruta_usuario.mkdir(parents=True, exist_ok=True)
-
-#     file_path = ruta_usuario / f"{str(id)}.{extension}"
-
-#     archivo: File = File(id=id, nombre_original=nombre_original,
-#                          path=str(file_path), id_usuario=usuario.id, tamaño_bytes=tamaño)
-
-#     archivo_db: File = file_repo.insert_file_db(archivo=archivo, db=db)
-
-#     return archivo_db, file_path
-
-
 def obtener_archivos_usuario(usuario: User, db: Session) -> list[File]:
     return file_repo.get_files_raiz(id_usuario=usuario.id, db=db)
 
