@@ -81,7 +81,7 @@ async function descargarCarpeta(id: string, nombre: string) {
   <div class="space-y-2">
     <Table>
       <TableCaption v-if="loadingItems || noData">
-        {{ loadingItems ? 'Cargando...' : 'Esta carpeta no tiene contenido' }}
+        {{ loadingItems ? 'Cargando...' : 'Esta carpeta no tiene contenido.' }}
       </TableCaption>
 
       <TableHeader class="bg-neutral-100">

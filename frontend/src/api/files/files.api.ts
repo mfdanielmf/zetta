@@ -1,3 +1,4 @@
+import { useUploadStore } from '@/stores/upload.store'
 import api from '../axios.config'
 import type {
   DeleteFilePermanentResponse,
@@ -14,8 +15,25 @@ export default {
   obtenerArchivosUsuario() {
     return api().get<GetFilesResponse>(URL)
   },
-  subirArchivosUsuario(data: FormData) {
-    return api().post<PostFilesResponse>(URL, data)
+  async subirArchivosUsuario(data: FormData) {
+    const uploadStore = useUploadStore()
+    uploadStore.estado = 'subiendo'
+
+    try {
+      const res = await api().post<PostFilesResponse>(URL, data, {
+        onUploadProgress: ({ loaded, total }) => {
+          uploadStore.setPorcentaje(loaded, total ?? 0)
+        },
+      })
+
+      uploadStore.estado = 'completado'
+
+      return res
+    } catch (e: unknown) {
+      uploadStore.estado = 'error'
+
+      throw e
+    }
   },
   descargarArchivo(id: string) {
     return api().get(URL + `/${id}`, { responseType: 'blob' })
