@@ -12,9 +12,8 @@ from tests.util import override_get_current_user
 
 client = TestClient(app=app)
 
+
 # Integración
-
-
 def test_descargar_carpeta_existente():
     usuario: User = override_get_current_user()
     app.dependency_overrides[get_current_user] = lambda: usuario
