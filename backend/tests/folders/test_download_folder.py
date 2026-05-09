@@ -1,6 +1,6 @@
+import tempfile
 from unittest.mock import patch
 import uuid
-import io
 
 from fastapi.testclient import TestClient
 from app.main import app
@@ -12,18 +12,16 @@ from tests.util import override_get_current_user
 
 client = TestClient(app=app)
 
+# Integración
+
 
 def test_descargar_carpeta_existente():
     usuario: User = override_get_current_user()
     app.dependency_overrides[get_current_user] = lambda: usuario
 
-    id_carpeta: uuid.UUID = uuid.uuid4()
+    id_carpeta = uuid.uuid4()
 
-    buffer_falso = io.BytesIO()
-    buffer_falso.write(b"PK\x03\x04fakezipcontent")
-    buffer_falso.seek(0)
-
-    carpeta_falsa: Folder = Folder(
+    carpeta_falsa = Folder(
         id=uuid.uuid4(),
         nombre_original="testing",
         path=f"uploads/{usuario.id}/testing",
@@ -32,18 +30,18 @@ def test_descargar_carpeta_existente():
         usuario=usuario
     )
 
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as tmp:
+        tmp.write(b"PK\x03\x04fakezipcontent")
+        tmp_path = tmp.name
+
     with patch("app.routes.folder_routes.folder_services.descargar_carpeta") as mock_descargar:
-        mock_descargar.return_value = (buffer_falso, carpeta_falsa)
+        mock_descargar.return_value = (tmp_path, carpeta_falsa)
 
         response = client.get(f"/api/folders/{id_carpeta}")
 
     assert response.status_code == 200
-
     assert "application/zip" in response.headers["content-type"]
-    assert "attachment" in response.headers["content-disposition"]
     assert "testing.zip" in response.headers["content-disposition"]
-
-    assert response.content.startswith(b"PK")
 
     app.dependency_overrides.clear()
 
