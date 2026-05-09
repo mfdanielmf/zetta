@@ -221,7 +221,7 @@ async function descargarCarpeta(id: string, nombre: string) {
 
     <Table>
       <TableCaption v-if="loadingItems || noData">
-        {{ loadingItems ? 'Cargando...' : 'Los archivos y carpetas que subas se mostrarán aquí.' }}
+        {{ loadingItems ? 'Cargando...' : 'Esta carpeta no tiene contenido.' }}
       </TableCaption>
 
       <TableHeader class="bg-neutral-100">
