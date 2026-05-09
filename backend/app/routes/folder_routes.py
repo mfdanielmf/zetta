@@ -1,8 +1,10 @@
+import os
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File as FileFA
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
+from starlette.background import BackgroundTask
 
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
@@ -178,18 +180,17 @@ def get_folders_inside_folder_on_trash(id_carpeta: UUID, usuario: User = Depends
             404, detail=f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera")
 
 
-@folder_router.get("/{id_carpeta}")
+@folder_router.get("/{id_carpeta}", response_class=FileResponse)
 def download_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
-        buffer, carpeta = folder_services.descargar_carpeta(
+        zip_path, carpeta = folder_services.descargar_carpeta(
             id_carpeta=id_carpeta, usuario=usuario, db=db)
 
-        return StreamingResponse(
-            content=buffer,
+        return FileResponse(
+            path=zip_path,
             media_type="application/zip",
-            headers={
-                "Content-Disposition": f'attachment; filename="{carpeta.nombre_original}.zip"'
-            }
+            filename=f"{carpeta.nombre_original}.zip",
+            background=BackgroundTask(lambda: os.remove(zip_path))
         )
     except ex.CarpetaNoEncontradaException as e1:
         raise HTTPException(404, detail=str(e1))
