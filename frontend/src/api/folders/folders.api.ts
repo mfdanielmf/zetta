@@ -56,11 +56,11 @@ export default {
   obtenerCarpetasAnidadasPapelera(idCarpeta: string) {
     return api().get<GetFoldersAnidadaTrashResponse>(URL + `/trash/${idCarpeta}/folders`)
   },
-  async descargarCarpeta(idCarpeta: string) {
+  async descargarCarpeta(idCarpeta: string, nombreCarpeta: string) {
     const downloadStore = useDownloadStore()
     downloadStore.reset()
+    downloadStore.nombreDescarga = nombreCarpeta
     downloadStore.estado = 'descargando'
-    downloadStore.esCarpeta = true
 
     try {
       const res = await api().get(URL + `/${idCarpeta}`, {

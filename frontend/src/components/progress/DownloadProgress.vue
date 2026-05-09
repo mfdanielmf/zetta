@@ -49,7 +49,7 @@ function cerrar() {
 
     <div
       class="w-full h-2 bg-gray-200 rounded-full overflow-hidden"
-      v-if="downloadStore.estado !== 'error' && downloadStore.esCarpeta === false"
+      v-if="downloadStore.estado !== 'error'"
     >
       <div
         class="h-full bg-green-500 transition-all duration-200"
@@ -57,10 +57,7 @@ function cerrar() {
       />
     </div>
 
-    <p
-      class="text-xs text-right mt-2"
-      v-if="downloadStore.estado !== 'error' && downloadStore.esCarpeta === false"
-    >
+    <p class="text-xs text-right mt-2" v-if="downloadStore.estado !== 'error'">
       {{ downloadStore.porcentaje }}%
     </p>
   </div>
