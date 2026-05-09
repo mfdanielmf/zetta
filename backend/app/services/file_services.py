@@ -56,52 +56,87 @@ async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -
     """
     TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException
     """
-    data = await file_upload.read()
-
-    if len(data) > TAMAÑO_LIMITE:
-        raise ex.TamañoExcedidoException(
-            f"Has excedido el tamaño máximo de subida")
-
-    archivo_db, file_path = añadir_archivo_db(
-        nombre_original=file_upload.filename, db=db, usuario=usuario, tamaño=len(data))
-
-    with file_path.open("wb") as f:
-        f.write(data)
-
-    return archivo_db
-
-
-def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario: User) -> tuple[File, str]:
-    """
-    IdYaUsadaException, NombreYaUsadoException
-    """
+    nombre_original: str = file_upload.filename
 
     # Si hay un archivo con el mismo nombre en la raiz (no tiene id_carpeta), salimos
     if file_repo.get_file_by_name_in_folder(nombre_original=nombre_original, usuario=usuario, db=db):
         raise ex.NombreYaUsadoException(
             f"Ya hay un archivo con el nombre '{nombre_original}'. Cambia el nombre")
 
-    id: uuid.UUID = uuid.uuid4()
+    id_archivo: uuid.UUID = uuid.uuid4()
 
     # Por si se genera un UUID ya usado
-    if file_repo.get_file_by_id(id_archivo=id, db=db):
+    if file_repo.get_file_by_id(id_archivo=id_archivo, db=db):
         raise ex.IdYaUsadaException(
-            f"Ya se ha usado la ID {id}. Vuelve a subir el archivo")
+            f"Ya se ha usado la ID {id_archivo}. Vuelve a subir el archivo")
 
-    extension = nombre_original.split(".").pop()  # png, jpg, txt...
+    extension: str = nombre_original.split(".").pop()  # png, jpg, txt...
 
     # Crear la carpeta si no existe
     ruta_usuario = UPLOAD_DIR / str(usuario.id)
     ruta_usuario.mkdir(parents=True, exist_ok=True)
 
-    file_path = ruta_usuario / f"{str(id)}.{extension}"
+    file_path = ruta_usuario / f"{str(id_archivo)}.{extension}"
 
-    archivo: File = File(id=id, nombre_original=nombre_original,
+    tamaño: int = 0
+
+    # Guardar por chunks
+    with file_path.open("wb") as f:
+        while True:
+            chunk = await file_upload.read(1024 * 1024)
+
+            if not chunk:
+                break
+
+            tamaño += len(chunk)
+
+            if tamaño > TAMAÑO_LIMITE:
+                file_path.unlink(missing_ok=True)
+
+                raise ex.TamañoExcedidoException(
+                    "Has excedido el tamaño máximo de subida")
+
+            f.write(chunk)
+
+    archivo: File = File(id=id_archivo, nombre_original=nombre_original,
                          path=str(file_path), id_usuario=usuario.id, tamaño_bytes=tamaño)
 
     archivo_db: File = file_repo.insert_file_db(archivo=archivo, db=db)
 
-    return archivo_db, file_path
+    return archivo_db
+
+
+# def añadir_archivo_db(nombre_original: str, tamaño: int, db: Session, usuario: User) -> tuple[File, str]:
+#     """
+#     IdYaUsadaException, NombreYaUsadoException
+#     """
+
+#     # Si hay un archivo con el mismo nombre en la raiz (no tiene id_carpeta), salimos
+#     if file_repo.get_file_by_name_in_folder(nombre_original=nombre_original, usuario=usuario, db=db):
+#         raise ex.NombreYaUsadoException(
+#             f"Ya hay un archivo con el nombre '{nombre_original}'. Cambia el nombre")
+
+#     id: uuid.UUID = uuid.uuid4()
+
+#     # Por si se genera un UUID ya usado
+#     if file_repo.get_file_by_id(id_archivo=id, db=db):
+#         raise ex.IdYaUsadaException(
+#             f"Ya se ha usado la ID {id}. Vuelve a subir el archivo")
+
+#     extension = nombre_original.split(".").pop()  # png, jpg, txt...
+
+#     # Crear la carpeta si no existe
+#     ruta_usuario = UPLOAD_DIR / str(usuario.id)
+#     ruta_usuario.mkdir(parents=True, exist_ok=True)
+
+#     file_path = ruta_usuario / f"{str(id)}.{extension}"
+
+#     archivo: File = File(id=id, nombre_original=nombre_original,
+#                          path=str(file_path), id_usuario=usuario.id, tamaño_bytes=tamaño)
+
+#     archivo_db: File = file_repo.insert_file_db(archivo=archivo, db=db)
+
+#     return archivo_db, file_path
 
 
 def obtener_archivos_usuario(usuario: User, db: Session) -> list[File]:
