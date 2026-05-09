@@ -39,13 +39,17 @@ export default {
   async descargarArchivo(id: string, nombre: string) {
     const downloadStore = useDownloadStore()
     downloadStore.reset()
-    downloadStore.estado = 'descargando'
+    downloadStore.estado = 'preparando'
     downloadStore.nombreDescarga = nombre
 
     try {
       const res = await api().get(URL + `/${id}`, {
         responseType: 'blob',
         onDownloadProgress: ({ loaded, total }) => {
+          if (downloadStore.estado !== 'descargando') {
+            downloadStore.estado = 'descargando'
+          }
+
           downloadStore.setPorcentaje(loaded, total ?? 0)
         },
       })

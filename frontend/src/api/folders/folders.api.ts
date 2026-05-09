@@ -56,16 +56,20 @@ export default {
   obtenerCarpetasAnidadasPapelera(idCarpeta: string) {
     return api().get<GetFoldersAnidadaTrashResponse>(URL + `/trash/${idCarpeta}/folders`)
   },
-  async descargarCarpeta(idCarpeta: string) {
+  async descargarCarpeta(idCarpeta: string, nombreCarpeta: string) {
     const downloadStore = useDownloadStore()
     downloadStore.reset()
-    downloadStore.estado = 'descargando'
-    downloadStore.esCarpeta = true
+    downloadStore.nombreDescarga = nombreCarpeta
+    downloadStore.estado = 'preparando'
 
     try {
       const res = await api().get(URL + `/${idCarpeta}`, {
         responseType: 'blob',
         onDownloadProgress: ({ loaded, total }) => {
+          if (downloadStore.estado !== 'descargando') {
+            downloadStore.estado = 'descargando'
+          }
+
           downloadStore.setPorcentaje(loaded, total ?? 0)
         },
       })

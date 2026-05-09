@@ -117,7 +117,7 @@ export async function obtenerCarpetasAnidadasPapeleraService(idCarpeta: string) 
 
 export async function downloadFolderService(id: string, nombre: string) {
   try {
-    const req = await foldersApi.descargarCarpeta(id)
+    const req = await foldersApi.descargarCarpeta(id, nombre)
 
     const blob = new Blob([req.data], {
       type: req.headers['content-type'],
