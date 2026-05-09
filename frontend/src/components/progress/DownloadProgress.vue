@@ -31,7 +31,12 @@ function cerrar() {
     </div>
 
     <div class="text-sm mb-3 text-gray-700">
-      <span v-if="downloadStore.estado === 'descargando'" class="flex items-center gap-1">
+      <span v-if="downloadStore.estado === 'preparando'" class="flex items-center gap-1">
+        <Spinner />
+        Preparando descarga...
+      </span>
+
+      <span v-else-if="downloadStore.estado === 'descargando'" class="flex items-center gap-1">
         <Spinner />
         Descargando...
       </span>

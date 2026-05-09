@@ -60,12 +60,16 @@ export default {
     const downloadStore = useDownloadStore()
     downloadStore.reset()
     downloadStore.nombreDescarga = nombreCarpeta
-    downloadStore.estado = 'descargando'
+    downloadStore.estado = 'preparando'
 
     try {
       const res = await api().get(URL + `/${idCarpeta}`, {
         responseType: 'blob',
         onDownloadProgress: ({ loaded, total }) => {
+          if (downloadStore.estado !== 'descargando') {
+            downloadStore.estado = 'descargando'
+          }
+
           downloadStore.setPorcentaje(loaded, total ?? 0)
         },
       })

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useDownloadStore = defineStore('downloadStore', () => {
-  const estado = ref<null | 'descargando' | 'completado' | 'error'>(null)
+  const estado = ref<null | 'preparando' | 'descargando' | 'completado' | 'error'>(null)
   const porcentaje = ref<number>(0)
   const nombreDescarga = ref<string | null>(null)
 
