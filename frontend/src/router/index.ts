@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/vue-query'
 import { obtenerArchivosCarpetaService } from '@/services/folder.services'
 import { useFolderStore } from '@/stores/folder.store'
 import { useUploadStore } from '@/stores/upload.store'
+import { useDownloadStore } from '@/stores/download.store'
 
 const MainLayout = () => import('@/layouts/MainLayout.vue')
 const AuthLayout = () => import('@/layouts/AuthLayout.vue')
@@ -120,6 +121,7 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
   const uploadStore = useUploadStore()
+  const downloadStore = useDownloadStore()
   const queryClient = useQueryClient()
 
   if (to.meta.authRequired) {
@@ -131,6 +133,7 @@ router.beforeEach(async (to) => {
       toast.info('Inicia sesión para acceder aquí')
 
       uploadStore.reset()
+      downloadStore.reset()
 
       return { name: 'login' }
     }
@@ -152,6 +155,7 @@ router.beforeEach(async (to) => {
 
   if (to.name === 'login' || to.name === 'register') {
     uploadStore.reset()
+    downloadStore.reset()
   }
 })
 
