@@ -100,18 +100,6 @@ def obtener_carpetas_papelera_raiz(usuario: User, db: Session) -> list[Folder]:
     return folder_repo.get_all_folders_trash_raiz(id_usuario=usuario.id, db=db)
 
 
-def subir_archivo_carpeta_disco(file_path: str, data: bytes):
-    """
-    CarpetaNoEncontradaException
-    """
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with file_path.open("wb") as f:
-        f.write(data)
-
-    return
-
-
 async def guardar_archivo_carpeta(id_carpeta: str, file_upload: UploadFile, db: Session, usuario: User) -> File:
     """
     TamañoExcedidoException, CarpetaNoEncontradaException, NombreYaUsadoException
@@ -126,26 +114,37 @@ async def guardar_archivo_carpeta(id_carpeta: str, file_upload: UploadFile, db: 
         raise ex.NombreYaUsadoException(
             f"Ya existe un archivo con el nombre '{file_upload.filename}' en la carpeta '{carpeta.nombre_original}'")
 
-    data = await file_upload.read()
-
-    if len(data) > TAMAÑO_LIMITE:
-        raise ex.TamañoExcedidoException(
-            f"Has excedido el tamaño máximo de subida")
-
     id_file: uuid.UUID = uuid.uuid4()
     nombre_original = file_upload.filename
 
-    extension = nombre_original.split(".").pop()
+    extension: str = nombre_original.split(".").pop()
 
     file_path = Path(carpeta.path) / f"{str(id_file)}.{extension}"
     file_path.parent.mkdir(parents=True, exist_ok=True)
 
+    tamaño: int = 0
+
+    with file_path.open("wb") as f:
+        while True:
+            chunk = await file_upload.read(1024 * 1024)
+
+            if not chunk:
+                break
+
+            tamaño += len(chunk)
+
+            if tamaño > TAMAÑO_LIMITE:
+                file_path.unlink(missing_ok=True)
+
+                raise ex.TamañoExcedidoException(
+                    "Has excedido el tamaño máximo de subida")
+
+            f.write(chunk)
+
     archivo: File = File(id=id_file, nombre_original=nombre_original,
-                         path=str(file_path), id_usuario=usuario.id, tamaño_bytes=len(data), id_carpeta=id_carpeta)
+                         path=str(file_path), id_usuario=usuario.id, tamaño_bytes=tamaño, id_carpeta=id_carpeta)
 
     archivo_guardado: File = file_repo.insert_file_db(archivo=archivo, db=db)
-
-    subir_archivo_carpeta_disco(file_path=file_path, data=data)
 
     return archivo_guardado
 
