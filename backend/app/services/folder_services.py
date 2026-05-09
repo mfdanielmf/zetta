@@ -1,4 +1,5 @@
 import os
+import tempfile
 import zipfile
 import io
 import shutil
@@ -323,14 +324,14 @@ def descargar_carpeta(id_carpeta: uuid.UUID, usuario: User, db: Session) -> tupl
     carpeta: Folder = obtener_carpeta_usuario_permisos(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
-    buffer: io.BytesIO = io.BytesIO()
+    archivo_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
+    zip_path: str = archivo_temp.name
+    archivo_temp.close()
 
-    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
         añadir_carpeta_a_zip(zipf=zipf, carpeta=carpeta, path_base="")
 
-    buffer.seek(0)
-
-    return buffer, carpeta
+    return zip_path, carpeta
 
 
 def añadir_carpeta_a_zip(zipf: zipfile.ZipFile, carpeta: Folder, path_base: str) -> None:
