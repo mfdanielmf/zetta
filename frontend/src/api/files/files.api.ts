@@ -26,11 +26,13 @@ export default {
         },
       })
 
-      uploadStore.estado = 'procesando'
+      uploadStore.estado = 'completado'
 
       return res
-    } finally {
-      uploadStore.estado = 'completado'
+    } catch (e: unknown) {
+      uploadStore.estado = 'error'
+
+      throw e
     }
   },
   descargarArchivo(id: string) {

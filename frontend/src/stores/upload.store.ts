@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useUploadStore = defineStore('uploadStore', () => {
-  const estado = ref<'subiendo' | 'procesando' | 'completado' | null>(null)
+  const estado = ref<null | 'subiendo' | 'completado' | 'error'>(null)
   const porcentaje = ref<number>(0)
 
   function reset() {
