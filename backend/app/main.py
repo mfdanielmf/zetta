@@ -20,7 +20,14 @@ from app.core.lifespan import lifespan
 from app.core.logging_config import logger
 from app.config import config
 
-app = FastAPI(title="ZETTA", description="DOCS API ZETTA", lifespan=lifespan)
+app = FastAPI(
+    title="ZETTA",
+    description="DOCS API ZETTA",
+    lifespan=lifespan,
+    docs_url=None if config.ENVIRONMENT == "prod" else "/docs",
+    redoc_url=None if config.ENVIRONMENT == "prod" else "/redoc",
+    openapi_url=None if config.ENVIRONMENT == "prod" else "/openapi.json"
+)
 
 logger.info(f"Inicializando app. CONFIG: {config.ENVIRONMENT}")
 logger.debug(f"CORS permitido: {config.ALLOWED_ORIGINS}")
