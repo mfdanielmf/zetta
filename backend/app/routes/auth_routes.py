@@ -11,6 +11,8 @@ from app.services.user_services import crear_usuario
 from app.services.auth_services import login_usuario, obtener_usuario_jwt
 from app.core.limiter import limiter, AUTH_RATE_LIMIT
 
+from app.config import config
+
 auth_router = APIRouter()
 
 
@@ -41,8 +43,14 @@ def login(request: Request, usuario_req: LoginRequest, db: Session = Depends(get
             "usuario": UserReturn.model_validate(usuario).model_dump(mode="json")
         })
 
-        response.set_cookie(key="access_token", value=token, samesite="lax",
-                            httponly=True, max_age=3600, expires=3600)
+        response.set_cookie(key="access_token",
+                            value=token,
+                            samesite="none" if config.ENVIRONMENT == "prod" else "lax",
+                            secure=True if config.ENVIRONMENT == "prod" else False,
+                            httponly=True,
+                            max_age=3600,
+                            expires=3600
+                            )
 
         return response
     except UsuarioNoEncontradoException as e1:
