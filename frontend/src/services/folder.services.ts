@@ -119,8 +119,13 @@ export async function downloadFolderService(id: string, nombre: string) {
   try {
     const req = await foldersApi.descargarCarpeta(id, nombre)
 
+    const contentType =
+      typeof req.headers['content-type'] === 'string'
+        ? req.headers['content-type']
+        : 'application/octet-stream'
+
     const blob = new Blob([req.data], {
-      type: req.headers['content-type'],
+      type: contentType,
     })
 
     const url = window.URL.createObjectURL(blob)
