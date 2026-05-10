@@ -5,3 +5,5 @@ __pycache__
 .coverage
 htmlcov/
 uploads
+.env.dev
+.env.prod

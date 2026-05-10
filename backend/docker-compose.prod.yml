@@ -1,0 +1,28 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend-prod
+    env_file:
+      - .env
+    environment:
+      - ENVIRONMENT=prod
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - uploads_volume:/app/uploads
+      - logs_volume:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT}/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  uploads_volume:
+    driver: local
+  logs_volume:
+    driver: local
