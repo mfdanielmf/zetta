@@ -9,12 +9,14 @@ from app.schemas.user_schemas import UserCreate, UserReturn
 from app.schemas.auth_schemas import RegisterResponse, LoginRequest, LoginResponse, MeResponse, LogoutResponse
 from app.services.user_services import crear_usuario
 from app.services.auth_services import login_usuario, obtener_usuario_jwt
+from app.core.limiter import limiter, AUTH_RATE_LIMIT
 
 auth_router = APIRouter()
 
 
 @auth_router.post("/register", response_model=RegisterResponse)
-def register(usuario: UserCreate, db: Session = Depends(get_db)):
+@limiter.limit(AUTH_RATE_LIMIT)
+def register(request: Request, usuario: UserCreate, db: Session = Depends(get_db)):
     try:
         usuario_db: User = crear_usuario(usuario=usuario, db=db)
 
@@ -29,7 +31,8 @@ def register(usuario: UserCreate, db: Session = Depends(get_db)):
 
 
 @auth_router.post("/login", response_model=LoginResponse)
-def login(usuario_req: LoginRequest, db: Session = Depends(get_db)):
+@limiter.limit(AUTH_RATE_LIMIT)
+def login(request: Request, usuario_req: LoginRequest, db: Session = Depends(get_db)):
     try:
         token, usuario = login_usuario(usuario_req=usuario_req, db=db)
 
@@ -69,7 +72,8 @@ def me(request: Request, db: Session = Depends(get_db)):
 
 
 @auth_router.post("/logout", response_model=LogoutResponse)
-def logout():
+@limiter.limit(AUTH_RATE_LIMIT)
+def logout(request: Request):
     response = JSONResponse(content={
         "msg": "Sesión cerrada con éxito"
     })

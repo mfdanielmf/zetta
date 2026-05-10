@@ -1,7 +1,7 @@
 import os
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File as FileFA
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File as FileFA, Request
 from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 from starlette.background import BackgroundTask
@@ -17,6 +17,7 @@ from app.schemas import file_schemas
 from app.schemas.file_schemas import FileBase
 from app.services import file_services, folder_services
 from app.schemas import folder_schemas
+from app.core.limiter import limiter, FILE_RATE_LIMIT
 
 folder_router = APIRouter()
 
@@ -49,7 +50,8 @@ def get_folders(db: Session = Depends(get_db), usuario: User = Depends(get_curre
 
 
 @folder_router.post("", response_model=folder_schemas.FolderResponse)
-def create_folder(req: folder_schemas.FolderRequest, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+@limiter.limit(FILE_RATE_LIMIT)
+def create_folder(request: Request, req: folder_schemas.FolderRequest, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
         carpeta: Folder = folder_services.crear_carpeta(
             nombre=req.nombre_carpeta, usuario=usuario, db=db)
@@ -100,7 +102,8 @@ def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = D
 
 
 @folder_router.delete("/trash/{id_carpeta}", response_model=folder_schemas.DeleteFolderPermanentResponse)
-def delete_folder_permanent(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit(FILE_RATE_LIMIT)
+def delete_folder_permanent(request: Request, id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         folder_services.eliminar_carpeta_permanente(
             id_carpeta=id_carpeta, db=db, usuario=usuario)
@@ -197,7 +200,8 @@ def download_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user),
 
 
 @folder_router.delete("/{id_carpeta}", response_model=folder_schemas.AddFolderTrashResponse)
-def add_folder_to_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit(FILE_RATE_LIMIT)
+def add_folder_to_trash(request: Request, id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         carpeta: Folder = folder_services.añadir_carpeta_papelera(
             id_carpeta=id_carpeta, usuario=usuario, db=db)
