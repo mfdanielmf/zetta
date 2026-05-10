@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.middleware.auth_middleware import get_current_user
@@ -10,6 +10,7 @@ from app.models import exceptions as ex
 from app.models.user import User
 from app.schemas import shared_file_schemas, shared_folder_schemas, file_schemas, folder_schemas
 from app.services import shared_file_services, shared_folder_services
+from app.core.limiter import limiter, DEFAULT_RATE_LIMIT
 
 shared_router = APIRouter()
 
@@ -30,7 +31,8 @@ def get_shared_files_by_user(usuario: User = Depends(get_current_user), db: Sess
 
 
 @shared_router.post("/sent/files", response_model=shared_file_schemas.ShareFileResponse)
-def share_file_with_user(req: shared_file_schemas.ShareFileRequest, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit(DEFAULT_RATE_LIMIT)
+def share_file_with_user(request: Request, req: shared_file_schemas.ShareFileRequest, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         archivo_compartido: ArchivoCompartido = shared_file_services.compartir_archivo(
             req=req, usuario=usuario, db=db)
@@ -82,7 +84,8 @@ def get_shared_folders_by_user(usuario: User = Depends(get_current_user), db: Se
 
 
 @shared_router.post("/sent/folders", response_model=shared_folder_schemas.ShareFolderResponse)
-def share_folder_with_user(req: shared_folder_schemas.ShareFolderRequest, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit(DEFAULT_RATE_LIMIT)
+def share_folder_with_user(request: Request, req: shared_folder_schemas.ShareFolderRequest, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         carpeta_compartida: CarpetaCompartida = shared_folder_services.compartir_carpeta(
             req=req, usuario=usuario, db=db)

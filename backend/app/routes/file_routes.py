@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
+from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, Request
 from fastapi.responses import FileResponse as FileResp
 from sqlalchemy.orm import Session
 from app.database.db import get_db
@@ -11,6 +11,7 @@ from app.models import exceptions as ex
 from app.schemas import file_schemas
 from app.middleware.auth_middleware import get_current_user
 from app.services import file_services
+from app.core.limiter import limiter, UPLOAD_RATE_LIMIT, FILE_RATE_LIMIT
 
 file_router = APIRouter()
 
@@ -44,7 +45,8 @@ def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current
 
 
 @file_router.post("", response_model=file_schemas.FileResponse)
-async def upload_file(file_upload: list[UploadFile] = File(...), db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+@limiter.limit(UPLOAD_RATE_LIMIT)
+async def upload_file(request: Request, file_upload: list[UploadFile] = File(...), db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
         archivos: list[File] = []
         for file in file_upload:
@@ -104,7 +106,8 @@ def get_files_trash(usuario: User = Depends(get_current_user), db: Session = Dep
 
 
 @file_router.delete("/trash/{id_archivo}", response_model=file_schemas.DeleteFilePermanentResponse)
-def delete_file_permanent(id_archivo: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit(FILE_RATE_LIMIT)
+def delete_file_permanent(request: Request, id_archivo: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         file_services.eliminar_archivo_permanente(
             id_archivo=id_archivo, db=db, usuario=usuario)
@@ -158,7 +161,8 @@ def restore_file_from_trash(id_archivo: UUID, db: Session = Depends(get_db), usu
 
 
 @file_router.delete("/{id_archivo}", response_model=file_schemas.AddFileTrashResponse)
-def add_file_to_trash(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+@limiter.limit(FILE_RATE_LIMIT)
+def add_file_to_trash(request: Request, id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
         archivo: File = file_services.añadir_archivo_papelera(
             id_archivo=id_archivo, db=db, usuario=usuario)

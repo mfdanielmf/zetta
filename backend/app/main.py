@@ -1,4 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi.errors import RateLimitExceeded
+from fastapi.responses import JSONResponse
 
 from app.models.file import File
 from app.models.user import User
@@ -18,6 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.lifespan import lifespan
 from app.core.logging_config import logger
+from app.core.limiter import limiter
 from app.config import config
 
 app = FastAPI(
@@ -28,6 +31,17 @@ app = FastAPI(
     redoc_url=None if config.ENVIRONMENT == "prod" else "/redoc",
     openapi_url=None if config.ENVIRONMENT == "prod" else "/openapi.json"
 )
+
+app.state.limiter = limiter
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request, exc):
+    return JSONResponse(
+        status_code=429,
+        content={
+            "detail": "Has hecho demasiadas solicitudes. Inténtalo de nuevo más tarde."}
+    )
 
 logger.info(f"Inicializando app. CONFIG: {config.ENVIRONMENT}")
 logger.debug(f"CORS permitido: {config.ALLOWED_ORIGINS}")
