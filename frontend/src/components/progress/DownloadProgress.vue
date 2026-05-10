@@ -48,7 +48,7 @@ function cerrar() {
 
       <span v-else-if="downloadStore.estado === 'error'" class="flex items-center gap-1">
         <X :size="18" color="red" />
-        Error al subir
+        Error al descargar
       </span>
     </div>
 

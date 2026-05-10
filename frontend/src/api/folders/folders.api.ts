@@ -1,3 +1,4 @@
+import { useUploadStore } from '@/stores/upload.store'
 import api from '../axios.config'
 import type {
   CreateFolderAnidadaResponse,
@@ -27,8 +28,25 @@ export default {
   obtenerArchivosCarpeta(idCarpeta: string) {
     return api().get<GetFilesFolderResponse>(URL + `/${idCarpeta}/files`)
   },
-  subirArchivosCarpeta(idCarpeta: string, data: FormData) {
-    return api().post<UploadFileFolderResponse>(URL + `/${idCarpeta}/files`, data)
+  async subirArchivosCarpeta(idCarpeta: string, data: FormData) {
+    const uploadStore = useUploadStore()
+    uploadStore.estado = 'subiendo'
+
+    try {
+      const res = await api().post<UploadFileFolderResponse>(URL + `/${idCarpeta}/files`, data, {
+        onUploadProgress: ({ loaded, total }) => {
+          uploadStore.setPorcentaje(loaded, total ?? 0)
+        },
+      })
+
+      uploadStore.estado = 'completado'
+
+      return res
+    } catch (e: unknown) {
+      uploadStore.estado = 'error'
+
+      throw e
+    }
   },
   crearCarpetaAnidada(idCarpetaPadre: string, nombreCarpeta: string) {
     return api().post<CreateFolderAnidadaResponse>(URL + `/${idCarpetaPadre}/folders`, {

@@ -1,3 +1,5 @@
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.models.file import File
 from app.models.user import User
 from app.models.folder import Folder
@@ -15,16 +17,20 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.lifespan import lifespan
+from app.core.logging_config import logger
+from app.config import config
 
 app = FastAPI(title="ZETTA", description="DOCS API ZETTA", lifespan=lifespan)
 
-# Config temporal
+logger.info(f"Inicializando app. CONFIG: {config.ENVIRONMENT}")
+logger.debug(f"CORS permitido: {config.ALLOWED_ORIGINS}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=config.ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allow_headers=["*"]
 )
 
 # RUTAS
