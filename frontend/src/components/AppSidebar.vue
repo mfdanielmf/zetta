@@ -2,19 +2,14 @@
 import type { SidebarProps } from '@/components/ui/sidebar'
 
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
   Frame,
   GalleryVerticalEnd,
+  HardDrive,
   Map,
   PieChart,
-  Settings2,
-  SquareTerminal,
+  Share2,
 } from 'lucide-vue-next'
 import NavMain from '@/components/NavMain.vue'
-import NavProjects from '@/components/NavProjects.vue'
 import NavUser from '@/components/NavUser.vue'
 import TeamSwitcher from '@/components/TeamSwitcher.vue'
 
@@ -45,23 +40,13 @@ const data = computed(() => ({
       logo: GalleryVerticalEnd,
       plan: 'Enterprise',
     },
-    {
-      name: 'Acme Corp.',
-      logo: AudioWaveform,
-      plan: 'Startup',
-    },
-    {
-      name: 'Evil Corp.',
-      logo: Command,
-      plan: 'Free',
-    },
   ],
 
   navMain: [
     {
       title: 'Mi Unidad',
       url: '#',
-      icon: SquareTerminal,
+      icon: HardDrive,
       isActive: route.path.startsWith('/storage') || isActive('/trash'),
       items: [
         {
@@ -79,7 +64,7 @@ const data = computed(() => ({
     {
       title: 'Compartido',
       url: '#',
-      icon: Bot,
+      icon: Share2,
       isActive: route.path.startsWith('/shared'),
       items: [
         {
@@ -91,38 +76,6 @@ const data = computed(() => ({
           title: 'Compartido por mí',
           url: '/shared/sent',
           isActive: isActive('/shared/sent'),
-        },
-      ],
-    },
-
-    {
-      title: 'Documentation',
-      url: '#',
-      icon: BookOpen,
-      items: [
-        {
-          title: 'Introduction',
-          url: '#',
-        },
-        {
-          title: 'Get Started',
-          url: '#',
-        },
-      ],
-    },
-
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-      items: [
-        {
-          title: 'General',
-          url: '#',
-        },
-        {
-          title: 'Team',
-          url: '#',
         },
       ],
     },
@@ -155,7 +108,6 @@ const data = computed(() => ({
     </SidebarHeader>
     <SidebarContent>
       <NavMain :items="data.navMain" />
-      <NavProjects :projects="data.projects" />
     </SidebarContent>
     <SidebarFooter>
       <NavUser :user="authStore.usuario" v-if="authStore.usuario" />
