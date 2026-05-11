@@ -4,2100 +4,2100 @@
  */
 
 export interface paths {
-    "/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Health */
-        get: operations["health__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Register */
-        post: operations["register_auth_register_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Login */
-        post: operations["login_auth_login_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/auth/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Me */
-        get: operations["me_auth_me_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/files": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Files */
-        get: operations["get_files_api_files_get"];
-        put?: never;
-        /** Upload File */
-        post: operations["upload_file_api_files_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/files/trash": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Files Trash */
-        get: operations["get_files_trash_api_files_trash_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/files/trash/{id_archivo}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Delete File Permanent */
-        delete: operations["delete_file_permanent_api_files_trash__id_archivo__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/files/{id_archivo}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Download Files */
-        get: operations["download_files_api_files__id_archivo__get"];
-        put?: never;
-        post?: never;
-        /** Add File To Trash */
-        delete: operations["add_file_to_trash_api_files__id_archivo__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/files/{id_archivo}/restaurar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Restore File From Trash */
-        put: operations["restore_file_from_trash_api_files__id_archivo__restaurar_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/folders": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Folders */
-        get: operations["get_folders_api_folders_get"];
-        put?: never;
-        /** Create Folder */
-        post: operations["create_folder_api_folders_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/folders/trash": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Folders Trash */
-        get: operations["get_folders_trash_api_folders_trash_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/folders/trash/{id_carpeta}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Delete Folder Permanent */
-        delete: operations["delete_folder_permanent_api_folders_trash__id_carpeta__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/folders/trash/{id_carpeta}/files": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Files Of Folder On Trash */
-        get: operations["get_files_of_folder_on_trash_api_folders_trash__id_carpeta__files_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/folders/trash/{id_carpeta}/folders": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Folders Inside Folder On Trash */
-        get: operations["get_folders_inside_folder_on_trash_api_folders_trash__id_carpeta__folders_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/folders/{id_carpeta}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Download Folder */
-        get: operations["download_folder_api_folders__id_carpeta__get"];
-        put?: never;
-        post?: never;
-        /** Add Folder To Trash */
-        delete: operations["add_folder_to_trash_api_folders__id_carpeta__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/folders/{id_carpeta}/restaurar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Restore Folder From Trash */
-        put: operations["restore_folder_from_trash_api_folders__id_carpeta__restaurar_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/folders/{id_carpeta}/files": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Files Of Folder */
-        get: operations["get_files_of_folder_api_folders__id_carpeta__files_get"];
-        put?: never;
-        /** Upload File To Folder */
-        post: operations["upload_file_to_folder_api_folders__id_carpeta__files_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/folders/{id_carpeta}/folders": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Folders Of Folder */
-        get: operations["get_folders_of_folder_api_folders__id_carpeta__folders_get"];
-        put?: never;
-        /** Create Folder In Folder */
-        post: operations["create_folder_in_folder_api_folders__id_carpeta__folders_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/shared/sent/files": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Shared Files By User */
-        get: operations["get_shared_files_by_user_api_shared_sent_files_get"];
-        put?: never;
-        /** Share File With User */
-        post: operations["share_file_with_user_api_shared_sent_files_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/shared/sent/folders": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Shared Folders By User */
-        get: operations["get_shared_folders_by_user_api_shared_sent_folders_get"];
-        put?: never;
-        /** Share Folder With User */
-        post: operations["share_folder_with_user_api_shared_sent_folders_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/shared/received/files": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Shared Files With User */
-        get: operations["get_shared_files_with_user_api_shared_received_files_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/shared/received/folders": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Shared Folders By User */
-        get: operations["get_shared_folders_by_user_api_shared_received_folders_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v2/items": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Items */
-        get: operations["get_items_api_v2_items_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v2/items/{id_carpeta}/items": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Items Folder */
-        get: operations["get_items_folder_api_v2_items__id_carpeta__items_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v2/items/trash": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Items Trash */
-        get: operations["get_items_trash_api_v2_items_trash_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v2/items/trash/{id_carpeta}/items": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Items Folder In Trash */
-        get: operations["get_items_folder_in_trash_api_v2_items_trash__id_carpeta__items_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v2/items/shared/sent": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Sent Items */
-        get: operations["get_sent_items_api_v2_items_shared_sent_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v2/items/shared/received": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Received Items */
-        get: operations["get_received_items_api_v2_items_shared_received_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  '/': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Health */
+    get: operations['health__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/auth/register': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Register */
+    post: operations['register_auth_register_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/auth/login': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Login */
+    post: operations['login_auth_login_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/auth/me': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Me */
+    get: operations['me_auth_me_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/files': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Files */
+    get: operations['get_files_api_files_get']
+    put?: never
+    /** Upload File */
+    post: operations['upload_file_api_files_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/files/trash': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Files Trash */
+    get: operations['get_files_trash_api_files_trash_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/files/trash/{id_archivo}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /** Delete File Permanent */
+    delete: operations['delete_file_permanent_api_files_trash__id_archivo__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/files/{id_archivo}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Download Files */
+    get: operations['download_files_api_files__id_archivo__get']
+    put?: never
+    post?: never
+    /** Add File To Trash */
+    delete: operations['add_file_to_trash_api_files__id_archivo__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/files/{id_archivo}/restaurar': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Restore File From Trash */
+    put: operations['restore_file_from_trash_api_files__id_archivo__restaurar_put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/folders': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Folders */
+    get: operations['get_folders_api_folders_get']
+    put?: never
+    /** Create Folder */
+    post: operations['create_folder_api_folders_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/folders/trash': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Folders Trash */
+    get: operations['get_folders_trash_api_folders_trash_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/folders/trash/{id_carpeta}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /** Delete Folder Permanent */
+    delete: operations['delete_folder_permanent_api_folders_trash__id_carpeta__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/folders/trash/{id_carpeta}/files': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Files Of Folder On Trash */
+    get: operations['get_files_of_folder_on_trash_api_folders_trash__id_carpeta__files_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/folders/trash/{id_carpeta}/folders': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Folders Inside Folder On Trash */
+    get: operations['get_folders_inside_folder_on_trash_api_folders_trash__id_carpeta__folders_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/folders/{id_carpeta}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Download Folder */
+    get: operations['download_folder_api_folders__id_carpeta__get']
+    put?: never
+    post?: never
+    /** Add Folder To Trash */
+    delete: operations['add_folder_to_trash_api_folders__id_carpeta__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/folders/{id_carpeta}/restaurar': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Restore Folder From Trash */
+    put: operations['restore_folder_from_trash_api_folders__id_carpeta__restaurar_put']
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/folders/{id_carpeta}/files': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Files Of Folder */
+    get: operations['get_files_of_folder_api_folders__id_carpeta__files_get']
+    put?: never
+    /** Upload File To Folder */
+    post: operations['upload_file_to_folder_api_folders__id_carpeta__files_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/folders/{id_carpeta}/folders': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Folders Of Folder */
+    get: operations['get_folders_of_folder_api_folders__id_carpeta__folders_get']
+    put?: never
+    /** Create Folder In Folder */
+    post: operations['create_folder_in_folder_api_folders__id_carpeta__folders_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/shared/sent/files': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Shared Files By User */
+    get: operations['get_shared_files_by_user_api_shared_sent_files_get']
+    put?: never
+    /** Share File With User */
+    post: operations['share_file_with_user_api_shared_sent_files_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/shared/sent/folders': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Shared Folders By User */
+    get: operations['get_shared_folders_by_user_api_shared_sent_folders_get']
+    put?: never
+    /** Share Folder With User */
+    post: operations['share_folder_with_user_api_shared_sent_folders_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/shared/received/files': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Shared Files With User */
+    get: operations['get_shared_files_with_user_api_shared_received_files_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/shared/received/folders': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Shared Folders By User */
+    get: operations['get_shared_folders_by_user_api_shared_received_folders_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v2/items': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Items */
+    get: operations['get_items_api_v2_items_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v2/items/{id_carpeta}/items': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Items Folder */
+    get: operations['get_items_folder_api_v2_items__id_carpeta__items_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v2/items/trash': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Items Trash */
+    get: operations['get_items_trash_api_v2_items_trash_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v2/items/trash/{id_carpeta}/items': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Items Folder In Trash */
+    get: operations['get_items_folder_in_trash_api_v2_items_trash__id_carpeta__items_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v2/items/shared/sent': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Sent Items */
+    get: operations['get_sent_items_api_v2_items_shared_sent_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v2/items/shared/received': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Received Items */
+    get: operations['get_received_items_api_v2_items_shared_received_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
-export type webhooks = Record<string, never>;
+export type webhooks = Record<string, never>
 export interface components {
-    schemas: {
-        /** AddFileTrashResponse */
-        AddFileTrashResponse: {
-            /** Msg */
-            msg: string;
-            archivo: components["schemas"]["FileBase"];
-        };
-        /** AddFolderTrashResponse */
-        AddFolderTrashResponse: {
-            /** Msg */
-            msg: string;
-            carpeta: components["schemas"]["FolderBase"];
-        };
-        /** ArchivoCompartidoBase */
-        ArchivoCompartidoBase: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * Fecha Compartido
-             * Format: date-time
-             */
-            fecha_compartido: string;
-            propietario: components["schemas"]["UserReturn"];
-            receptor: components["schemas"]["UserReturn"];
-            archivo: components["schemas"]["FileBase"];
-        };
-        /** Body_upload_file_api_files_post */
-        Body_upload_file_api_files_post: {
-            /** File Upload */
-            file_upload: string[];
-        };
-        /** Body_upload_file_to_folder_api_folders__id_carpeta__files_post */
-        Body_upload_file_to_folder_api_folders__id_carpeta__files_post: {
-            /** File Upload */
-            file_upload: string[];
-        };
-        /** CarpetaCompartidaBase */
-        CarpetaCompartidaBase: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * Fecha Compartido
-             * Format: date-time
-             */
-            fecha_compartido: string;
-            propietario: components["schemas"]["UserReturn"];
-            receptor: components["schemas"]["UserReturn"];
-            carpeta: components["schemas"]["FolderBase"];
-        };
-        /** DeleteFilePermanentResponse */
-        DeleteFilePermanentResponse: {
-            /**
-             * Msg
-             * @default Archivo eliminado correctamente
-             */
-            msg: string;
-        };
-        /** DeleteFolderPermanentResponse */
-        DeleteFolderPermanentResponse: {
-            /**
-             * Msg
-             * @default Carpeta eliminada correctamente
-             */
-            msg: string;
-        };
-        /** FileBase */
-        FileBase: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Nombre Original */
-            nombre_original: string;
-            /** Path */
-            path: string;
-            /**
-             * Fecha Creacion
-             * Format: date-time
-             */
-            fecha_creacion: string;
-            /** Tamaño Bytes */
-            "tama\u00F1o_bytes": number;
-            /**
-             * Id Usuario
-             * Format: uuid
-             */
-            id_usuario: string;
-            /** Id Carpeta */
-            id_carpeta?: string | null;
-            /** Nombre Usuario */
-            nombre_usuario: string;
-            /** Fecha Eliminacion */
-            fecha_eliminacion?: string | null;
-        };
-        /** FileItem */
-        FileItem: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Nombre Original */
-            nombre_original: string;
-            /** Path */
-            path: string;
-            /**
-             * Fecha Creacion
-             * Format: date-time
-             */
-            fecha_creacion: string;
-            /** Tamaño Bytes */
-            "tama\u00F1o_bytes": number;
-            /**
-             * Id Usuario
-             * Format: uuid
-             */
-            id_usuario: string;
-            /** Id Carpeta */
-            id_carpeta?: string | null;
-            /** Nombre Usuario */
-            nombre_usuario: string;
-            /** Fecha Eliminacion */
-            fecha_eliminacion?: string | null;
-            /**
-             * Tipo
-             * @default file
-             * @constant
-             */
-            tipo: "file";
-        };
-        /** FileResponse */
-        FileResponse: {
-            /** Msg */
-            msg: string;
-            /** Archivos */
-            archivos: components["schemas"]["FileBase"][];
-        };
-        /** FolderBase */
-        FolderBase: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Nombre Original */
-            nombre_original: string;
-            /** Path */
-            path: string;
-            /**
-             * Fecha Creacion
-             * Format: date-time
-             */
-            fecha_creacion: string;
-            /**
-             * Id Usuario
-             * Format: uuid
-             */
-            id_usuario: string;
-            /** Nombre Usuario */
-            nombre_usuario: string;
-            /** Id Carpeta */
-            id_carpeta?: string | null;
-            /** Fecha Eliminacion */
-            fecha_eliminacion?: string | null;
-        };
-        /** FolderItem */
-        FolderItem: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Nombre Original */
-            nombre_original: string;
-            /** Path */
-            path: string;
-            /**
-             * Fecha Creacion
-             * Format: date-time
-             */
-            fecha_creacion: string;
-            /**
-             * Id Usuario
-             * Format: uuid
-             */
-            id_usuario: string;
-            /** Nombre Usuario */
-            nombre_usuario: string;
-            /** Id Carpeta */
-            id_carpeta?: string | null;
-            /** Fecha Eliminacion */
-            fecha_eliminacion?: string | null;
-            /**
-             * Tipo
-             * @default folder
-             * @constant
-             */
-            tipo: "folder";
-        };
-        /** FolderRequest */
-        FolderRequest: {
-            /** Nombre Carpeta */
-            nombre_carpeta: string;
-        };
-        /** FolderResponse */
-        FolderResponse: {
-            /** Msg */
-            msg: string;
-            carpeta: components["schemas"]["FolderBase"];
-        };
-        /** HTTPValidationError */
-        HTTPValidationError: {
-            /** Detail */
-            detail?: components["schemas"]["ValidationError"][];
-        };
-        /** LoginRequest */
-        LoginRequest: {
-            /** Nombre */
-            nombre: string;
-            /** Contraseña */
-            "contrase\u00F1a": string;
-        };
-        /** LoginResponse */
-        LoginResponse: {
-            /** Msg */
-            msg: string;
-            usuario: components["schemas"]["UserReturn"];
-            /** Token */
-            token: string;
-        };
-        /** MeResponse */
-        MeResponse: {
-            usuario: components["schemas"]["UserReturn"];
-        };
-        /** PaginatedFileResponse */
-        PaginatedFileResponse: {
-            /** Items */
-            items: components["schemas"]["FileBase"][];
-            /** Total */
-            total: number;
-            /** Pagina */
-            pagina: number;
-            /** Limite */
-            limite: number;
-        };
-        /** PaginatedFolderResponse */
-        PaginatedFolderResponse: {
-            /** Items */
-            items: components["schemas"]["FolderBase"][];
-            /** Total */
-            total: number;
-            /** Pagina */
-            pagina: number;
-            /** Limite */
-            limite: number;
-        };
-        /** PaginatedItemResponse */
-        PaginatedItemResponse: {
-            /** Items */
-            items: (components["schemas"]["FolderItem"] | components["schemas"]["FileItem"])[];
-            /** Total */
-            total: number;
-            /** Pagina */
-            pagina: number;
-            /** Limite */
-            limite: number;
-        };
-        /** PaginatedSharedFileResponse */
-        PaginatedSharedFileResponse: {
-            /** Items */
-            items: components["schemas"]["ArchivoCompartidoBase"][];
-            /** Total */
-            total: number;
-            /** Pagina */
-            pagina: number;
-            /** Limite */
-            limite: number;
-        };
-        /** PaginatedSharedFolderResponse */
-        PaginatedSharedFolderResponse: {
-            /** Items */
-            items: components["schemas"]["CarpetaCompartidaBase"][];
-            /** Total */
-            total: number;
-            /** Pagina */
-            pagina: number;
-            /** Limite */
-            limite: number;
-        };
-        /** PaginatedSharedItemResponse */
-        PaginatedSharedItemResponse: {
-            /** Items */
-            items: (components["schemas"]["SharedFolderItem"] | components["schemas"]["SharedFileItem"])[];
-            /** Total */
-            total: number;
-            /** Pagina */
-            pagina: number;
-            /** Limite */
-            limite: number;
-        };
-        /** RegisterResponse */
-        RegisterResponse: {
-            /** Msg */
-            msg: string;
-            usuario: components["schemas"]["UserReturn"];
-        };
-        /** RestoreFileResponse */
-        RestoreFileResponse: {
-            /** Msg */
-            msg: string;
-            archivo: components["schemas"]["FileBase"];
-        };
-        /** RestoreFolderResponse */
-        RestoreFolderResponse: {
-            /** Msg */
-            msg: string;
-            carpeta: components["schemas"]["FolderBase"];
-        };
-        /** ShareFileRequest */
-        ShareFileRequest: {
-            /**
-             * Id Archivo
-             * Format: uuid
-             */
-            id_archivo: string;
-            /**
-             * Correo Usuario
-             * Format: email
-             */
-            correo_usuario: string;
-        };
-        /** ShareFileResponse */
-        ShareFileResponse: {
-            /**
-             * Msg
-             * @default Archivo compartido con éxito
-             */
-            msg: string;
-            archivo_compartido: components["schemas"]["ArchivoCompartidoBase"];
-        };
-        /** ShareFolderRequest */
-        ShareFolderRequest: {
-            /**
-             * Id Carpeta
-             * Format: uuid
-             */
-            id_carpeta: string;
-            /**
-             * Correo Usuario
-             * Format: email
-             */
-            correo_usuario: string;
-        };
-        /** ShareFolderResponse */
-        ShareFolderResponse: {
-            /**
-             * Msg
-             * @default Carpeta compartida con éxito
-             */
-            msg: string;
-            carpeta_compartida: components["schemas"]["CarpetaCompartidaBase"];
-        };
-        /** SharedFileItem */
-        SharedFileItem: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * Fecha Compartido
-             * Format: date-time
-             */
-            fecha_compartido: string;
-            propietario: components["schemas"]["UserReturn"];
-            receptor: components["schemas"]["UserReturn"];
-            archivo: components["schemas"]["FileBase"];
-            /**
-             * Tipo
-             * @default file
-             * @constant
-             */
-            tipo: "file";
-        };
-        /** SharedFolderItem */
-        SharedFolderItem: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * Fecha Compartido
-             * Format: date-time
-             */
-            fecha_compartido: string;
-            propietario: components["schemas"]["UserReturn"];
-            receptor: components["schemas"]["UserReturn"];
-            carpeta: components["schemas"]["FolderBase"];
-            /**
-             * Tipo
-             * @default folder
-             * @constant
-             */
-            tipo: "folder";
-        };
-        /** UploadFileFolderResponse */
-        UploadFileFolderResponse: {
-            /** Msg */
-            msg: string;
-            /** Archivos */
-            archivos: components["schemas"]["FileBase"][];
-        };
-        /** UserCreate */
-        UserCreate: {
-            /** Nombre */
-            nombre: string;
-            /**
-             * Correo
-             * Format: email
-             */
-            correo: string;
-            /** Contraseña */
-            "contrase\u00F1a": string;
-            /** Contraseña Repetir */
-            "contrase\u00F1a_repetir": string;
-        };
-        /** UserReturn */
-        UserReturn: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Nombre */
-            nombre: string;
-            /** Correo */
-            correo: string;
-            /**
-             * Fecha Creacion
-             * Format: date-time
-             */
-            fecha_creacion: string;
-        };
-        /** ValidationError */
-        ValidationError: {
-            /** Location */
-            loc: (string | number)[];
-            /** Message */
-            msg: string;
-            /** Error Type */
-            type: string;
-        };
-    };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+  schemas: {
+    /** AddFileTrashResponse */
+    AddFileTrashResponse: {
+      /** Msg */
+      msg: string
+      archivo: components['schemas']['FileBase']
+    }
+    /** AddFolderTrashResponse */
+    AddFolderTrashResponse: {
+      /** Msg */
+      msg: string
+      carpeta: components['schemas']['FolderBase']
+    }
+    /** ArchivoCompartidoBase */
+    ArchivoCompartidoBase: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /**
+       * Fecha Compartido
+       * Format: date-time
+       */
+      fecha_compartido: string
+      propietario: components['schemas']['UserReturn']
+      receptor: components['schemas']['UserReturn']
+      archivo: components['schemas']['FileBase']
+    }
+    /** Body_upload_file_api_files_post */
+    Body_upload_file_api_files_post: {
+      /** File Upload */
+      file_upload: string[]
+    }
+    /** Body_upload_file_to_folder_api_folders__id_carpeta__files_post */
+    Body_upload_file_to_folder_api_folders__id_carpeta__files_post: {
+      /** File Upload */
+      file_upload: string[]
+    }
+    /** CarpetaCompartidaBase */
+    CarpetaCompartidaBase: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /**
+       * Fecha Compartido
+       * Format: date-time
+       */
+      fecha_compartido: string
+      propietario: components['schemas']['UserReturn']
+      receptor: components['schemas']['UserReturn']
+      carpeta: components['schemas']['FolderBase']
+    }
+    /** DeleteFilePermanentResponse */
+    DeleteFilePermanentResponse: {
+      /**
+       * Msg
+       * @default Archivo eliminado correctamente
+       */
+      msg: string
+    }
+    /** DeleteFolderPermanentResponse */
+    DeleteFolderPermanentResponse: {
+      /**
+       * Msg
+       * @default Carpeta eliminada correctamente
+       */
+      msg: string
+    }
+    /** FileBase */
+    FileBase: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Nombre Original */
+      nombre_original: string
+      /** Path */
+      path: string
+      /**
+       * Fecha Creacion
+       * Format: date-time
+       */
+      fecha_creacion: string
+      /** Tamaño Bytes */
+      'tama\u00F1o_bytes': number
+      /**
+       * Id Usuario
+       * Format: uuid
+       */
+      id_usuario: string
+      /** Id Carpeta */
+      id_carpeta?: string | null
+      /** Nombre Usuario */
+      nombre_usuario: string
+      /** Fecha Eliminacion */
+      fecha_eliminacion?: string | null
+    }
+    /** FileItem */
+    FileItem: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Nombre Original */
+      nombre_original: string
+      /** Path */
+      path: string
+      /**
+       * Fecha Creacion
+       * Format: date-time
+       */
+      fecha_creacion: string
+      /** Tamaño Bytes */
+      'tama\u00F1o_bytes': number
+      /**
+       * Id Usuario
+       * Format: uuid
+       */
+      id_usuario: string
+      /** Id Carpeta */
+      id_carpeta?: string | null
+      /** Nombre Usuario */
+      nombre_usuario: string
+      /** Fecha Eliminacion */
+      fecha_eliminacion?: string | null
+      /**
+       * Tipo
+       * @default file
+       * @constant
+       */
+      tipo: 'file'
+    }
+    /** FileResponse */
+    FileResponse: {
+      /** Msg */
+      msg: string
+      /** Archivos */
+      archivos: components['schemas']['FileBase'][]
+    }
+    /** FolderBase */
+    FolderBase: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Nombre Original */
+      nombre_original: string
+      /** Path */
+      path: string
+      /**
+       * Fecha Creacion
+       * Format: date-time
+       */
+      fecha_creacion: string
+      /**
+       * Id Usuario
+       * Format: uuid
+       */
+      id_usuario: string
+      /** Nombre Usuario */
+      nombre_usuario: string
+      /** Id Carpeta */
+      id_carpeta?: string | null
+      /** Fecha Eliminacion */
+      fecha_eliminacion?: string | null
+    }
+    /** FolderItem */
+    FolderItem: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Nombre Original */
+      nombre_original: string
+      /** Path */
+      path: string
+      /**
+       * Fecha Creacion
+       * Format: date-time
+       */
+      fecha_creacion: string
+      /**
+       * Id Usuario
+       * Format: uuid
+       */
+      id_usuario: string
+      /** Nombre Usuario */
+      nombre_usuario: string
+      /** Id Carpeta */
+      id_carpeta?: string | null
+      /** Fecha Eliminacion */
+      fecha_eliminacion?: string | null
+      /**
+       * Tipo
+       * @default folder
+       * @constant
+       */
+      tipo: 'folder'
+    }
+    /** FolderRequest */
+    FolderRequest: {
+      /** Nombre Carpeta */
+      nombre_carpeta: string
+    }
+    /** FolderResponse */
+    FolderResponse: {
+      /** Msg */
+      msg: string
+      carpeta: components['schemas']['FolderBase']
+    }
+    /** HTTPValidationError */
+    HTTPValidationError: {
+      /** Detail */
+      detail?: components['schemas']['ValidationError'][]
+    }
+    /** LoginRequest */
+    LoginRequest: {
+      /** Nombre */
+      nombre: string
+      /** Contraseña */
+      'contrase\u00F1a': string
+    }
+    /** LoginResponse */
+    LoginResponse: {
+      /** Msg */
+      msg: string
+      usuario: components['schemas']['UserReturn']
+      /** Token */
+      token: string
+    }
+    /** MeResponse */
+    MeResponse: {
+      usuario: components['schemas']['UserReturn']
+    }
+    /** PaginatedFileResponse */
+    PaginatedFileResponse: {
+      /** Items */
+      items: components['schemas']['FileBase'][]
+      /** Total */
+      total: number
+      /** Pagina */
+      pagina: number
+      /** Limite */
+      limite: number
+    }
+    /** PaginatedFolderResponse */
+    PaginatedFolderResponse: {
+      /** Items */
+      items: components['schemas']['FolderBase'][]
+      /** Total */
+      total: number
+      /** Pagina */
+      pagina: number
+      /** Limite */
+      limite: number
+    }
+    /** PaginatedItemResponse */
+    PaginatedItemResponse: {
+      /** Items */
+      items: (components['schemas']['FolderItem'] | components['schemas']['FileItem'])[]
+      /** Total */
+      total: number
+      /** Pagina */
+      pagina: number
+      /** Limite */
+      limite: number
+    }
+    /** PaginatedSharedFileResponse */
+    PaginatedSharedFileResponse: {
+      /** Items */
+      items: components['schemas']['ArchivoCompartidoBase'][]
+      /** Total */
+      total: number
+      /** Pagina */
+      pagina: number
+      /** Limite */
+      limite: number
+    }
+    /** PaginatedSharedFolderResponse */
+    PaginatedSharedFolderResponse: {
+      /** Items */
+      items: components['schemas']['CarpetaCompartidaBase'][]
+      /** Total */
+      total: number
+      /** Pagina */
+      pagina: number
+      /** Limite */
+      limite: number
+    }
+    /** PaginatedSharedItemResponse */
+    PaginatedSharedItemResponse: {
+      /** Items */
+      items: (components['schemas']['SharedFolderItem'] | components['schemas']['SharedFileItem'])[]
+      /** Total */
+      total: number
+      /** Pagina */
+      pagina: number
+      /** Limite */
+      limite: number
+    }
+    /** RegisterResponse */
+    RegisterResponse: {
+      /** Msg */
+      msg: string
+      usuario: components['schemas']['UserReturn']
+    }
+    /** RestoreFileResponse */
+    RestoreFileResponse: {
+      /** Msg */
+      msg: string
+      archivo: components['schemas']['FileBase']
+    }
+    /** RestoreFolderResponse */
+    RestoreFolderResponse: {
+      /** Msg */
+      msg: string
+      carpeta: components['schemas']['FolderBase']
+    }
+    /** ShareFileRequest */
+    ShareFileRequest: {
+      /**
+       * Id Archivo
+       * Format: uuid
+       */
+      id_archivo: string
+      /**
+       * Correo Usuario
+       * Format: email
+       */
+      correo_usuario: string
+    }
+    /** ShareFileResponse */
+    ShareFileResponse: {
+      /**
+       * Msg
+       * @default Archivo compartido con éxito
+       */
+      msg: string
+      archivo_compartido: components['schemas']['ArchivoCompartidoBase']
+    }
+    /** ShareFolderRequest */
+    ShareFolderRequest: {
+      /**
+       * Id Carpeta
+       * Format: uuid
+       */
+      id_carpeta: string
+      /**
+       * Correo Usuario
+       * Format: email
+       */
+      correo_usuario: string
+    }
+    /** ShareFolderResponse */
+    ShareFolderResponse: {
+      /**
+       * Msg
+       * @default Carpeta compartida con éxito
+       */
+      msg: string
+      carpeta_compartida: components['schemas']['CarpetaCompartidaBase']
+    }
+    /** SharedFileItem */
+    SharedFileItem: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /**
+       * Fecha Compartido
+       * Format: date-time
+       */
+      fecha_compartido: string
+      propietario: components['schemas']['UserReturn']
+      receptor: components['schemas']['UserReturn']
+      archivo: components['schemas']['FileBase']
+      /**
+       * Tipo
+       * @default file
+       * @constant
+       */
+      tipo: 'file'
+    }
+    /** SharedFolderItem */
+    SharedFolderItem: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /**
+       * Fecha Compartido
+       * Format: date-time
+       */
+      fecha_compartido: string
+      propietario: components['schemas']['UserReturn']
+      receptor: components['schemas']['UserReturn']
+      carpeta: components['schemas']['FolderBase']
+      /**
+       * Tipo
+       * @default folder
+       * @constant
+       */
+      tipo: 'folder'
+    }
+    /** UploadFileFolderResponse */
+    UploadFileFolderResponse: {
+      /** Msg */
+      msg: string
+      /** Archivos */
+      archivos: components['schemas']['FileBase'][]
+    }
+    /** UserCreate */
+    UserCreate: {
+      /** Nombre */
+      nombre: string
+      /**
+       * Correo
+       * Format: email
+       */
+      correo: string
+      /** Contraseña */
+      'contrase\u00F1a': string
+      /** Contraseña Repetir */
+      'contrase\u00F1a_repetir': string
+    }
+    /** UserReturn */
+    UserReturn: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Nombre */
+      nombre: string
+      /** Correo */
+      correo: string
+      /**
+       * Fecha Creacion
+       * Format: date-time
+       */
+      fecha_creacion: string
+    }
+    /** ValidationError */
+    ValidationError: {
+      /** Location */
+      loc: (string | number)[]
+      /** Message */
+      msg: string
+      /** Error Type */
+      type: string
+    }
+  }
+  responses: never
+  parameters: never
+  requestBodies: never
+  headers: never
+  pathItems: never
 }
-export type $defs = Record<string, never>;
+export type $defs = Record<string, never>
 export interface operations {
-    health__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    register_auth_register_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UserCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RegisterResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    login_auth_login_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LoginRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LoginResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    me_auth_me_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MeResponse"];
-                };
-            };
-        };
-    };
-    get_files_api_files_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedFileResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    upload_file_api_files_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_upload_file_api_files_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FileResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_files_trash_api_files_trash_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedFileResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_file_permanent_api_files_trash__id_archivo__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id_archivo: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeleteFilePermanentResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    download_files_api_files__id_archivo__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id_archivo: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    add_file_to_trash_api_files__id_archivo__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id_archivo: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AddFileTrashResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    restore_file_from_trash_api_files__id_archivo__restaurar_put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id_archivo: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RestoreFileResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_folders_api_folders_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedFolderResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_folder_api_folders_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FolderRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FolderResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_folders_trash_api_folders_trash_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedFolderResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_folder_permanent_api_folders_trash__id_carpeta__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeleteFolderPermanentResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_files_of_folder_on_trash_api_folders_trash__id_carpeta__files_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedFileResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_folders_inside_folder_on_trash_api_folders_trash__id_carpeta__folders_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedFolderResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    download_folder_api_folders__id_carpeta__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    add_folder_to_trash_api_folders__id_carpeta__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AddFolderTrashResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    restore_folder_from_trash_api_folders__id_carpeta__restaurar_put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RestoreFolderResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_files_of_folder_api_folders__id_carpeta__files_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedFileResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    upload_file_to_folder_api_folders__id_carpeta__files_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_upload_file_to_folder_api_folders__id_carpeta__files_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UploadFileFolderResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_folders_of_folder_api_folders__id_carpeta__folders_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedFolderResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_folder_in_folder_api_folders__id_carpeta__folders_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["FolderRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FolderResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_shared_files_by_user_api_shared_sent_files_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedSharedFileResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    share_file_with_user_api_shared_sent_files_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ShareFileRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ShareFileResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_shared_folders_by_user_api_shared_sent_folders_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedSharedFolderResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    share_folder_with_user_api_shared_sent_folders_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ShareFolderRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ShareFolderResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_shared_files_with_user_api_shared_received_files_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedSharedFileResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_shared_folders_by_user_api_shared_received_folders_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedSharedFolderResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_items_api_v2_items_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedItemResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_items_folder_api_v2_items__id_carpeta__items_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedItemResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_items_trash_api_v2_items_trash_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedItemResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_items_folder_in_trash_api_v2_items_trash__id_carpeta__items_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path: {
-                id_carpeta: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedItemResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_sent_items_api_v2_items_shared_sent_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedSharedItemResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_received_items_api_v2_items_shared_received_get: {
-        parameters: {
-            query?: {
-                pagina?: number;
-                limite?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedSharedItemResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
+  health__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': unknown
+        }
+      }
+    }
+  }
+  register_auth_register_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UserCreate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RegisterResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  login_auth_login_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LoginRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['LoginResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  me_auth_me_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['MeResponse']
+        }
+      }
+    }
+  }
+  get_files_api_files_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedFileResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  upload_file_api_files_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'multipart/form-data': components['schemas']['Body_upload_file_api_files_post']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FileResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_files_trash_api_files_trash_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedFileResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_file_permanent_api_files_trash__id_archivo__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id_archivo: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DeleteFilePermanentResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  download_files_api_files__id_archivo__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id_archivo: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  add_file_to_trash_api_files__id_archivo__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id_archivo: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AddFileTrashResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  restore_file_from_trash_api_files__id_archivo__restaurar_put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id_archivo: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RestoreFileResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_folders_api_folders_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedFolderResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  create_folder_api_folders_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FolderRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FolderResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_folders_trash_api_folders_trash_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedFolderResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  delete_folder_permanent_api_folders_trash__id_carpeta__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DeleteFolderPermanentResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_files_of_folder_on_trash_api_folders_trash__id_carpeta__files_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedFileResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_folders_inside_folder_on_trash_api_folders_trash__id_carpeta__folders_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedFolderResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  download_folder_api_folders__id_carpeta__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  add_folder_to_trash_api_folders__id_carpeta__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AddFolderTrashResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  restore_folder_from_trash_api_folders__id_carpeta__restaurar_put: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['RestoreFolderResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_files_of_folder_api_folders__id_carpeta__files_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedFileResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  upload_file_to_folder_api_folders__id_carpeta__files_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'multipart/form-data': components['schemas']['Body_upload_file_to_folder_api_folders__id_carpeta__files_post']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['UploadFileFolderResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_folders_of_folder_api_folders__id_carpeta__folders_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedFolderResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  create_folder_in_folder_api_folders__id_carpeta__folders_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FolderRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FolderResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_shared_files_by_user_api_shared_sent_files_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedSharedFileResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  share_file_with_user_api_shared_sent_files_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ShareFileRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ShareFileResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_shared_folders_by_user_api_shared_sent_folders_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedSharedFolderResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  share_folder_with_user_api_shared_sent_folders_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ShareFolderRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ShareFolderResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_shared_files_with_user_api_shared_received_files_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedSharedFileResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_shared_folders_by_user_api_shared_received_folders_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedSharedFolderResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_items_api_v2_items_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedItemResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_items_folder_api_v2_items__id_carpeta__items_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedItemResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_items_trash_api_v2_items_trash_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedItemResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_items_folder_in_trash_api_v2_items_trash__id_carpeta__items_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path: {
+        id_carpeta: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedItemResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_sent_items_api_v2_items_shared_sent_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedSharedItemResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_received_items_api_v2_items_shared_received_get: {
+    parameters: {
+      query?: {
+        pagina?: number
+        limite?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PaginatedSharedItemResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
 }
