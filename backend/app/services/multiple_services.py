@@ -84,3 +84,32 @@ def añadir_multiples_archivos_papelera(ids: list[UUID], usuario: User, db: Sess
             })
 
     return errores
+
+
+def restaurar_multiples_archivos_papelera(ids: list[UUID], usuario: User, db: Session) -> File:
+    """
+    ArchivoNoEncontradoException
+    """
+    errores = []
+
+    for id_archivo in ids:
+        nombre_archivo = "desconocido"
+
+        try:
+            archivo: File = file_services.obtener_archivo_papelera(
+                id_archivo=id_archivo, db=db, usuario=usuario)
+
+            nombre_archivo = archivo.nombre_original or "desconocido"
+
+            archivo.fecha_eliminacion = None
+
+            file_repo.update_file(archivo=archivo, db=db)
+
+        except Exception as e1:
+            errores.append({
+                "id_archivo": str(id_archivo),
+                "nombre_archivo": nombre_archivo,
+                "error": str(e1)
+            })
+
+    return errores

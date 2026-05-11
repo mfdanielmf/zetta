@@ -15,6 +15,6 @@ class ErroresFileMultiple(BaseModel):
 
 
 class MultipleFileResponse(BaseModel):
-    msg: str = "Proceso completado"
+    msg: str
     items_totales: int
     errores: ErroresFileMultiple | None = None
