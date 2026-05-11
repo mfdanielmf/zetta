@@ -20,7 +20,7 @@ from app.repositories import shared_folder_repo, folder_repo, file_repo
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
-TAMAÑO_LIMITE = config.TAMAÑO_LIMITE
+TAMAÑO_LIMITE = config.TAMANO_LIMITE
 
 
 def crear_carpeta(nombre: str, usuario: User, db: Session) -> Folder:

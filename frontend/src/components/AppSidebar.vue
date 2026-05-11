@@ -1,14 +1,7 @@
 <script setup lang="ts">
 import type { SidebarProps } from '@/components/ui/sidebar'
 
-import {
-  Frame,
-  GalleryVerticalEnd,
-  HardDrive,
-  Map,
-  PieChart,
-  Share2,
-} from 'lucide-vue-next'
+import { Frame, GalleryVerticalEnd, HardDrive, Map, PieChart, Share2 } from 'lucide-vue-next'
 import NavMain from '@/components/NavMain.vue'
 import NavUser from '@/components/NavUser.vue'
 import TeamSwitcher from '@/components/TeamSwitcher.vue'

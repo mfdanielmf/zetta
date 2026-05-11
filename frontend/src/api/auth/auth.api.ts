@@ -5,7 +5,6 @@ import type {
   LoginRequest,
   LoginResponse,
   MeResponse,
-  LogoutResponse,
 } from '../types/types'
 
 const URL = '/auth'
@@ -19,8 +18,5 @@ export default {
   },
   obtenerUsuario() {
     return api().get<MeResponse>(URL + `/me`)
-  },
-  cerrarSesion() {
-    return api().post<LogoutResponse>(URL + `/logout`)
   },
 }

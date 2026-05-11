@@ -1,17 +1,7 @@
 <script setup lang="ts">
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-vue-next"
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-vue-next'
 
-import {
-  Avatar,
-  AvatarFallback,
-} from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,9 +17,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { useAuthStore } from "@/stores/auth.store";
-import { useRouter } from "vue-router";
-import type { UserReturn } from "@/api/types/types";
+import { useAuthStore } from '@/stores/auth.store'
+import { useRouter } from 'vue-router'
+import type { UserReturn } from '@/api/types/types'
 
 const props = defineProps<{
   user: UserReturn
@@ -40,10 +30,10 @@ const { isMobile } = useSidebar()
 const authStore = useAuthStore()
 const router = useRouter()
 
-async function handleLogout(){
+async function handleLogout() {
   const success = await authStore.cerrarSesion()
 
-  if (success) router.push({ name: "login" })
+  if (success) router.push({ name: 'login' })
 }
 </script>
 

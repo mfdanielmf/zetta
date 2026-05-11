@@ -54,7 +54,7 @@ const onSubmit = handleSubmit(async (data: UserRequest) => {
   const success = await authStore.registrarUsuario(data)
 
   if (success) {
-    router.push({"name": "login"})
+    router.push({ name: 'login' })
   }
 })
 </script>
@@ -75,7 +75,7 @@ const onSubmit = handleSubmit(async (data: UserRequest) => {
           <h1 class="text-xl font-bold">Bienvenido a Zetta</h1>
 
           <FieldDescription>
-            ¿Ya tienes una cuenta? <RouterLink :to="{name: 'login'}">Iniciar Sesión</RouterLink>
+            ¿Ya tienes una cuenta? <RouterLink :to="{ name: 'login' }">Iniciar Sesión</RouterLink>
           </FieldDescription>
         </div>
 
@@ -110,8 +110,8 @@ const onSubmit = handleSubmit(async (data: UserRequest) => {
 
         <Field>
           <Button type="submit" class="hover:cursor-pointer" :disabled="authStore.cargando">
-            <Spinner v-if="authStore.cargando"/>
-            {{ !authStore.cargando ? "Crear Cuenta" :  "Cargando..." }}
+            <Spinner v-if="authStore.cargando" />
+            {{ !authStore.cargando ? 'Crear Cuenta' : 'Cargando...' }}
           </Button>
         </Field>
       </FieldGroup>

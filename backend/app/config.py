@@ -37,7 +37,7 @@ class Config(BaseSettings):
 
     # SUBIDAS
     UPLOAD_DIR: str = "/tmp/uploads"
-    TAMAÑO_LIMITE: int = 1000 * 1024 * 1024  # 1GB
+    TAMANO_LIMITE: int = 1000 * 1024 * 1024  # 1GB
 
     # PAPELERA
     DIAS_PAPELERA: int = 30
