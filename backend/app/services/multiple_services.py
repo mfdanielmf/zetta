@@ -1,13 +1,15 @@
 import os
+import shutil
 from uuid import UUID
 from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
 from app.models.file import File
+from app.models.folder import Folder
 from app.models.user import User
 from app.models import exceptions as ex
-from app.services import file_services
+from app.services import file_services, folder_services
 from app.repositories import file_repo, multiple_repo
 
 
@@ -43,8 +45,8 @@ def eliminar_multiples_archivos_permanente(ids: list[UUID], usuario: User, db: S
 
         except Exception as e1:
             errores.append({
-                "id_archivo": str(id_archivo),
-                "nombre_archivo": nombre_archivo,
+                "id_item": str(id_archivo),
+                "nombre_item": nombre_archivo,
                 "error": str(e1)
             })
 
@@ -78,8 +80,8 @@ def añadir_multiples_archivos_papelera(ids: list[UUID], usuario: User, db: Sess
 
         except Exception as e1:
             errores.append({
-                "id_archivo": str(id_archivo),
-                "nombre_archivo": nombre_archivo,
+                "id_item": str(id_archivo),
+                "nombre_item": nombre_archivo,
                 "error": str(e1)
             })
 
@@ -107,9 +109,47 @@ def restaurar_multiples_archivos_papelera(ids: list[UUID], usuario: User, db: Se
 
         except Exception as e1:
             errores.append({
-                "id_archivo": str(id_archivo),
-                "nombre_archivo": nombre_archivo,
+                "id_item": str(id_archivo),
+                "nombre_item": nombre_archivo,
                 "error": str(e1)
             })
+
+    return errores
+
+
+def eliminar_multiples_carpetas_permanente(ids: list[UUID], usuario: User, db: Session):
+    """
+    CarpetaNoEncontradaException
+    """
+    errores = []
+
+    for id_carpeta in ids:
+        nombre_carpeta = "desconocida"
+
+        try:
+            carpeta: Folder = folder_services.obtener_carpeta_papelera(
+                id_carpeta=id_carpeta, usuario=usuario, db=db)
+
+            nombre_carpeta = carpeta.nombre or "desconocida"
+
+            path: str = carpeta.path
+
+            if os.path.exists(path):
+                try:
+                    shutil.rmtree(path)
+                except Exception:
+                    raise ex.EliminarDiscoException(
+                        "Error al eliminar la carpeta del disco")
+
+            multiple_repo.delete_folder(carpeta=carpeta, db=db)
+
+        except Exception as e1:
+            errores.append({
+                "id_item": str(id_carpeta),
+                "nombre_item": nombre_carpeta,
+                "error": str(e1)
+            })
+
+    db.commit()
 
     return errores
