@@ -3,18 +3,18 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
-class ErrorItemMultiple(BaseModel):
+class ErrorFileMultiple(BaseModel):
     id_archivo: UUID
     nombre_archivo: str
     error: str
 
 
-class ErroresMultiple(BaseModel):
-    details: list[ErrorItemMultiple]
+class ErroresFileMultiple(BaseModel):
+    details: list[ErrorFileMultiple]
     total_errores: int
 
 
-class DeleteMultiplePermanent(BaseModel):
-    msg: str = "Proceso de eliminación completado"
+class MultipleFileResponse(BaseModel):
+    msg: str = "Proceso completado"
     items_totales: int
-    errores: ErroresMultiple | None = None
+    errores: ErroresFileMultiple | None = None
