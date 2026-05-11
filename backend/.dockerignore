@@ -3,17 +3,25 @@
 .gitignore
 .gitattributes
 
+# Docker
+Dockerfile
+.dockerignore
+
 # Python
-__pycache__
+__pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+
+# Virtual envs
 env/
 venv/
 ENV/
+.venv/
+
+# Build artifacts
 build/
-develop-eggs/
 dist/
 downloads/
 eggs/
@@ -28,33 +36,40 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Testing / coverage
 .pytest_cache/
 .coverage
 htmlcov/
-.venv/
+.mypy_cache/
+.ruff_cache/
 
-# IDES
-.vscode
-.idea
+# IDEs
+.vscode/
+.idea/
 *.swp
 *.swo
 *~
 .DS_Store
 
-# Uploads y archivos temporales
+# Uploads y temporales
 uploads/
-.tmp
 tmp/
+.tmp/
+temp/
 logs/
 
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
+# Environment / secrets
+.env
+.env.*
+*.pem
+*.key
 
-# Misc
+# Docs
 README.md
-.editorconfig
-*.md
 LICENSE
 Makefile
+.editorconfig
+
+# OS
+Thumbs.db
