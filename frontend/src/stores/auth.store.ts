@@ -37,19 +37,20 @@ export const useAuthStore = defineStore('auth-store', () => {
     }
   }
 
-  async function iniciarSesion(data: LoginRequest){
+  async function iniciarSesion(data: LoginRequest) {
     cargando.value = true
 
-    try{
+    try {
       const req = await authApi.iniciarSesion(data)
 
-      toast.success(req.data.msg || 'Sesión iniciada correctamente')
+      localStorage.setItem('tokenZetta', req.data.token)
 
       usuario.value = req.data.usuario
 
-      return true // Hacer push
+      toast.success(req.data.msg || 'Sesión iniciada correctamente')
 
-    }catch(e: unknown){
+      return true // Hacer push
+    } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         toast.error(e.response?.data?.detail || 'Ocurrió un error inesperado al iniciar sesión')
       } else {
@@ -57,45 +58,56 @@ export const useAuthStore = defineStore('auth-store', () => {
       }
 
       usuario.value = null
+      localStorage.removeItem('tokenZetta')
 
       return false // No hacer push
-    }finally{
+    } finally {
       cargando.value = false
     }
   }
 
   // Endpoint me
-  async function obtenerUsuario(){
+  async function obtenerUsuario() {
     obteniendoUsuario.value = true
 
-    try{
+    try {
       const req = await authApi.obtenerUsuario()
 
       usuario.value = req.data.usuario
 
       return true //Redirigir dash
-    }catch{
+    } catch {
       usuario.value = null
 
       return false //Redigir login
-    }finally{
+    } finally {
       obteniendoUsuario.value = false
     }
   }
 
-  async function cerrarSesion(){
-    try{
-      const req = await authApi.cerrarSesion()
+  function cerrarSesion() {
+    try {
+      localStorage.removeItem('tokenZetta')
+      usuario.value = null
 
-      toast.success(req.data.msg)
+      toast.success('Sesión cerrada con éxito')
 
-      return true //Redirigir login
-    }catch{
-      toast.error("Ocurrió un error inesperado al cerrar sesión")
+      return true
+    } catch {
+      toast.error('Ocurrió un error al cerrar sesión')
 
-      return false //No redirigir
+      return false
     }
   }
 
-  return { usuario, logueado, cargando, obteniendoUsuario, registrarUsuario, iniciarSesion, obtenerUsuario, cerrarSesion }
+  return {
+    usuario,
+    logueado,
+    cargando,
+    obteniendoUsuario,
+    registrarUsuario,
+    iniciarSesion,
+    obtenerUsuario,
+    cerrarSesion,
+  }
 })
