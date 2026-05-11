@@ -20,6 +20,7 @@ const ReceivedView = () => import('@/views/shared/ReceivedView.vue')
 const SentView = () => import('@/views/shared/SentView.vue')
 const SharedFolderView = () => import('@/views/shared/SharedFolderView.vue')
 const ReceivedFolderView = () => import('@/views/shared/ReceivedFolderView.vue')
+const NotFoundView = () => import('@/views/NotFoundView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -114,6 +115,11 @@ const router = createRouter({
           component: LoginView,
         },
       ],
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: '404',
+      component: NotFoundView,
     },
   ],
 })
