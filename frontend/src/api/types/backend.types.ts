@@ -72,23 +72,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Logout */
-        post: operations["logout_auth_logout_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/files": {
         parameters: {
             query?: never;
@@ -742,11 +725,8 @@ export interface components {
             /** Msg */
             msg: string;
             usuario: components["schemas"]["UserReturn"];
-        };
-        /** LogoutResponse */
-        LogoutResponse: {
-            /** Msg */
-            msg: string;
+            /** Token */
+            token: string;
         };
         /** MeResponse */
         MeResponse: {
@@ -1086,26 +1066,6 @@ export interface operations {
             };
         };
     };
-    logout_auth_logout_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LogoutResponse"];
-                };
-            };
-        };
-    };
     get_files_api_files_get: {
         parameters: {
             query?: {
@@ -1114,9 +1074,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1145,9 +1103,7 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody: {
             content: {
@@ -1183,9 +1139,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1216,9 +1170,7 @@ export interface operations {
             path: {
                 id_archivo: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1249,9 +1201,7 @@ export interface operations {
             path: {
                 id_archivo: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1280,9 +1230,7 @@ export interface operations {
             path: {
                 id_archivo: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1313,9 +1261,7 @@ export interface operations {
             path: {
                 id_archivo: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1347,9 +1293,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1378,9 +1322,7 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody: {
             content: {
@@ -1416,9 +1358,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1449,9 +1389,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1485,9 +1423,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1521,9 +1457,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1554,9 +1488,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1565,9 +1497,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": unknown;
-                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -1587,9 +1517,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1620,9 +1548,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1656,9 +1582,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1689,9 +1613,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody: {
             content: {
@@ -1729,9 +1651,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1762,9 +1682,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody: {
             content: {
@@ -1800,9 +1718,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1831,9 +1747,7 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody: {
             content: {
@@ -1869,9 +1783,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1900,9 +1812,7 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody: {
             content: {
@@ -1938,9 +1848,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -1972,9 +1880,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -2006,9 +1912,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -2042,9 +1946,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -2076,9 +1978,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -2112,9 +2012,7 @@ export interface operations {
             path: {
                 id_carpeta: string;
             };
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -2146,9 +2044,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
@@ -2180,9 +2076,7 @@ export interface operations {
             };
             header?: never;
             path?: never;
-            cookie?: {
-                access_token?: string;
-            };
+            cookie?: never;
         };
         requestBody?: never;
         responses: {
