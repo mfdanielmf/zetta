@@ -1,5 +1,6 @@
 # Middleware para inyectar en las rutas
-from fastapi import Cookie, Depends, HTTPException
+from fastapi import Depends, HTTPException, Request
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.database.db import get_db
@@ -8,15 +9,30 @@ from app.models.user import User
 from app.services.auth_services import obtener_usuario_jwt
 
 
-def get_current_user(db: Session = Depends(get_db), access_token: str = Cookie(None)) -> User:
+class BearerCustom(HTTPBearer):
+    def __init__(self):
+        super().__init__(auto_error=False)
+
+    async def __call__(self, request: Request) -> HTTPAuthorizationCredentials | None:
+        credentials = await super().__call__(request)
+
+        if not credentials:
+            raise HTTPException(
+                status_code=401,
+                detail="No se proporcionó token"
+            )
+
+        return credentials
+
+
+security = BearerCustom()
+
+
+def get_current_user(db: Session = Depends(get_db), credentials: HTTPAuthorizationCredentials = Depends(security)) -> User:
     """
     HTTPException
     """
-    if access_token is None:
-        raise HTTPException(
-            401,
-            detail="No se proporcionó token"
-        )
+    access_token = credentials.credentials
 
     try:
         return obtener_usuario_jwt(access_token, db)

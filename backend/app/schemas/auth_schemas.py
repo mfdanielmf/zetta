@@ -20,7 +20,7 @@ class TokenData(BaseModel):
 
 
 class LoginResponse(RegisterResponse):
-    pass
+    token: str
 
 
 class MeResponse(BaseModel):
