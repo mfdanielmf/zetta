@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from app.core.limiter import limiter, FILE_RATE_LIMIT
+from app.core.limiter import DEFAULT_RATE_LIMIT, limiter, FILE_RATE_LIMIT
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
 from app.models.user import User
+from app.models import exceptions as ex
 from app.schemas import multiple_schemas
 from app.services import multiple_services
 
@@ -75,3 +76,30 @@ def delete_multiple_items_permanent(req: list[multiple_schemas.ItemMultipleReque
         "msg": "Proceso de eliminación completado",
         "items_totales": len(req)
     }
+
+
+@multiple_router.post("/sent/items", response_model=multiple_schemas.MultipleFileResponse)
+@limiter.limit(DEFAULT_RATE_LIMIT)
+def share_multiple_items_with_user(req: multiple_schemas.ShareMultipleItemsRequest, request: Request, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        errores = multiple_services.compartir_multiples_items(
+            req=req, usuario=usuario, db=db)
+
+        if errores:
+            return {
+                "msg": "Proceso de compartido completado",
+                "items_totales": len(req.items),
+                "errores": {
+                    "details": errores,
+                    "total_errores": len(errores)
+                }
+            }
+
+        return {
+            "msg": "Proceso de compartido completado",
+            "items_totales": len(req.items)
+        }
+    except ex.UsuarioNoEncontradoException as e1:
+        raise HTTPException(404, detail=str(e1))
+    except ex.PropietarioException as e2:
+        raise HTTPException(400, detail=str(e2))
