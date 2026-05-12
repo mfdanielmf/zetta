@@ -56,6 +56,8 @@ import { useGetItemsUser } from '@/queries/useItemsQuery'
 import PaginationFirst from '@/components/ui/pagination/PaginationFirst.vue'
 import PaginationLast from '@/components/ui/pagination/PaginationLast.vue'
 import config from '@/config/config'
+import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
+import { useSelectedStore } from '@/stores/selected.store'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
@@ -70,6 +72,7 @@ const CompartirArchivoDialog = defineAsyncComponent(
 
 const router = useRouter()
 const folderStore = useFolderStore()
+const selectedStore = useSelectedStore()
 
 const mutacionInsertar = useInsertFiles()
 const { mutateAsync: mutateArchivoPapelera } = useMoveFileTrash()
@@ -183,6 +186,10 @@ function abrirCompartirArchivo(idArchivo: string) {
 async function descargarCarpeta(id: string, nombre: string) {
   await downloadFolderService(id, nombre)
 }
+
+function handleSelection(id: string, tipo: 'file' | 'folder') {
+  selectedStore.toggleSeleccionado(id, tipo)
+}
 </script>
 
 <template>
@@ -240,6 +247,7 @@ async function descargarCarpeta(id: string, nombre: string) {
 
       <TableHeader class="bg-neutral-100">
         <TableRow>
+          <TableHead></TableHead>
           <TableHead>Nombre</TableHead>
           <TableHead>Propietario</TableHead>
           <TableHead>Tamaño</TableHead>
@@ -259,6 +267,14 @@ async function descargarCarpeta(id: string, nombre: string) {
           "
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
+          <TableCell class="cursor-default" @click.stop>
+            <Checkbox
+              class="border-neutral-400"
+              :checked="selectedStore.estaSeleccionado(item.id)"
+              @update:model-value="handleSelection(item.id, item.tipo)"
+            />
+          </TableCell>
+
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
               <Folder :size="20" v-if="item.tipo === 'folder'" />
