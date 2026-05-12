@@ -1,6 +1,5 @@
 import os
 import shutil
-from uuid import UUID
 from datetime import datetime, timezone
 
 from sqlalchemy import or_
