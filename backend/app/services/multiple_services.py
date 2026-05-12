@@ -3,6 +3,7 @@ import shutil
 from uuid import UUID
 from datetime import datetime, timezone
 
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.models.file import File
@@ -10,7 +11,8 @@ from app.models.folder import Folder
 from app.models.user import User
 from app.models import exceptions as ex
 from app.services import file_services, folder_services
-from app.repositories import file_repo, multiple_repo
+from app.repositories import file_repo, folder_repo, multiple_repo
+from app.schemas import multiple_schemas
 
 
 def eliminar_multiples_archivos_permanente(ids: list[UUID], usuario: User, db: Session):
@@ -155,7 +157,76 @@ def eliminar_multiples_carpetas_permanente(ids: list[UUID], usuario: User, db: S
     return errores
 
 
-def eliminar_multiples_items_permanente(items, usuario: User, db: Session):
+def añadir_multiples_items_papelera(items: multiple_schemas.ItemMultipleRequest, usuario: User, db: Session):
+    errores = []
+
+    fecha_actual = datetime.now(timezone.utc)
+
+    for item in items:
+        nombre_item = "desconocido"
+
+        try:
+            if item.tipo == "archivo":
+
+                if file_repo.get_file_trash(id_archivo=item.id, id_usuario=usuario.id, db=db):
+                    raise ex.ArchivoPapeleraException(
+                        "El archivo ya está en la papelera")
+
+                archivo: File = file_services.obtener_archivo_id(
+                    id=item.id, usuario=usuario, db=db)
+
+                nombre_item = archivo.nombre_original or "desconocido"
+
+                archivo.fecha_eliminacion = fecha_actual
+
+                file_repo.update_file(archivo=archivo, db=db)
+
+            else:
+                if folder_repo.get_folder_trash(id_carpeta=item.id, id_usuario=usuario.id, db=db):
+                    raise ex.CarpetaPapeleraException(
+                        "La carpeta ya está en la papelera")
+
+                carpeta: Folder = folder_services.obtener_carpeta_usuario_id(
+                    id_carpeta=item.id, usuario=usuario, db=db)
+
+                nombre_item = carpeta.nombre_original or "desconocida"
+
+                path_padre = carpeta.path
+
+                carpeta.fecha_eliminacion = fecha_actual
+
+                db.query(Folder).filter(
+                    Folder.id_usuario == usuario.id,
+                    or_(
+                        Folder.path == path_padre,
+                        Folder.path.like(f"{path_padre}/%")
+                    )
+                ).update(
+                    {Folder.fecha_eliminacion: fecha_actual},
+                    synchronize_session=False
+                )
+
+                db.query(File).filter(
+                    File.id_usuario == usuario.id,
+                    File.path.like(f"{path_padre}/%")
+                ).update(
+                    {File.fecha_eliminacion: fecha_actual},
+                    synchronize_session=False
+                )
+
+        except Exception as e1:
+            errores.append({
+                "id_item": str(item.id),
+                "nombre_item": nombre_item,
+                "error": str(e1)
+            })
+
+    db.commit()
+
+    return errores
+
+
+def eliminar_multiples_items_permanente(items: multiple_schemas.ItemMultipleRequest, usuario: User, db: Session):
     errores = []
 
     for item in items:
