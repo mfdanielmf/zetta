@@ -1,6 +1,12 @@
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel
+
+
+class ItemMultipleRequest(BaseModel):
+    id: UUID
+    tipo: Literal["archivo", "carpeta"]
 
 
 class ErrorItemMultiple(BaseModel):
