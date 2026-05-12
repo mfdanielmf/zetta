@@ -832,8 +832,8 @@ export interface components {
         MeResponse: {
             usuario: components["schemas"]["UserReturn"];
         };
-        /** MultipleFileResponse */
-        MultipleFileResponse: {
+        /** MultipleItemResponse */
+        MultipleItemResponse: {
             /** Msg */
             msg: string;
             /** Items Totales */
@@ -2237,7 +2237,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MultipleFileResponse"];
+                    "application/json": components["schemas"]["MultipleItemResponse"];
                 };
             };
             /** @description Validation Error */
@@ -2270,7 +2270,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MultipleFileResponse"];
+                    "application/json": components["schemas"]["MultipleItemResponse"];
                 };
             };
             /** @description Validation Error */
@@ -2303,7 +2303,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MultipleFileResponse"];
+                    "application/json": components["schemas"]["MultipleItemResponse"];
                 };
             };
             /** @description Validation Error */
@@ -2336,7 +2336,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MultipleFileResponse"];
+                    "application/json": components["schemas"]["MultipleItemResponse"];
                 };
             };
             /** @description Validation Error */

@@ -13,7 +13,7 @@ from app.services import multiple_services
 multiple_router = APIRouter()
 
 
-@multiple_router.delete("/items", response_model=multiple_schemas.MultipleFileResponse)
+@multiple_router.delete("/items", response_model=multiple_schemas.MultipleItemResponse)
 @limiter.limit(FILE_RATE_LIMIT)
 def add_multiple_items_to_trash(req: list[multiple_schemas.ItemMultipleRequest], request: Request, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     errores = multiple_services.añadir_multiples_items_papelera(
@@ -35,7 +35,7 @@ def add_multiple_items_to_trash(req: list[multiple_schemas.ItemMultipleRequest],
     }
 
 
-@multiple_router.put("/items/restaurar", response_model=multiple_schemas.MultipleFileResponse)
+@multiple_router.put("/items/restaurar", response_model=multiple_schemas.MultipleItemResponse)
 def restore_items_from_trash(req: list[multiple_schemas.ItemMultipleRequest], db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     errores = multiple_services.restaurar_multiples_items_papelera(
         items=req, usuario=usuario, db=db)
@@ -56,7 +56,7 @@ def restore_items_from_trash(req: list[multiple_schemas.ItemMultipleRequest], db
     }
 
 
-@multiple_router.delete("/items/trash", response_model=multiple_schemas.MultipleFileResponse)
+@multiple_router.delete("/items/trash", response_model=multiple_schemas.MultipleItemResponse)
 @limiter.limit(FILE_RATE_LIMIT)
 def delete_multiple_items_permanent(req: list[multiple_schemas.ItemMultipleRequest], request: Request, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     errores = multiple_services.eliminar_multiples_items_permanente(
@@ -78,7 +78,7 @@ def delete_multiple_items_permanent(req: list[multiple_schemas.ItemMultipleReque
     }
 
 
-@multiple_router.post("/sent/items", response_model=multiple_schemas.MultipleFileResponse)
+@multiple_router.post("/sent/items", response_model=multiple_schemas.MultipleItemResponse)
 @limiter.limit(DEFAULT_RATE_LIMIT)
 def share_multiple_items_with_user(req: multiple_schemas.ShareMultipleItemsRequest, request: Request, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:

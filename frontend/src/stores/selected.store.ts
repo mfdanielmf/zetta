@@ -1,9 +1,11 @@
 import type { ItemMultipleRequest } from '@/api/types/types'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export const useSelectedStore = defineStore('selectedStore', () => {
   const itemsSeleccionados = ref<ItemMultipleRequest>([])
+  const hayItems = computed(() => itemsSeleccionados.value.length > 0)
+  const numItems = computed(() => itemsSeleccionados.value.length)
 
   function estaSeleccionado(id: string) {
     return itemsSeleccionados.value.some((i) => i.id === id)
@@ -22,5 +24,21 @@ export const useSelectedStore = defineStore('selectedStore', () => {
     }
   }
 
-  return { itemsSeleccionados, estaSeleccionado, toggleSeleccionado }
+  function seleccionarTodos(items: ItemMultipleRequest) {
+    itemsSeleccionados.value = items
+  }
+
+  function reset() {
+    itemsSeleccionados.value = []
+  }
+
+  return {
+    itemsSeleccionados,
+    hayItems,
+    numItems,
+    estaSeleccionado,
+    toggleSeleccionado,
+    seleccionarTodos,
+    reset,
+  }
 })

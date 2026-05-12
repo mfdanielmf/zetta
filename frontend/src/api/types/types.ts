@@ -50,3 +50,4 @@ export type GetSentItemsResponse = components['schemas']['PaginatedSharedItemRes
 
 //MULTIPLE
 export type ItemMultipleRequest = components['schemas']['ItemMultipleRequest'][]
+export type MultipleItemResponse = components['schemas']['MultipleItemResponse']

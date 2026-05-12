@@ -25,7 +25,7 @@ class ErroresMultiple(BaseModel):
     total_errores: int
 
 
-class MultipleFileResponse(BaseModel):
+class MultipleItemResponse(BaseModel):
     msg: str
     items_totales: int
     errores: ErroresMultiple | None = None

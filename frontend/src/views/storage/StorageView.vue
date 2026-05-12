@@ -58,6 +58,8 @@ import PaginationLast from '@/components/ui/pagination/PaginationLast.vue'
 import config from '@/config/config'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import { useSelectedStore } from '@/stores/selected.store'
+import { useMoveSelectedTrash } from '@/queries/useMultipleQuery'
+import Spinner from '@/components/ui/spinner/Spinner.vue'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
@@ -92,6 +94,11 @@ const {
   isSuccess: successCompartirArchivo,
   isPending: pendingCompartirArchivo,
 } = useShareFile()
+const {
+  mutateAsync: mutatePapeleraSelected,
+  isSuccess: successPapeleraSelected,
+  isPending: pendingPapeleraSelected,
+} = useMoveSelectedTrash()
 
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
@@ -104,6 +111,15 @@ const noData = computed(() => {
   }
 
   return false
+})
+
+const todosSeleccionados = computed(() => {
+  return (
+    dataItems &&
+    dataItems.value?.items &&
+    dataItems.value.items.length > 0 &&
+    selectedStore.itemsSeleccionados.length === dataItems.value.items.length
+  )
 })
 
 const subirAbierto = ref<boolean>(false)
@@ -190,35 +206,78 @@ async function descargarCarpeta(id: string, nombre: string) {
 function handleSelection(id: string, tipo: 'file' | 'folder') {
   selectedStore.toggleSeleccionado(id, tipo)
 }
+
+async function mandarPapeleraSeleccion() {
+  try {
+    if (selectedStore.hayItems) {
+      await mutatePapeleraSelected(selectedStore.itemsSeleccionados)
+
+      if (successPapeleraSelected) selectedStore.reset()
+    } else {
+      toast.error('Selecciona items')
+    }
+  } catch {}
+}
+
+function handleSelectAll(checked: boolean | 'indeterminate') {
+  if (checked && dataItems.value?.items) {
+    const items = dataItems.value.items
+
+    const arr = items?.map((i) => {
+      return {
+        id: i.id,
+        tipo: (i.tipo === 'file' ? 'archivo' : 'carpeta') as 'archivo' | 'carpeta',
+      }
+    })
+
+    selectedStore.seleccionarTodos(arr)
+  } else {
+    selectedStore.reset()
+  }
+}
 </script>
 
 <template>
   <div class="space-y-2">
-    <DropdownMenu>
-      <DropdownMenuTrigger as-child>
-        <Button variant="outline" class="hover:cursor-pointer">
-          <Plus />
-          Añadir
+    <div class="flex gap-4 justify-between">
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button variant="outline" class="hover:cursor-pointer">
+            <Plus />
+            Añadir
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="w-56" align="start">
+          <DropdownMenuLabel>Archivos</DropdownMenuLabel>
+          <DropdownMenuGroup>
+            <DropdownMenuItem class="hover:cursor-pointer" @click="subirAbierto = true">
+              <Upload />
+              Subir archivos
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Organización</DropdownMenuLabel>
+          <DropdownMenuGroup>
+            <DropdownMenuItem class="hover:cursor-pointer" @click="crearAbierto = true">
+              <FolderPlus />
+              Crear carpeta
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <div v-if="selectedStore.hayItems">
+        <Button
+          class="hover:cursor-pointer bg-red-600 hover:bg-red-700"
+          @click="mandarPapeleraSeleccion"
+          :disabled="pendingPapeleraSelected"
+        >
+          <Spinner v-if="pendingPapeleraSelected" />
+          <Trash2 v-else />
+          {{ pendingPapeleraSelected ? 'Eliminando...' : 'Eliminar' }}
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent class="w-56" align="start">
-        <DropdownMenuLabel>Archivos</DropdownMenuLabel>
-        <DropdownMenuGroup>
-          <DropdownMenuItem class="hover:cursor-pointer" @click="subirAbierto = true">
-            <Upload />
-            Subir archivos
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel>Organización</DropdownMenuLabel>
-        <DropdownMenuGroup>
-          <DropdownMenuItem class="hover:cursor-pointer" @click="crearAbierto = true">
-            <FolderPlus />
-            Crear carpeta
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </div>
+    </div>
 
     <ArchivoDialog v-model:open="subirAbierto" :subir="mutacionInsertar.mutateAsync" />
     <CompartirArchivoDialog
@@ -247,7 +306,13 @@ function handleSelection(id: string, tipo: 'file' | 'folder') {
 
       <TableHeader class="bg-neutral-100">
         <TableRow>
-          <TableHead></TableHead>
+          <TableHead>
+            <Checkbox
+              class="border-neutral-400"
+              :model-value="todosSeleccionados"
+              @update:model-value="handleSelectAll"
+            />
+          </TableHead>
           <TableHead>Nombre</TableHead>
           <TableHead>Propietario</TableHead>
           <TableHead>Tamaño</TableHead>
@@ -270,8 +335,8 @@ function handleSelection(id: string, tipo: 'file' | 'folder') {
           <TableCell class="cursor-default" @click.stop>
             <Checkbox
               class="border-neutral-400"
-              :checked="selectedStore.estaSeleccionado(item.id)"
-              @update:model-value="handleSelection(item.id, item.tipo)"
+              :model-value="selectedStore.estaSeleccionado(item.id)"
+              @update:model-value="() => handleSelection(item.id, item.tipo)"
             />
           </TableCell>
 
