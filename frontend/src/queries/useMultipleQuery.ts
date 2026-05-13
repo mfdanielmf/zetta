@@ -1,6 +1,7 @@
 import type { ItemMultipleRequest, ShareMultipleItemsRequest } from '@/api/types/types'
 import {
   deleteMultipleItemsService,
+  restoreMultipleItemsService,
   sendItemsTrashService,
   shareMultipleItemsService,
 } from '@/services/multiple.services'
@@ -27,7 +28,7 @@ export function useMoveSelectedTrash() {
 
       toast.success(data?.msg || 'Proceso completado correctamente', {
         description:
-          `Items eliminados: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
+          `Items procesados: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
           '',
       })
     },
@@ -53,7 +54,7 @@ export function useShareMultiple() {
 
       toast.success(data?.msg || 'Proceso completado correctamente', {
         description:
-          `Items compartidos: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
+          `Items procesados: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
           '',
       })
     },
@@ -83,7 +84,7 @@ export function useDeleteMultiplePermanent() {
 
       toast.success(data?.msg || 'Proceso completado correctamente', {
         description:
-          `Items eliminados: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
+          `Items procesados: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
           '',
       })
     },
@@ -92,6 +93,37 @@ export function useDeleteMultiplePermanent() {
         toast.error(e.response?.data?.detail || 'Error al eliminar la selección')
       } else {
         toast.error('Error al eliminar la selección')
+      }
+    },
+  })
+}
+
+export function useRestoreMultiple() {
+  const authStore = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: ItemMultipleRequest) => restoreMultipleItemsService(data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['items', authStore.usuario?.id],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['itemsPapelera'],
+      })
+
+      toast.success(data?.msg || 'Proceso completado correctamente', {
+        description:
+          `Items procesados: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
+          '',
+      })
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al restaurar la selección')
+      } else {
+        toast.error('Error al restaurar la selección')
       }
     },
   })

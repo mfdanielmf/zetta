@@ -45,7 +45,7 @@ import DialogEliminarMultiple from '@/components/multiple/DialogEliminarMultiple
 import { useGetItemsPapelera } from '@/queries/useItemsQuery'
 import { useSelectedStore } from '@/stores/selected.store'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
-import { useDeleteMultiplePermanent } from '@/queries/useMultipleQuery'
+import { useDeleteMultiplePermanent, useRestoreMultiple } from '@/queries/useMultipleQuery'
 import { toast } from 'vue-sonner'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
 
@@ -77,6 +77,11 @@ const {
   isPending: pendingDeleteMultiple,
   isSuccess: successDeleteMultiple,
 } = useDeleteMultiplePermanent()
+const {
+  mutateAsync: mutateRestoreMultiple,
+  isPending: pendingRestoreMultiple,
+  isSuccess: successRestoreMultiple,
+} = useRestoreMultiple()
 
 const { data: dataItems, isLoading: loadingItems } = useGetItemsPapelera(pagina, limite)
 
@@ -176,6 +181,18 @@ async function eliminarSeleccionPermanente() {
     }
   } catch {}
 }
+
+async function restaurarSeleccion() {
+  try {
+    if (selectedStore.hayItems) {
+      await mutateRestoreMultiple(selectedStore.itemsSeleccionados)
+
+      if (successRestoreMultiple) selectedStore.reset()
+    } else {
+      toast.error('Selecciona items')
+    }
+  } catch {}
+}
 </script>
 
 <template>
@@ -197,9 +214,15 @@ async function eliminarSeleccionPermanente() {
 
   <div class="space-y-2">
     <div class="flex items-center justify-end gap-4" v-if="selectedStore.hayItems">
-      <Button variant="outline" class="cursor-pointer">
-        <RefreshCcw />
-        Restaurar
+      <Button
+        variant="outline"
+        class="cursor-pointer"
+        @click="restaurarSeleccion"
+        :disabled="pendingRestoreMultiple"
+      >
+        <Spinner v-if="pendingRestoreMultiple" />
+        <RefreshCcw v-else />
+        {{ pendingRestoreMultiple ? 'Restaurando...' : 'Restaurar' }}
       </Button>
 
       <Button

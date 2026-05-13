@@ -18,4 +18,7 @@ export default {
   eliminarDefinitivoSeleccion(data: ItemMultipleRequest) {
     return api().delete<MultipleItemResponse>(URL + '/trash', { data })
   },
+  restaurarSeleccion(data: ItemMultipleRequest) {
+    return api().put(URL + '/restaurar', data)
+  },
 }

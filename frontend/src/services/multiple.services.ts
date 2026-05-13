@@ -18,3 +18,9 @@ export async function deleteMultipleItemsService(data: ItemMultipleRequest) {
 
   return req.data
 }
+
+export async function restoreMultipleItemsService(data: ItemMultipleRequest) {
+  const req = await multipleApi.restaurarSeleccion(data)
+
+  return req.data
+}
