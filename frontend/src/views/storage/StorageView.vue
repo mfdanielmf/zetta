@@ -58,7 +58,7 @@ import PaginationLast from '@/components/ui/pagination/PaginationLast.vue'
 import config from '@/config/config'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import { useSelectedStore } from '@/stores/selected.store'
-import { useMoveSelectedTrash } from '@/queries/useMultipleQuery'
+import { useMoveSelectedTrash, useShareMultiple } from '@/queries/useMultipleQuery'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
@@ -70,6 +70,9 @@ const CompartirCarpetaDialog = defineAsyncComponent(
 )
 const CompartirArchivoDialog = defineAsyncComponent(
   () => import('@/components/files/CompartirArchivoDialog.vue'),
+)
+const CompartirMultipleDialog = defineAsyncComponent(
+  () => import('@/components/multiple/CompartirMultipleDialog.vue'),
 )
 
 const router = useRouter()
@@ -100,6 +103,11 @@ const {
   isPending: pendingPapeleraSelected,
 } = useMoveSelectedTrash()
 
+const {
+  mutateAsync: mutateShareMultiple,
+  isSuccess: successShareMultiple,
+  isPending: pendingShareMultiple,
+} = useShareMultiple()
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
 
@@ -128,6 +136,7 @@ const compartirCarpetaAbierto = ref<boolean>(false)
 const idCarpetaSeleccionada = ref<string | null>(null)
 const compartirArchivoAbierto = ref<boolean>(false)
 const idArchivoSeleccionado = ref<string | null>(null)
+const compartirMultipleAbierto = ref<boolean>(false)
 
 async function descargarArchivo(id: string, nombre: string) {
   await downloadFileService(id, nombre)
@@ -235,6 +244,23 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
     selectedStore.reset()
   }
 }
+
+async function compartirSeleccion(correo: string) {
+  try {
+    if (selectedStore.hayItems) {
+      const data = {
+        correo_usuario: correo,
+        items: selectedStore.itemsSeleccionados,
+      }
+
+      await mutateShareMultiple(data)
+
+      if (successShareMultiple) selectedStore.reset()
+    } else {
+      toast.error('Selecciona items')
+    }
+  } catch {}
+}
 </script>
 
 <template>
@@ -266,7 +292,12 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div v-if="selectedStore.hayItems">
+      <div class="flex items-center gap-4" v-if="selectedStore.hayItems">
+        <Button variant="outline" class="cursor-pointer" @click="compartirMultipleAbierto = true">
+          <Share2 />
+          Compartir
+        </Button>
+
         <Button
           class="hover:cursor-pointer bg-red-600 hover:bg-red-700"
           @click="mandarPapeleraSeleccion"
@@ -297,6 +328,12 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
       :pending="pendingCompartirCarpeta"
       :reset="compartirCarpetaAbierto"
       @compartir-carpeta="compartirCarpeta"
+    />
+    <CompartirMultipleDialog
+      v-model:open="compartirMultipleAbierto"
+      :pending="pendingShareMultiple"
+      :reset="compartirMultipleAbierto"
+      @compartir-seleccionado="compartirSeleccion"
     />
 
     <Table>

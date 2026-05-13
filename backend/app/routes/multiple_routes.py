@@ -78,7 +78,7 @@ def delete_multiple_items_permanent(req: list[multiple_schemas.ItemMultipleReque
     }
 
 
-@multiple_router.post("/sent/items", response_model=multiple_schemas.MultipleItemResponse)
+@multiple_router.post("/items/sent", response_model=multiple_schemas.MultipleItemResponse)
 @limiter.limit(DEFAULT_RATE_LIMIT)
 def share_multiple_items_with_user(req: multiple_schemas.ShareMultipleItemsRequest, request: Request, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:

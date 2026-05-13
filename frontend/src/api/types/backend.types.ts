@@ -539,7 +539,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v2/multiple/sent/items": {
+    "/api/v2/multiple/items/sent": {
         parameters: {
             query?: never;
             header?: never;
@@ -549,7 +549,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Share Multiple Items With User */
-        post: operations["share_multiple_items_with_user_api_v2_multiple_sent_items_post"];
+        post: operations["share_multiple_items_with_user_api_v2_multiple_items_sent_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2317,7 +2317,7 @@ export interface operations {
             };
         };
     };
-    share_multiple_items_with_user_api_v2_multiple_sent_items_post: {
+    share_multiple_items_with_user_api_v2_multiple_items_sent_post: {
         parameters: {
             query?: never;
             header?: never;

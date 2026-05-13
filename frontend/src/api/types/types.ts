@@ -51,3 +51,5 @@ export type GetSentItemsResponse = components['schemas']['PaginatedSharedItemRes
 //MULTIPLE
 export type ItemMultipleRequest = components['schemas']['ItemMultipleRequest'][]
 export type MultipleItemResponse = components['schemas']['MultipleItemResponse']
+export type ShareMultipleItemsRequest = components['schemas']['ShareMultipleItemsRequest']
+export type ShareMultipleItemsResponse = components['schemas']['MultipleItemResponse']
