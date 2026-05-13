@@ -1,6 +1,8 @@
 import os
 import shutil
 from datetime import datetime, timezone
+import tempfile
+import zipfile
 
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
@@ -16,7 +18,7 @@ from app.repositories import file_repo, folder_repo, multiple_repo, shared_file_
 from app.schemas import multiple_schemas
 
 
-def añadir_multiples_items_papelera(items: multiple_schemas.ItemMultipleRequest, usuario: User, db: Session):
+def añadir_multiples_items_papelera(items: list[multiple_schemas.ItemMultipleRequest], usuario: User, db: Session):
     errores = []
 
     fecha_actual = datetime.now(timezone.utc)
@@ -85,7 +87,7 @@ def añadir_multiples_items_papelera(items: multiple_schemas.ItemMultipleRequest
     return errores
 
 
-def eliminar_multiples_items_permanente(items: multiple_schemas.ItemMultipleRequest, usuario: User, db: Session):
+def eliminar_multiples_items_permanente(items: list[multiple_schemas.ItemMultipleRequest], usuario: User, db: Session):
     errores = []
 
     for item in items:
@@ -127,7 +129,7 @@ def eliminar_multiples_items_permanente(items: multiple_schemas.ItemMultipleRequ
     return errores
 
 
-def restaurar_multiples_items_papelera(items: multiple_schemas.ItemMultipleRequest, usuario: User, db: Session):
+def restaurar_multiples_items_papelera(items: list[multiple_schemas.ItemMultipleRequest], usuario: User, db: Session):
     errores = []
 
     for item in items:
@@ -245,3 +247,42 @@ def compartir_multiples_items(req: multiple_schemas.ShareMultipleItemsRequest, u
             })
 
     return errores
+
+
+def descargar_multiples_items(items: list[multiple_schemas.ItemMultipleRequest], usuario: User, db: Session):
+    """
+    ArchivoNoEncontradoException, CarpetaNoEncontradaException
+    """
+    archivo_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
+    zip_path: str = archivo_temp.name
+    archivo_temp.close()
+
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+
+        for item in items:
+            if item.tipo == "archivo":
+                archivo: File = file_services.obtener_archivo_permisos(
+                    id_archivo=item.id,
+                    usuario=usuario,
+                    db=db
+                )
+
+                zipf.write(
+                    archivo.path,
+                    arcname=archivo.nombre_original
+                )
+
+            else:
+                carpeta: Folder = folder_services.obtener_carpeta_usuario_permisos(
+                    id_carpeta=item.id,
+                    usuario=usuario,
+                    db=db
+                )
+
+                folder_services.añadir_carpeta_a_zip(
+                    zipf=zipf,
+                    carpeta=carpeta,
+                    path_base=""
+                )
+
+    return zip_path
