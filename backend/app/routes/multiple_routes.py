@@ -1,5 +1,9 @@
+import os
+
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
+from starlette.background import BackgroundTask
 
 from app.core.limiter import DEFAULT_RATE_LIMIT, limiter, FILE_RATE_LIMIT
 from app.database.db import get_db
@@ -103,3 +107,24 @@ def share_multiple_items_with_user(req: multiple_schemas.ShareMultipleItemsReque
         raise HTTPException(404, detail=str(e1))
     except ex.PropietarioException as e2:
         raise HTTPException(400, detail=str(e2))
+
+
+@multiple_router.post("/items")
+def download_multiple_items_zip(req: list[multiple_schemas.ItemMultipleRequest], db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+    try:
+        zip_path = multiple_services.descargar_multiples_items(
+            items=req, usuario=usuario, db=db)
+
+        return FileResponse(
+            path=zip_path,
+            media_type="application/zip",
+            filename="zetta_descarga.zip",
+            background=BackgroundTask(lambda: os.remove(zip_path))
+        )
+    except ex.ArchivoNoEncontradoException as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except ex.CarpetaNoEncontradaException as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception:
+        raise HTTPException(
+            status_code=500, detail="Error interno al descargar los items")

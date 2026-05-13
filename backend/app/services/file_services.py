@@ -182,7 +182,7 @@ def obtener_archivo_permisos(id_archivo: uuid.UUID, usuario: User, db: Session) 
 
     if not archivo:
         raise ex.ArchivoNoEncontradoException(
-            f"No se ha encontrado el archivo con id {id}")
+            f"No se ha encontrado el archivo con id {id_archivo}")
 
     if archivo.id_usuario == usuario.id:
         return archivo
