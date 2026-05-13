@@ -49,6 +49,9 @@ import { Download, Ellipsis, Folder, FolderPlus, Plus, Share2, Upload } from 'lu
 import { computed, defineAsyncComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
+import { useSelectedStore } from '@/stores/selected.store'
+import { useShareMultiple } from '@/queries/useMultipleQuery'
+import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CompartirCarpetaDialog = defineAsyncComponent(
@@ -57,10 +60,14 @@ const CompartirCarpetaDialog = defineAsyncComponent(
 const CompartirArchivoDialog = defineAsyncComponent(
   () => import('@/components/files/CompartirArchivoDialog.vue'),
 )
+const CompartirMultipleDialog = defineAsyncComponent(
+  () => import('@/components/multiple/CompartirMultipleDialog.vue'),
+)
 
 const route = useRoute()
 const router = useRouter()
 const folderStore = useFolderStore()
+const selectedStore = useSelectedStore()
 
 const idCarpeta = computed(() => route.params.id as string)
 
@@ -70,6 +77,15 @@ const noData = computed(() => {
   }
 
   return false
+})
+
+const todosSeleccionados = computed(() => {
+  return (
+    dataItems &&
+    dataItems.value?.items &&
+    dataItems.value.items.length > 0 &&
+    selectedStore.itemsSeleccionados.length === dataItems.value.items.length
+  )
 })
 
 const mutacionSubir = useUploadFileFolder()
@@ -88,6 +104,11 @@ const {
   isSuccess: successCompartirArchivo,
   isPending: pendingCompartirArchivo,
 } = useShareFile()
+const {
+  mutateAsync: mutateShareMultiple,
+  isSuccess: successShareMultiple,
+  isPending: pendingShareMultiple,
+} = useShareMultiple()
 
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
@@ -97,6 +118,7 @@ const { data: dataItems, isLoading: loadingItems } = useGetFolderItems(idCarpeta
 const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
 const compartirCarpetaAbierto = ref<boolean>(false)
+const compartirMultipleAbierto = ref<boolean>(false)
 const idCarpetaSeleccionada = ref<string | null>(null)
 const compartirArchivoAbierto = ref<boolean>(false)
 const idArchivoSeleccionado = ref<string | null>(null)
@@ -169,35 +191,85 @@ function abrirCompartirArchivo(idArchivo: string) {
 async function descargarCarpeta(id: string, nombre: string) {
   await downloadFolderService(id, nombre)
 }
+
+async function compartirSeleccion(correo: string) {
+  try {
+    if (selectedStore.hayItems) {
+      const data = {
+        correo_usuario: correo,
+        items: selectedStore.itemsSeleccionados,
+      }
+
+      await mutateShareMultiple(data)
+
+      if (successShareMultiple) {
+        selectedStore.reset()
+        compartirMultipleAbierto.value = false
+      }
+    } else {
+      toast.error('Selecciona items')
+    }
+  } catch {}
+}
+
+function handleSelection(id: string, tipo: 'file' | 'folder') {
+  selectedStore.toggleSeleccionado(id, tipo)
+}
+
+function handleSelectAll(checked: boolean | 'indeterminate') {
+  if (checked && dataItems.value?.items) {
+    const items = dataItems.value.items
+
+    const arr = items?.map((i) => {
+      return {
+        id: i.id,
+        tipo: (i.tipo === 'file' ? 'archivo' : 'carpeta') as 'archivo' | 'carpeta',
+      }
+    })
+
+    selectedStore.seleccionarTodos(arr)
+  } else {
+    selectedStore.reset()
+  }
+}
 </script>
 
 <template>
   <div class="space-y-2">
-    <DropdownMenu>
-      <DropdownMenuTrigger as-child>
-        <Button variant="outline" class="hover:cursor-pointer">
-          <Plus />
-          Añadir
+    <div class="flex gap-4 justify-between">
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button variant="outline" class="hover:cursor-pointer">
+            <Plus />
+            Añadir
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="w-56" align="start">
+          <DropdownMenuLabel>Archivos</DropdownMenuLabel>
+          <DropdownMenuGroup>
+            <DropdownMenuItem class="hover:cursor-pointer" @click="subirAbierto = true">
+              <Upload />
+              Subir archivos
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Organización</DropdownMenuLabel>
+          <DropdownMenuGroup>
+            <DropdownMenuItem class="hover:cursor-pointer" @click="crearAbierto = true">
+              <FolderPlus />
+              Crear carpeta
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <div class="flex items-center gap-4" v-if="selectedStore.hayItems">
+        <Button variant="outline" class="cursor-pointer" @click="compartirMultipleAbierto = true">
+          <Share2 />
+          Compartir
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent class="w-56" align="start">
-        <DropdownMenuLabel>Archivos</DropdownMenuLabel>
-        <DropdownMenuGroup>
-          <DropdownMenuItem class="hover:cursor-pointer" @click="subirAbierto = true">
-            <Upload />
-            Subir archivos
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel>Organización</DropdownMenuLabel>
-        <DropdownMenuGroup>
-          <DropdownMenuItem class="hover:cursor-pointer" @click="crearAbierto = true">
-            <FolderPlus />
-            Crear carpeta
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </div>
+    </div>
 
     <ArchivoDialog v-model:open="subirAbierto" :subir="subirArchivo" />
     <CompartirArchivoDialog
@@ -218,6 +290,12 @@ async function descargarCarpeta(id: string, nombre: string) {
       :reset="compartirCarpetaAbierto"
       @compartir-carpeta="compartirCarpeta"
     />
+    <CompartirMultipleDialog
+      v-model:open="compartirMultipleAbierto"
+      :pending="pendingShareMultiple"
+      :reset="compartirMultipleAbierto"
+      @compartir-seleccionado="compartirSeleccion"
+    />
 
     <Table>
       <TableCaption v-if="loadingItems || noData">
@@ -226,6 +304,14 @@ async function descargarCarpeta(id: string, nombre: string) {
 
       <TableHeader class="bg-neutral-100">
         <TableRow>
+          <TableHead>
+            <Checkbox
+              class="border-neutral-400"
+              :model-value="todosSeleccionados"
+              @update:model-value="handleSelectAll"
+              v-if="dataItems && dataItems.total > 0"
+            />
+          </TableHead>
           <TableHead>Nombre</TableHead>
           <TableHead>Propietario</TableHead>
           <TableHead>Tamaño</TableHead>
@@ -245,6 +331,14 @@ async function descargarCarpeta(id: string, nombre: string) {
           "
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
+          <TableCell class="cursor-default" @click.stop>
+            <Checkbox
+              class="border-neutral-400"
+              :model-value="selectedStore.estaSeleccionado(item.id)"
+              @update:model-value="() => handleSelection(item.id, item.tipo)"
+            />
+          </TableCell>
+
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
               <Folder :size="20" v-if="item.tipo === 'folder'" />
