@@ -102,12 +102,12 @@ const {
   isSuccess: successPapeleraSelected,
   isPending: pendingPapeleraSelected,
 } = useMoveSelectedTrash()
-
 const {
   mutateAsync: mutateShareMultiple,
   isSuccess: successShareMultiple,
   isPending: pendingShareMultiple,
 } = useShareMultiple()
+
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
 
