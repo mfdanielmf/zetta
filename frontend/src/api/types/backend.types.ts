@@ -497,7 +497,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
+        /** Download Multiple Items Zip */
+        post: operations["download_multiple_items_zip_api_v2_multiple_items_post"];
         /** Add Multiple Items To Trash */
         delete: operations["add_multiple_items_to_trash_api_v2_multiple_items_delete"];
         options?: never;
@@ -2205,6 +2206,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedSharedItemResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_multiple_items_zip_api_v2_multiple_items_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ItemMultipleRequest"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
