@@ -255,7 +255,10 @@ async function compartirSeleccion(correo: string) {
 
       await mutateShareMultiple(data)
 
-      if (successShareMultiple) selectedStore.reset()
+      if (successShareMultiple) {
+        selectedStore.reset()
+        compartirMultipleAbierto.value = false
+      }
     } else {
       toast.error('Selecciona items')
     }
@@ -348,6 +351,7 @@ async function compartirSeleccion(correo: string) {
               class="border-neutral-400"
               :model-value="todosSeleccionados"
               @update:model-value="handleSelectAll"
+              v-if="dataItems && dataItems.total > 0"
             />
           </TableHead>
           <TableHead>Nombre</TableHead>

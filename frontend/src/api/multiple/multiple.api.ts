@@ -15,4 +15,7 @@ export default {
   compartirSeleccion(data: ShareMultipleItemsRequest) {
     return api().post<ShareMultipleItemsResponse>(URL + '/sent', data)
   },
+  eliminarDefinitivoSeleccion(data: ItemMultipleRequest) {
+    return api().delete<MultipleItemResponse>(URL + '/trash', { data })
+  },
 }

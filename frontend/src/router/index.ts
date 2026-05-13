@@ -6,6 +6,7 @@ import { obtenerArchivosCarpetaService } from '@/services/folder.services'
 import { useFolderStore } from '@/stores/folder.store'
 import { useUploadStore } from '@/stores/upload.store'
 import { useDownloadStore } from '@/stores/download.store'
+import { useSelectedStore } from '@/stores/selected.store'
 
 const MainLayout = () => import('@/layouts/MainLayout.vue')
 const AuthLayout = () => import('@/layouts/AuthLayout.vue')
@@ -129,6 +130,9 @@ router.beforeEach(async (to) => {
   const uploadStore = useUploadStore()
   const downloadStore = useDownloadStore()
   const queryClient = useQueryClient()
+  const selectedStore = useSelectedStore()
+
+  selectedStore.reset()
 
   if (to.meta.authRequired) {
     if (authStore.logueado) return

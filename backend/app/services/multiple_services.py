@@ -108,7 +108,7 @@ def eliminar_multiples_items_permanente(items: multiple_schemas.ItemMultipleRequ
                 carpeta: Folder = folder_services.obtener_carpeta_papelera(
                     id_carpeta=item.id, usuario=usuario, db=db)
 
-                nombre_item = carpeta.nombre or "desconocida"
+                nombre_item = carpeta.nombre_original or "desconocida"
 
                 if os.path.exists(carpeta.path):
                     shutil.rmtree(carpeta.path)

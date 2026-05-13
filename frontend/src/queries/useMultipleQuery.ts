@@ -1,5 +1,9 @@
 import type { ItemMultipleRequest, ShareMultipleItemsRequest } from '@/api/types/types'
-import { sendItemsTrashService, shareMultipleItemsService } from '@/services/multiple.services'
+import {
+  deleteMultipleItemsService,
+  sendItemsTrashService,
+  shareMultipleItemsService,
+} from '@/services/multiple.services'
 import { useAuthStore } from '@/stores/auth.store'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import axios from 'axios'
@@ -58,6 +62,36 @@ export function useShareMultiple() {
         toast.error(e.response?.data?.detail || 'Error al compartir la selección')
       } else {
         toast.error('Error al compartir la selección')
+      }
+    },
+  })
+}
+
+export function useDeleteMultiplePermanent() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: ItemMultipleRequest) => deleteMultipleItemsService(data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['itemsPapelera'],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCompartidos'],
+      })
+
+      toast.success(data?.msg || 'Proceso completado correctamente', {
+        description:
+          `Items eliminados: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
+          '',
+      })
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al eliminar la selección')
+      } else {
+        toast.error('Error al eliminar la selección')
       }
     },
   })

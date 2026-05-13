@@ -12,3 +12,9 @@ export async function shareMultipleItemsService(data: ShareMultipleItemsRequest)
 
   return req.data
 }
+
+export async function deleteMultipleItemsService(data: ItemMultipleRequest) {
+  const req = await multipleApi.eliminarDefinitivoSeleccion(data)
+
+  return req.data
+}

@@ -41,13 +41,21 @@ import { useRouter } from 'vue-router'
 import { useFolderStore } from '@/stores/folder.store'
 import DialogEliminarArchivo from '@/components/files/DialogEliminarArchivo.vue'
 import DialogEliminarCarpeta from '@/components/folders/DialogEliminarCarpeta.vue'
+import DialogEliminarMultiple from '@/components/multiple/DialogEliminarMultiple.vue'
 import { useGetItemsPapelera } from '@/queries/useItemsQuery'
+import { useSelectedStore } from '@/stores/selected.store'
+import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
+import { useDeleteMultiplePermanent } from '@/queries/useMultipleQuery'
+import { toast } from 'vue-sonner'
+import Spinner from '@/components/ui/spinner/Spinner.vue'
 
 const router = useRouter()
 const folderStore = useFolderStore()
+const selectedStore = useSelectedStore()
 
 const eliminarArchivoAbierto = ref<boolean>(false)
 const eliminarCarpetaAbierto = ref<boolean>(false)
+const eliminarMultipleAbierto = ref<boolean>(false)
 const idEliminar = ref<string>('')
 const pagina = ref<number>(1)
 const limite = 25
@@ -64,6 +72,11 @@ const {
   isPending: pendingDeleteFolder,
   isSuccess: successDeleteFolder,
 } = useDeleteFolderPermanent()
+const {
+  mutateAsync: mutateDeleteMultiple,
+  isPending: pendingDeleteMultiple,
+  isSuccess: successDeleteMultiple,
+} = useDeleteMultiplePermanent()
 
 const { data: dataItems, isLoading: loadingItems } = useGetItemsPapelera(pagina, limite)
 
@@ -118,6 +131,51 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
     if (successDeleteFolder) eliminarCarpetaAbierto.value = false
   } catch {}
 }
+
+function handleSelection(id: string, tipo: 'file' | 'folder') {
+  selectedStore.toggleSeleccionado(id, tipo)
+}
+
+const todosSeleccionados = computed(() => {
+  return (
+    dataItems &&
+    dataItems.value?.items &&
+    dataItems.value.items.length > 0 &&
+    selectedStore.itemsSeleccionados.length === dataItems.value.items.length
+  )
+})
+
+function handleSelectAll(checked: boolean | 'indeterminate') {
+  if (checked && dataItems.value?.items) {
+    const items = dataItems.value.items
+
+    const arr = items?.map((i) => {
+      return {
+        id: i.id,
+        tipo: (i.tipo === 'file' ? 'archivo' : 'carpeta') as 'archivo' | 'carpeta',
+      }
+    })
+
+    selectedStore.seleccionarTodos(arr)
+  } else {
+    selectedStore.reset()
+  }
+}
+
+async function eliminarSeleccionPermanente() {
+  try {
+    if (selectedStore.hayItems) {
+      await mutateDeleteMultiple(selectedStore.itemsSeleccionados)
+
+      if (successDeleteMultiple) {
+        selectedStore.reset()
+        eliminarMultipleAbierto.value = false
+      }
+    } else {
+      toast.error('Selecciona items')
+    }
+  } catch {}
+}
 </script>
 
 <template>
@@ -131,8 +189,30 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
     @eliminar-permanente="eliminarCarpetaPermanente(idEliminar)"
     :pending="pendingDeleteFolder"
   />
+  <DialogEliminarMultiple
+    v-model:open="eliminarMultipleAbierto"
+    @eliminar-permanente="eliminarSeleccionPermanente"
+    :pending="pendingDeleteFolder"
+  />
 
   <div class="space-y-2">
+    <div class="flex items-center justify-end gap-4" v-if="selectedStore.hayItems">
+      <Button variant="outline" class="cursor-pointer">
+        <RefreshCcw />
+        Restaurar
+      </Button>
+
+      <Button
+        class="hover:cursor-pointer bg-red-600 hover:bg-red-700"
+        @click="eliminarMultipleAbierto = true"
+        :disabled="pendingDeleteMultiple"
+      >
+        <Spinner v-if="pendingDeleteMultiple" />
+        <Trash2 v-else />
+        {{ pendingDeleteMultiple ? 'Eliminando...' : 'Eliminar' }}
+      </Button>
+    </div>
+
     <Table>
       <TableCaption v-if="loadingItems || noData">
         {{
@@ -144,6 +224,14 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
 
       <TableHeader class="bg-neutral-100">
         <TableRow>
+          <TableHead>
+            <Checkbox
+              class="border-neutral-400"
+              :model-value="todosSeleccionados"
+              @update:model-value="handleSelectAll"
+              v-if="dataItems && dataItems.total > 0"
+            />
+          </TableHead>
           <TableHead>Nombre</TableHead>
           <TableHead>Propietario</TableHead>
           <TableHead>Tamaño</TableHead>
@@ -163,6 +251,13 @@ async function eliminarCarpetaPermanente(idCarpeta: string) {
           "
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
+          <TableCell class="cursor-default" @click.stop>
+            <Checkbox
+              class="border-neutral-400"
+              :model-value="selectedStore.estaSeleccionado(item.id)"
+              @update:model-value="() => handleSelection(item.id, item.tipo)"
+            />
+          </TableCell>
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
               <Folder :size="20" v-if="item.tipo === 'folder'" />
