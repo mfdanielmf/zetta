@@ -1,3 +1,4 @@
+import { useDownloadStore } from '@/stores/download.store'
 import api from '../axios.config'
 import type {
   ItemMultipleRequest,
@@ -20,5 +21,31 @@ export default {
   },
   restaurarSeleccion(data: ItemMultipleRequest) {
     return api().put(URL + '/restaurar', data)
+  },
+  async descargarSeleccion(data: ItemMultipleRequest) {
+    const downloadStore = useDownloadStore()
+    downloadStore.reset()
+    downloadStore.estado = 'preparando'
+
+    try {
+      const res = await api().post(URL, data, {
+        responseType: 'blob',
+        onDownloadProgress: ({ loaded, total }) => {
+          if (downloadStore.estado !== 'descargando') {
+            downloadStore.estado = 'descargando'
+          }
+
+          downloadStore.setPorcentaje(loaded, total ?? 0)
+        },
+      })
+
+      downloadStore.estado = 'completado'
+
+      return res
+    } catch (e: unknown) {
+      downloadStore.estado = 'error'
+
+      throw e
+    }
   },
 }

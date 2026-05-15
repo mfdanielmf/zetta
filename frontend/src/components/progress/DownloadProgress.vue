@@ -15,7 +15,7 @@ function cerrar() {
   <div class="w-72 bg-white border rounded-xl shadow-sm p-4 z-50">
     <div class="flex justify-between items-center mb-2 gap-2">
       <p class="font-semibold truncate">
-        {{ downloadStore.nombreDescarga ? downloadStore.nombreDescarga : 'Descargando 1 elemento' }}
+        {{ downloadStore.nombreDescarga ? downloadStore.nombreDescarga : 'Descargando elementos' }}
       </p>
 
       <Button

@@ -109,10 +109,10 @@ def share_multiple_items_with_user(req: multiple_schemas.ShareMultipleItemsReque
         raise HTTPException(400, detail=str(e2))
 
 
-@multiple_router.post("/items")
+@multiple_router.post("/items", response_class=FileResponse)
 def download_multiple_items_zip(req: list[multiple_schemas.ItemMultipleRequest], db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
-        zip_path = multiple_services.descargar_multiples_items(
+        zip_path: str = multiple_services.descargar_multiples_items(
             items=req, usuario=usuario, db=db)
 
         return FileResponse(

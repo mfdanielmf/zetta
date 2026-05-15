@@ -60,6 +60,8 @@ import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import { useSelectedStore } from '@/stores/selected.store'
 import { useMoveSelectedTrash, useShareMultiple } from '@/queries/useMultipleQuery'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
+import { downloadMultipleService } from '@/services/multiple.services'
+import { useDownloadStore } from '@/stores/download.store'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
@@ -78,6 +80,7 @@ const CompartirMultipleDialog = defineAsyncComponent(
 const router = useRouter()
 const folderStore = useFolderStore()
 const selectedStore = useSelectedStore()
+const downloadStore = useDownloadStore()
 
 const mutacionInsertar = useInsertFiles()
 const { mutateAsync: mutateArchivoPapelera } = useMoveFileTrash()
@@ -264,6 +267,19 @@ async function compartirSeleccion(correo: string) {
     }
   } catch {}
 }
+
+async function descargarSeleccion() {
+  try {
+    if (selectedStore.hayItems) {
+      await downloadMultipleService(selectedStore.itemsSeleccionados)
+    } else {
+      toast.error('Selecciona items')
+    }
+  } catch {
+  } finally {
+    selectedStore.reset()
+  }
+}
 </script>
 
 <template>
@@ -296,6 +312,17 @@ async function compartirSeleccion(correo: string) {
       </DropdownMenu>
 
       <div class="flex items-center gap-4" v-if="selectedStore.hayItems">
+        <Button
+          variant="outline"
+          class="cursor-pointer"
+          @click="descargarSeleccion"
+          :disabled="downloadStore.descargandoMultiple"
+        >
+          <Spinner v-if="downloadStore.descargandoMultiple" />
+          <Download v-else />
+          {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
+        </Button>
+
         <Button variant="outline" class="cursor-pointer" @click="compartirMultipleAbierto = true">
           <Share2 />
           Compartir

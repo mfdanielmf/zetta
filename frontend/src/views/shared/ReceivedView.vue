@@ -44,9 +44,17 @@ import getIconExtension from '@/utils/iconMap'
 import { Download, Ellipsis, Folder } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useSelectedStore } from '@/stores/selected.store'
+import { useDownloadStore } from '@/stores/download.store'
+import { downloadMultipleService } from '@/services/multiple.services'
+import { toast } from 'vue-sonner'
+import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
+import Spinner from '@/components/ui/spinner/Spinner.vue'
 
 const router = useRouter()
 const folderStore = useFolderStore()
+const selectedStore = useSelectedStore()
+const downloadStore = useDownloadStore()
 
 const noData = computed(() => {
   if (!dataItems.value || dataItems.value.total < 1) {
@@ -54,6 +62,15 @@ const noData = computed(() => {
   }
 
   return false
+})
+
+const todosSeleccionados = computed(() => {
+  return (
+    dataItems &&
+    dataItems.value?.items &&
+    dataItems.value.items.length > 0 &&
+    selectedStore.itemsSeleccionados.length === dataItems.value.items.length
+  )
 })
 
 const pagina = ref<number>(1)
@@ -74,10 +91,57 @@ async function descargarArchivo(id: string, nombre: string) {
 async function descargarCarpeta(id: string, nombre: string) {
   await downloadFolderService(id, nombre)
 }
+
+function handleSelection(id: string, tipo: 'file' | 'folder') {
+  selectedStore.toggleSeleccionado(id, tipo)
+}
+
+async function descargarSeleccion() {
+  try {
+    if (selectedStore.hayItems) {
+      await downloadMultipleService(selectedStore.itemsSeleccionados)
+    } else {
+      toast.error('Selecciona items')
+    }
+  } catch {
+  } finally {
+    selectedStore.reset()
+  }
+}
+
+function handleSelectAll(checked: boolean | 'indeterminate') {
+  if (checked && dataItems.value?.items) {
+    const items = dataItems.value.items
+
+    const arr = items?.map((i) => {
+      return {
+        id: i.tipo === 'file' ? i.archivo.id : i.carpeta.id,
+        tipo: (i.tipo === 'file' ? 'archivo' : 'carpeta') as 'archivo' | 'carpeta',
+      }
+    })
+
+    selectedStore.seleccionarTodos(arr)
+  } else {
+    selectedStore.reset()
+  }
+}
 </script>
 
 <template>
   <div class="space-y-2">
+    <div class="flex items-center justify-end gap-4" v-if="selectedStore.hayItems">
+      <Button
+        variant="outline"
+        class="cursor-pointer"
+        @click="descargarSeleccion"
+        :disabled="downloadStore.descargandoMultiple"
+      >
+        <Spinner v-if="downloadStore.descargandoMultiple" />
+        <Download v-else />
+        {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
+      </Button>
+    </div>
+
     <Table>
       <TableCaption v-if="loadingItems || noData">
         {{
@@ -89,6 +153,14 @@ async function descargarCarpeta(id: string, nombre: string) {
 
       <TableHeader class="bg-neutral-100">
         <TableRow>
+          <TableHead>
+            <Checkbox
+              class="border-neutral-400"
+              :model-value="todosSeleccionados"
+              @update:model-value="handleSelectAll"
+              v-if="dataItems && dataItems.total > 0"
+            />
+          </TableHead>
           <TableHead>Nombre</TableHead>
           <TableHead>Propietario</TableHead>
           <TableHead>Tamaño</TableHead>
@@ -107,6 +179,23 @@ async function descargarCarpeta(id: string, nombre: string) {
           "
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
+          <TableCell class="cursor-default" @click.stop>
+            <Checkbox
+              class="border-neutral-400"
+              :model-value="
+                selectedStore.estaSeleccionado(
+                  item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
+                )
+              "
+              @update:model-value="
+                () =>
+                  handleSelection(
+                    item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
+                    item.tipo,
+                  )
+              "
+            />
+          </TableCell>
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
               <Folder :size="20" v-if="item.tipo === 'folder'" />
