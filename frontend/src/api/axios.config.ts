@@ -22,7 +22,10 @@ export default (url = import.meta.env.VITE_API_BASE_URL || 'http://localhost:808
       const status = error.response?.status
       const detail = error.response?.data?.detail
 
-      if (status === 401 && detail === 'No se proporcionó token') {
+      if (
+        status === 401 &&
+        (detail === 'No se proporcionó token' || detail === 'Token incorrecto o expirado')
+      ) {
         localStorage.removeItem('tokenZetta')
 
         router.push({ name: 'login' })
