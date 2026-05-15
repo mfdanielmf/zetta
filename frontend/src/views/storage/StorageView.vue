@@ -133,10 +133,6 @@ const todosSeleccionados = computed(() => {
   )
 })
 
-const descargandoMultiple = computed(() => {
-  return downloadStore.estado === 'preparando' || downloadStore.estado === 'descargando'
-})
-
 const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
 const compartirCarpetaAbierto = ref<boolean>(false)
@@ -320,11 +316,11 @@ async function descargarSeleccion() {
           variant="outline"
           class="cursor-pointer"
           @click="descargarSeleccion"
-          :disabled="descargandoMultiple"
+          :disabled="downloadStore.descargandoMultiple"
         >
-          <Spinner v-if="descargandoMultiple" />
+          <Spinner v-if="downloadStore.descargandoMultiple" />
           <Download v-else />
-          {{ descargandoMultiple ? 'Descargando...' : 'Descargar' }}
+          {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
         </Button>
 
         <Button variant="outline" class="cursor-pointer" @click="compartirMultipleAbierto = true">

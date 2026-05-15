@@ -1,10 +1,14 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export const useDownloadStore = defineStore('downloadStore', () => {
   const estado = ref<null | 'preparando' | 'descargando' | 'completado' | 'error'>(null)
   const porcentaje = ref<number>(0)
   const nombreDescarga = ref<string | null>(null)
+
+  const descargandoMultiple = computed(() => {
+    return estado.value === 'preparando' || estado.value === 'descargando'
+  })
 
   function reset() {
     estado.value = null
@@ -22,5 +26,5 @@ export const useDownloadStore = defineStore('downloadStore', () => {
     porcentaje.value = Math.round((descargado / total) * 100)
   }
 
-  return { estado, porcentaje, nombreDescarga, reset, setPorcentaje }
+  return { estado, porcentaje, nombreDescarga, reset, setPorcentaje, descargandoMultiple }
 })

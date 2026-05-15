@@ -65,10 +65,6 @@ const noData = computed(() => {
   return false
 })
 
-const descargandoMultiple = computed(() => {
-  return downloadStore.estado === 'preparando' || downloadStore.estado === 'descargando'
-})
-
 const todosSeleccionados = computed(() => {
   return (
     dataItems &&
@@ -139,11 +135,11 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
         variant="outline"
         class="cursor-pointer"
         @click="descargarSeleccion"
-        :disabled="descargandoMultiple"
+        :disabled="downloadStore.descargandoMultiple"
       >
-        <Spinner v-if="descargandoMultiple" />
+        <Spinner v-if="downloadStore.descargandoMultiple" />
         <Download v-else />
-        {{ descargandoMultiple ? 'Descargando...' : 'Descargar' }}
+        {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
       </Button>
     </div>
 
