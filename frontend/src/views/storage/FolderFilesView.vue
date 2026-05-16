@@ -327,7 +327,7 @@ async function descargarSeleccion() {
         </div>
 
         <InputGroup>
-          <InputGroupInput placeholder="Buscar..." v-model="busqueda" />
+          <InputGroupInput placeholder="Buscar..." v-model="busqueda" id="busqueda" />
           <InputGroupAddon>
             <SearchIcon />
           </InputGroupAddon>

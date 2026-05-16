@@ -68,9 +68,9 @@ export async function getItemsFolderTrashService(
   }
 }
 
-export async function getReceivedItemsService(pagina: number, limite: number) {
+export async function getReceivedItemsService(pagina: number, limite: number, busqueda: string) {
   try {
-    const req = await itemsApi.obtenerItemsRecibidos({ pagina, limite })
+    const req = await itemsApi.obtenerItemsRecibidos({ pagina, limite, busqueda })
 
     return req.data
   } catch (e: unknown) {

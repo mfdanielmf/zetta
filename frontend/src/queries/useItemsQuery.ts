@@ -65,12 +65,16 @@ export function useGetFolderTrashItems(
   })
 }
 
-export function useGetReceivedItems(pagina: Ref<number>, limite: number = 25) {
+export function useGetReceivedItems(
+  pagina: Ref<number>,
+  limite: number = 25,
+  busqueda: Ref<string>,
+) {
   const authStore = useAuthStore()
 
   return useQuery({
-    queryKey: ['itemsRecibidos', authStore.usuario?.id, pagina],
-    queryFn: () => getReceivedItemsService(pagina.value, limite),
+    queryKey: ['itemsRecibidos', authStore.usuario?.id, pagina, busqueda],
+    queryFn: () => getReceivedItemsService(pagina.value, limite, busqueda.value),
     enabled: !!authStore.usuario?.id,
   })
 }

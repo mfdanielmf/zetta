@@ -233,7 +233,7 @@ async function restaurarSeleccion() {
     <div class="flex flex-col gap-4 justify-between sm:flex-row">
       <div>
         <InputGroup>
-          <InputGroupInput placeholder="Buscar..." v-model="busqueda" />
+          <InputGroupInput placeholder="Buscar..." v-model="busqueda" id="busqueda" />
           <InputGroupAddon>
             <SearchIcon />
           </InputGroupAddon>

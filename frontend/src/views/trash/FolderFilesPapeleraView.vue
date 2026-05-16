@@ -77,7 +77,7 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
 <template>
   <div class="space-y-2">
     <InputGroup class="max-w-73.5">
-      <InputGroupInput placeholder="Buscar..." v-model="busqueda" />
+      <InputGroupInput placeholder="Buscar..." v-model="busqueda" id="busqueda" />
       <InputGroupAddon>
         <SearchIcon />
       </InputGroupAddon>
