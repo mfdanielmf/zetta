@@ -302,11 +302,16 @@ def get_sent_items(
 
 
 @item_router.get("/shared/received", response_model=item_schemas.PaginatedSharedItemResponse)
-def get_received_items(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_received_items(
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+    busqueda: str | None = Depends(get_filters)
+):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_recibidos_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
     items_serializados: list[Union[file_schemas.FileBase,
                                    file_schemas.File]] = []

@@ -101,8 +101,8 @@ def get_all_shared_folders_raiz_sorted(id_usuario: UUID, db: Session, busqueda: 
     return query.order_by(CarpetaCompartida.fecha_compartido.desc()).all()
 
 
-def get_all_received_folders_raiz_sorted(id_usuario: UUID, db: Session) -> list[CarpetaCompartida]:
-    return (
+def get_all_received_folders_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[CarpetaCompartida]:
+    query = (
         db.query(CarpetaCompartida)
         .options(
             joinedload(CarpetaCompartida.propietario),
@@ -110,6 +110,11 @@ def get_all_received_folders_raiz_sorted(id_usuario: UUID, db: Session) -> list[
             joinedload(CarpetaCompartida.carpeta)
         )
         .filter_by(id_receptor=id_usuario)
-        .order_by(CarpetaCompartida.fecha_compartido.desc())
-        .all()
     )
+
+    if busqueda:
+        query = query.join(CarpetaCompartida.carpeta).filter(
+            Folder.nombre_original.ilike(f"%{busqueda}%")
+        )
+
+    return query.order_by(CarpetaCompartida.fecha_compartido.desc()).all()

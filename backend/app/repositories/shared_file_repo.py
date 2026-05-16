@@ -100,8 +100,8 @@ def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: st
     return query.order_by(ArchivoCompartido.fecha_compartido.desc()).all()
 
 
-def get_all_received_files_raiz_sorted(id_usuario: UUID, db: Session) -> list[ArchivoCompartido]:
-    return (
+def get_all_received_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[ArchivoCompartido]:
+    query = (
         db.query(ArchivoCompartido)
         .options(
             joinedload(ArchivoCompartido.propietario),
@@ -109,6 +109,11 @@ def get_all_received_files_raiz_sorted(id_usuario: UUID, db: Session) -> list[Ar
             joinedload(ArchivoCompartido.archivo)
         )
         .filter_by(id_receptor=id_usuario)
-        .order_by(ArchivoCompartido.fecha_compartido.desc())
-        .all()
     )
+
+    if busqueda:
+        query = query.join(ArchivoCompartido.archivo).filter(
+            File.nombre_original.ilike(f"%{busqueda}%")
+        )
+
+    return query.order_by(ArchivoCompartido.fecha_compartido.desc()).all()
