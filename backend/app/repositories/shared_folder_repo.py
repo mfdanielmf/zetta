@@ -3,6 +3,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.carpeta_compartida import CarpetaCompartida
+from app.models.folder import Folder
 
 
 def add_shared_folder_db(carpeta_compartida: CarpetaCompartida, db: Session) -> CarpetaCompartida:
@@ -81,8 +82,8 @@ def get_all_received_folders_raiz_paginadas(id_usuario: UUID, db: Session, offse
     return total, carpetas_recibidas
 
 
-def get_all_shared_folders_raiz_sorted(id_usuario: UUID, db: Session) -> list[CarpetaCompartida]:
-    return (
+def get_all_shared_folders_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[CarpetaCompartida]:
+    query = (
         db.query(CarpetaCompartida)
         .options(
             joinedload(CarpetaCompartida.propietario),
@@ -90,13 +91,18 @@ def get_all_shared_folders_raiz_sorted(id_usuario: UUID, db: Session) -> list[Ca
             joinedload(CarpetaCompartida.carpeta)
         )
         .filter_by(id_propietario=id_usuario)
-        .order_by(CarpetaCompartida.fecha_compartido.desc())
-        .all()
     )
 
+    if busqueda:
+        query = query.join(CarpetaCompartida.carpeta).filter(
+            Folder.nombre_original.ilike(f"%{busqueda}%")
+        )
 
-def get_all_received_folders_raiz_sorted(id_usuario: UUID, db: Session) -> list[CarpetaCompartida]:
-    return (
+    return query.order_by(CarpetaCompartida.fecha_compartido.desc()).all()
+
+
+def get_all_received_folders_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[CarpetaCompartida]:
+    query = (
         db.query(CarpetaCompartida)
         .options(
             joinedload(CarpetaCompartida.propietario),
@@ -104,6 +110,11 @@ def get_all_received_folders_raiz_sorted(id_usuario: UUID, db: Session) -> list[
             joinedload(CarpetaCompartida.carpeta)
         )
         .filter_by(id_receptor=id_usuario)
-        .order_by(CarpetaCompartida.fecha_compartido.desc())
-        .all()
     )
+
+    if busqueda:
+        query = query.join(CarpetaCompartida.carpeta).filter(
+            Folder.nombre_original.ilike(f"%{busqueda}%")
+        )
+
+    return query.order_by(CarpetaCompartida.fecha_compartido.desc()).all()

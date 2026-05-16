@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
+from app.middleware.filters_middleware import get_filters
 from app.middleware.pagination_middleware import get_pagination
 from app.models.archivo_compartido import ArchivoCompartido
 from app.models.file import File
@@ -18,11 +19,16 @@ item_router = APIRouter()
 
 
 @item_router.get("", response_model=item_schemas.PaginatedItemResponse)
-def get_items(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_items(
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+    busqueda: str | None = Depends(get_filters)
+):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_raiz_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
     items_serializados: list[Union[file_schemas.FileBase,
                                    file_schemas.File]] = []
@@ -65,12 +71,18 @@ def get_items(usuario: User = Depends(get_current_user), db: Session = Depends(g
 
 
 @item_router.get("/{id_carpeta}/items", response_model=item_schemas.PaginatedItemResponse)
-def get_items_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_items_folder(
+    id_carpeta: UUID,
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+    busqueda: str | None = Depends(get_filters)
+):
     pagina, limite = paginacion
 
     try:
         total, items = item_services.obtener_items_carpeta_paginados(id_carpeta=id_carpeta,
-                                                                     usuario=usuario, db=db, pagina=pagina, limite=limite)
+                                                                     usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
         items_serializados: list[Union[file_schemas.FileBase,
                                        file_schemas.File]] = []
@@ -116,11 +128,16 @@ def get_items_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user)
 
 
 @item_router.get("/trash", response_model=item_schemas.PaginatedItemResponse)
-def get_items_trash(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_items_trash(
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+    busqueda: str | None = Depends(get_filters)
+):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_papelera_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
     items_serializados: list[Union[file_schemas.FileBase,
                                    file_schemas.File]] = []
@@ -163,12 +180,18 @@ def get_items_trash(usuario: User = Depends(get_current_user), db: Session = Dep
 
 
 @item_router.get("/trash/{id_carpeta}/items", response_model=item_schemas.PaginatedItemResponse)
-def get_items_folder_in_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_items_folder_in_trash(
+    id_carpeta: UUID,
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+    busqueda: str | None = Depends(get_filters)
+):
     pagina, limite = paginacion
 
     try:
         total, items = item_services.obtener_items_carpeta_papelera_paginados(id_carpeta=id_carpeta,
-                                                                              usuario=usuario, db=db, pagina=pagina, limite=limite)
+                                                                              usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
         items_serializados: list[Union[file_schemas.FileBase,
                                        file_schemas.File]] = []
@@ -215,11 +238,16 @@ def get_items_folder_in_trash(id_carpeta: UUID, usuario: User = Depends(get_curr
 
 
 @item_router.get("/shared/sent", response_model=item_schemas.PaginatedSharedItemResponse)
-def get_sent_items(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_sent_items(
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+    busqueda: str | None = Depends(get_filters)
+):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_compartidos_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
     items_serializados: list[Union[file_schemas.FileBase,
                                    file_schemas.File]] = []
@@ -274,11 +302,16 @@ def get_sent_items(usuario: User = Depends(get_current_user), db: Session = Depe
 
 
 @item_router.get("/shared/received", response_model=item_schemas.PaginatedSharedItemResponse)
-def get_received_items(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_received_items(
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+    busqueda: str | None = Depends(get_filters)
+):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_recibidos_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
     items_serializados: list[Union[file_schemas.FileBase,
                                    file_schemas.File]] = []

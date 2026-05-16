@@ -3,6 +3,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.archivo_compartido import ArchivoCompartido
+from app.models.file import File
 
 
 def add_shared_file_db(archivo_compartido: ArchivoCompartido, db: Session) -> ArchivoCompartido:
@@ -80,8 +81,8 @@ def get_all_received_files_raiz_paginados(id_usuario: UUID, db: Session, offset:
     return total, archivos_recibidos
 
 
-def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session) -> list[ArchivoCompartido]:
-    return (
+def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[ArchivoCompartido]:
+    query = (
         db.query(ArchivoCompartido)
         .options(
             joinedload(ArchivoCompartido.propietario),
@@ -89,13 +90,18 @@ def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session) -> list[Arch
             joinedload(ArchivoCompartido.archivo)
         )
         .filter_by(id_propietario=id_usuario)
-        .order_by(ArchivoCompartido.fecha_compartido.desc())
-        .all()
     )
 
+    if busqueda:
+        query = query.join(ArchivoCompartido.archivo).filter(
+            File.nombre_original.ilike(f"%{busqueda}%")
+        )
 
-def get_all_received_files_raiz_sorted(id_usuario: UUID, db: Session) -> list[ArchivoCompartido]:
-    return (
+    return query.order_by(ArchivoCompartido.fecha_compartido.desc()).all()
+
+
+def get_all_received_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[ArchivoCompartido]:
+    query = (
         db.query(ArchivoCompartido)
         .options(
             joinedload(ArchivoCompartido.propietario),
@@ -103,6 +109,11 @@ def get_all_received_files_raiz_sorted(id_usuario: UUID, db: Session) -> list[Ar
             joinedload(ArchivoCompartido.archivo)
         )
         .filter_by(id_receptor=id_usuario)
-        .order_by(ArchivoCompartido.fecha_compartido.desc())
-        .all()
     )
+
+    if busqueda:
+        query = query.join(ArchivoCompartido.archivo).filter(
+            File.nombre_original.ilike(f"%{busqueda}%")
+        )
+
+    return query.order_by(ArchivoCompartido.fecha_compartido.desc()).all()

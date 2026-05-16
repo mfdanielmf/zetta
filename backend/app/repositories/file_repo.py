@@ -99,7 +99,8 @@ def get_all_files_in_folder_paginados(id_carpeta: uuid.UUID, db: Session, id_usu
                 File.id_usuario == id_usuario,
                 ArchivoCompartido.id_receptor == id_usuario,
                 File.id_carpeta.in_(
-                    db.query(CarpetaCompartida.id_carpeta).filter(CarpetaCompartida.id_receptor == id_usuario)
+                    db.query(CarpetaCompartida.id_carpeta).filter(
+                        CarpetaCompartida.id_receptor == id_usuario)
                 )
             )
         )
@@ -113,13 +114,22 @@ def get_all_files_in_folder_paginados(id_carpeta: uuid.UUID, db: Session, id_usu
     return total, archivos
 
 
-def get_files_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[File]:
-    return db.query(File).filter(File.id_usuario == id_usuario, File.id_carpeta == None, File.fecha_eliminacion == None).order_by(File.fecha_creacion.desc()).all()
+def get_files_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[File]:
+    query = db.query(File).filter(
+        File.id_usuario == id_usuario,
+        File.id_carpeta == None,
+        File.fecha_eliminacion == None
+    )
+
+    if busqueda:
+        query = query.filter(File.nombre_original.ilike(f"%{busqueda}%"))
+
+    return query.order_by(File.fecha_creacion.desc()).all()
 
 
 # O propietario o usuario con permisos (acordarme de cambiarlo en algún momento en el resto de queries antiguas)
-def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID) -> list[File]:
-    return (
+def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, busqueda: str | None) -> list[File]:
+    query = (
         db.query(File)
         .outerjoin(ArchivoCompartido, ArchivoCompartido.id_archivo == File.id)
         .filter(
@@ -128,13 +138,27 @@ def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuari
                 File.id_usuario == id_usuario,
                 ArchivoCompartido.id_receptor == id_usuario,
                 File.id_carpeta.in_(
-                    db.query(CarpetaCompartida.id_carpeta).filter(CarpetaCompartida.id_receptor == id_usuario)
+                    db.query(CarpetaCompartida.id_carpeta).filter(
+                        CarpetaCompartida.id_receptor == id_usuario)
                 )
             )
         )
-        .order_by(File.fecha_creacion.desc())
-        .all()
     )
 
-def get_all_files_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[File]:
-    return db.query(File).filter(File.id_usuario == id_usuario, File.fecha_eliminacion != None, File.id_carpeta == None).order_by(File.fecha_eliminacion.desc()).all()
+    if busqueda:
+        query = query.filter(File.nombre_original.ilike(f"%{busqueda}%"))
+
+    return query.order_by(File.fecha_creacion.desc()).all()
+
+
+def get_all_files_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[File]:
+    query = db.query(File).filter(
+        File.id_usuario == id_usuario,
+        File.fecha_eliminacion != None,
+        File.id_carpeta == None
+    )
+
+    if busqueda:
+        query = query.filter(File.nombre_original.ilike(f"%{busqueda}%"))
+
+    return query.order_by(File.fecha_eliminacion.desc()).all()

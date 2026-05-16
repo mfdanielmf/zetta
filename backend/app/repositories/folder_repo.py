@@ -102,7 +102,8 @@ def get_folders_inside_folder_paginadas(id_carpeta: uuid.UUID, id_usuario: uuid.
                 Folder.id_usuario == id_usuario,
                 CarpetaCompartida.id_receptor == id_usuario,
                 Folder.id_carpeta.in_(
-                    db.query(CarpetaCompartida.id_carpeta).filter(CarpetaCompartida.id_receptor == id_usuario)
+                    db.query(CarpetaCompartida.id_carpeta).filter(
+                        CarpetaCompartida.id_receptor == id_usuario)
                 )
             )
         )
@@ -116,12 +117,22 @@ def get_folders_inside_folder_paginadas(id_carpeta: uuid.UUID, id_usuario: uuid.
     return total, carpetas
 
 
-def get_folders_user_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
-    return db.query(Folder).filter(Folder.id_usuario == id_usuario, Folder.id_carpeta == None, Folder.fecha_eliminacion == None).order_by(Folder.fecha_creacion.desc()).all()
+def get_folders_user_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[Folder]:
+    query = db.query(Folder).filter(
+        Folder.id_usuario == id_usuario,
+        Folder.id_carpeta == None,
+        Folder.fecha_eliminacion == None
+    )
+
+    if busqueda:
+        query = query.filter(Folder.nombre_original.ilike(f"%{busqueda}%"))
+
+    return query.order_by(Folder.fecha_creacion.desc()).all()
+
 
 # O propietario o usuario con permisos (acordarme de cambiarlo en algún momento en el resto de queries antiguas)
-def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session) -> list[Folder]:
-    return (
+def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[Folder]:
+    query = (
         db.query(Folder)
         .outerjoin(CarpetaCompartida, CarpetaCompartida.id_carpeta == Folder.id)
         .filter(
@@ -130,13 +141,28 @@ def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUI
                 Folder.id_usuario == id_usuario,
                 CarpetaCompartida.id_receptor == id_usuario,
                 Folder.id_carpeta.in_(
-                    db.query(CarpetaCompartida.id_carpeta).filter(CarpetaCompartida.id_receptor == id_usuario)
+                    db.query(CarpetaCompartida.id_carpeta).filter(
+                        CarpetaCompartida.id_receptor == id_usuario
+                    )
                 )
             )
         )
-        .order_by(Folder.fecha_creacion.desc())
-        .all()
     )
 
-def get_all_folders_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
-    return db.query(Folder).filter(Folder.id_usuario == id_usuario, Folder.fecha_eliminacion != None, Folder.id_carpeta == None).order_by(Folder.fecha_eliminacion.desc()).all()
+    if busqueda:
+        query = query.filter(Folder.nombre_original.ilike(f"%{busqueda}%"))
+
+    return query.order_by(Folder.fecha_creacion.desc()).all()
+
+
+def get_all_folders_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[Folder]:
+    query = db.query(Folder).filter(
+        Folder.id_usuario == id_usuario,
+        Folder.fecha_eliminacion != None,
+        Folder.id_carpeta == None
+    )
+
+    if busqueda:
+        query = query.filter(Folder.nombre_original.ilike(f"%{busqueda}%"))
+
+    return query.order_by(Folder.fecha_eliminacion.desc()).all()
