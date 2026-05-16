@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
+from app.middleware.filters_middleware import get_filters
 from app.middleware.pagination_middleware import get_pagination
 from app.models.archivo_compartido import ArchivoCompartido
 from app.models.file import File
@@ -18,11 +19,16 @@ item_router = APIRouter()
 
 
 @item_router.get("", response_model=item_schemas.PaginatedItemResponse)
-def get_items(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_items(
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+    busqueda: str | None = Depends(get_filters)
+):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_raiz_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
     items_serializados: list[Union[file_schemas.FileBase,
                                    file_schemas.File]] = []

@@ -12,13 +12,13 @@ from app.repositories import file_repo, folder_repo, shared_file_repo, shared_fo
 from app.services import folder_services
 
 
-def obtener_items_raiz_paginados(usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[Union[Folder, File]]]:
+def obtener_items_raiz_paginados(usuario: User, db: Session, pagina: int, limite: int, busqueda: str | None) -> tuple[int, list[Union[Folder, File]]]:
     offset: int = (pagina - 1) * limite
 
     carpetas: list[Folder] = folder_repo.get_folders_user_raiz_sorted(
-        id_usuario=usuario.id, db=db)
+        id_usuario=usuario.id, db=db, busqueda=busqueda)
     archivos: list[File] = file_repo.get_files_raiz_sorted(
-        id_usuario=usuario.id, db=db)
+        id_usuario=usuario.id, db=db, busqueda=busqueda)
 
     items: list[Union[Folder, File]] = carpetas + archivos
 
