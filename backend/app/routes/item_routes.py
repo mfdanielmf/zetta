@@ -238,11 +238,16 @@ def get_items_folder_in_trash(
 
 
 @item_router.get("/shared/sent", response_model=item_schemas.PaginatedSharedItemResponse)
-def get_sent_items(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_sent_items(
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+    busqueda: str | None = Depends(get_filters)
+):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_compartidos_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
     items_serializados: list[Union[file_schemas.FileBase,
                                    file_schemas.File]] = []
