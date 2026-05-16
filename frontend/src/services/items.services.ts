@@ -35,9 +35,9 @@ export async function getItemsFolderService(
   }
 }
 
-export async function getItemsTrashService(pagina: number, limite: number) {
+export async function getItemsTrashService(pagina: number, limite: number, busqueda: string) {
   try {
-    const req = await itemsApi.obtenerItemsPapelera({ pagina, limite })
+    const req = await itemsApi.obtenerItemsPapelera({ pagina, limite, busqueda })
 
     return req.data
   } catch (e: unknown) {
@@ -53,9 +53,10 @@ export async function getItemsFolderTrashService(
   idCarpeta: string,
   pagina: number,
   limite: number,
+  busqueda: string,
 ) {
   try {
-    const req = await itemsApi.obtenerItemsCarpetaPapelera(idCarpeta, { pagina, limite })
+    const req = await itemsApi.obtenerItemsCarpetaPapelera(idCarpeta, { pagina, limite, busqueda })
 
     return req.data
   } catch (e: unknown) {

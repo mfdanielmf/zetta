@@ -26,9 +26,12 @@ import { useGetFolderTrashItems } from '@/queries/useItemsQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
-import { Folder } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import { Folder, SearchIcon } from 'lucide-vue-next'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useDebounceFn } from '@vueuse/core'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import Spinner from '@/components/ui/spinner/Spinner.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -46,11 +49,22 @@ const noData = computed(() => {
 
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
+const busqueda = ref<string>('')
+const busquedaDebounced = ref<string>('')
+const setBusquedaDebounced = useDebounceFn((value: string) => {
+  busquedaDebounced.value = value
+  pagina.value = 1
+}, 500)
+
+watch(busqueda, (nuevoValor: string) => {
+  setBusquedaDebounced(nuevoValor)
+})
 
 const { data: dataItems, isLoading: loadingItems } = useGetFolderTrashItems(
   idCarpeta,
   pagina,
   limite,
+  busquedaDebounced,
 )
 
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
@@ -62,6 +76,20 @@ function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: strin
 
 <template>
   <div class="space-y-2">
+    <InputGroup class="max-w-73.5">
+      <InputGroupInput placeholder="Buscar..." v-model="busqueda" />
+      <InputGroupAddon>
+        <SearchIcon />
+      </InputGroupAddon>
+      <InputGroupAddon align="inline-end">
+        <Spinner v-if="loadingItems" />
+        <span v-else>
+          {{ dataItems?.total ?? 0 }}
+          {{ (dataItems?.total ?? 0) === 1 ? 'resultado' : 'resultados' }}</span
+        >
+      </InputGroupAddon>
+    </InputGroup>
+
     <Table>
       <TableCaption v-if="loadingItems || noData">
         {{ loadingItems ? 'Cargando...' : 'Esta carpeta no tiene contenido.' }}

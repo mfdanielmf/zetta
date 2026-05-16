@@ -35,12 +35,16 @@ export function useGetFolderItems(
   })
 }
 
-export function useGetItemsPapelera(pagina: Ref<number>, limite: number = 25) {
+export function useGetItemsPapelera(
+  pagina: Ref<number>,
+  limite: number = 25,
+  busqueda: Ref<string>,
+) {
   const authStore = useAuthStore()
 
   return useQuery({
-    queryKey: ['itemsPapelera', authStore.usuario?.id, pagina],
-    queryFn: () => getItemsTrashService(pagina.value, limite),
+    queryKey: ['itemsPapelera', authStore.usuario?.id, pagina, busqueda],
+    queryFn: () => getItemsTrashService(pagina.value, limite, busqueda.value),
     enabled: !!authStore.usuario?.id,
   })
 }
@@ -49,12 +53,14 @@ export function useGetFolderTrashItems(
   idCarpeta: ComputedRef<string>,
   pagina: Ref<number>,
   limite: number = 25,
+  busqueda: Ref<string>,
 ) {
   const authStore = useAuthStore()
 
   return useQuery({
-    queryKey: ['itemsCarpetaPapelera', authStore.usuario?.id, idCarpeta, pagina],
-    queryFn: () => getItemsFolderTrashService(idCarpeta.value, pagina.value, limite),
+    queryKey: ['itemsCarpetaPapelera', authStore.usuario?.id, idCarpeta, pagina, busqueda],
+    queryFn: () =>
+      getItemsFolderTrashService(idCarpeta.value, pagina.value, limite, busqueda.value),
     enabled: computed(() => !!authStore.usuario?.id && !!idCarpeta.value),
   })
 }

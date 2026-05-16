@@ -64,9 +64,7 @@ import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
 import { useDownloadStore } from '@/stores/download.store'
 import { downloadMultipleService } from '@/services/multiple.services'
-import InputGroupInput from '@/components/ui/input-group/InputGroupInput.vue'
-import InputGroupAddon from '@/components/ui/input-group/InputGroupAddon.vue'
-import InputGroup from '@/components/ui/input-group/InputGroup.vue'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { useDebounceFn } from '@vueuse/core'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
