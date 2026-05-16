@@ -69,7 +69,7 @@ def obtener_items_papelera_paginados(usuario: User, db: Session, pagina: int, li
     return total, items_paginados
 
 
-def obtener_items_carpeta_papelera_paginados(id_carpeta: UUID, usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[Union[Folder, File]]]:
+def obtener_items_carpeta_papelera_paginados(id_carpeta: UUID, usuario: User, db: Session, pagina: int, limite: int, busqueda: str | None) -> tuple[int, list[Union[Folder, File]]]:
     """
     CarpetaNoEncontradaException
     """
@@ -79,9 +79,9 @@ def obtener_items_carpeta_papelera_paginados(id_carpeta: UUID, usuario: User, db
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
     carpetas: list[Folder] = folder_repo.get_folders_inside_folder_sorted(
-        id_carpeta=id_carpeta, id_usuario=usuario.id, db=db)
+        id_carpeta=id_carpeta, id_usuario=usuario.id, db=db, busqueda=busqueda)
     archivos: list[File] = file_repo.get_all_files_in_folder_sorted(id_carpeta=id_carpeta,
-                                                                    id_usuario=usuario.id, db=db)
+                                                                    id_usuario=usuario.id, db=db, busqueda=busqueda)
 
     items: list[Union[Folder, File]] = carpetas + archivos
 

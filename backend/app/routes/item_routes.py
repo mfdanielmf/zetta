@@ -180,12 +180,18 @@ def get_items_trash(
 
 
 @item_router.get("/trash/{id_carpeta}/items", response_model=item_schemas.PaginatedItemResponse)
-def get_items_folder_in_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_items_folder_in_trash(
+    id_carpeta: UUID,
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+    busqueda: str | None = Depends(get_filters)
+):
     pagina, limite = paginacion
 
     try:
         total, items = item_services.obtener_items_carpeta_papelera_paginados(id_carpeta=id_carpeta,
-                                                                              usuario=usuario, db=db, pagina=pagina, limite=limite)
+                                                                              usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
         items_serializados: list[Union[file_schemas.FileBase,
                                        file_schemas.File]] = []
