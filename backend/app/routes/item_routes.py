@@ -128,11 +128,16 @@ def get_items_folder(
 
 
 @item_router.get("/trash", response_model=item_schemas.PaginatedItemResponse)
-def get_items_trash(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_items_trash(
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+    busqueda: str | None = Depends(get_filters)
+):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_papelera_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
     items_serializados: list[Union[file_schemas.FileBase,
                                    file_schemas.File]] = []
