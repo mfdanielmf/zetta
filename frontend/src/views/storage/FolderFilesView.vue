@@ -45,8 +45,17 @@ import config from '@/config/config'
 import { downloadFolderService } from '@/services/folder.services'
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
-import { Download, Ellipsis, Folder, FolderPlus, Plus, Share2, Upload } from 'lucide-vue-next'
-import { computed, defineAsyncComponent, ref } from 'vue'
+import {
+  Download,
+  Ellipsis,
+  Folder,
+  FolderPlus,
+  Plus,
+  SearchIcon,
+  Share2,
+  Upload,
+} from 'lucide-vue-next'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { useSelectedStore } from '@/stores/selected.store'
@@ -55,6 +64,10 @@ import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
 import { useDownloadStore } from '@/stores/download.store'
 import { downloadMultipleService } from '@/services/multiple.services'
+import InputGroupInput from '@/components/ui/input-group/InputGroupInput.vue'
+import InputGroupAddon from '@/components/ui/input-group/InputGroupAddon.vue'
+import InputGroup from '@/components/ui/input-group/InputGroup.vue'
+import { useDebounceFn } from '@vueuse/core'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CompartirCarpetaDialog = defineAsyncComponent(
@@ -116,8 +129,24 @@ const {
 
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
+const busqueda = ref<string>('')
+const busquedaDebounced = ref<string>('')
+const setBusquedaDebounced = useDebounceFn((value: string) => {
+  busquedaDebounced.value = value
+  pagina.value = 1
+}, 500)
 
-const { data: dataItems, isLoading: loadingItems } = useGetFolderItems(idCarpeta, pagina, limite)
+watch(busqueda, async (nuevoValor: string) => {
+  await setBusquedaDebounced(nuevoValor)
+  selectedStore.reset()
+})
+
+const { data: dataItems, isLoading: loadingItems } = useGetFolderItems(
+  idCarpeta,
+  pagina,
+  limite,
+  busquedaDebounced,
+)
 
 const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
@@ -253,49 +282,65 @@ async function descargarSeleccion() {
 
 <template>
   <div class="space-y-2">
-    <div class="flex gap-4 justify-between">
-      <DropdownMenu>
-        <DropdownMenuTrigger as-child>
-          <Button variant="outline" class="hover:cursor-pointer">
-            <Plus />
-            Añadir
+    <div class="flex flex-col gap-4 justify-between sm:flex-row">
+      <div class="flex gap-4 items-center justify-between">
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button variant="outline" class="hover:cursor-pointer">
+              <Plus />
+              Añadir
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent class="w-56" align="start">
+            <DropdownMenuLabel>Archivos</DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuItem class="hover:cursor-pointer" @click="subirAbierto = true">
+                <Upload />
+                Subir archivos
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>Organización</DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuItem class="hover:cursor-pointer" @click="crearAbierto = true">
+                <FolderPlus />
+                Crear carpeta
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div class="flex items-center gap-4" v-if="selectedStore.hayItems">
+          <Button variant="outline" class="cursor-pointer" @click="compartirMultipleAbierto = true">
+            <Share2 />
+            Compartir
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-56" align="start">
-          <DropdownMenuLabel>Archivos</DropdownMenuLabel>
-          <DropdownMenuGroup>
-            <DropdownMenuItem class="hover:cursor-pointer" @click="subirAbierto = true">
-              <Upload />
-              Subir archivos
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel>Organización</DropdownMenuLabel>
-          <DropdownMenuGroup>
-            <DropdownMenuItem class="hover:cursor-pointer" @click="crearAbierto = true">
-              <FolderPlus />
-              Crear carpeta
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
 
-      <div class="flex items-center gap-4" v-if="selectedStore.hayItems">
-        <Button variant="outline" class="cursor-pointer" @click="compartirMultipleAbierto = true">
-          <Share2 />
-          Compartir
-        </Button>
+          <Button
+            variant="outline"
+            class="cursor-pointer"
+            @click="descargarSeleccion"
+            :disabled="downloadStore.descargandoMultiple"
+          >
+            <Spinner v-if="downloadStore.descargandoMultiple" />
+            <Download v-else />
+            {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
+          </Button>
+        </div>
 
-        <Button
-          variant="outline"
-          class="cursor-pointer"
-          @click="descargarSeleccion"
-          :disabled="downloadStore.descargandoMultiple"
-        >
-          <Spinner v-if="downloadStore.descargandoMultiple" />
-          <Download v-else />
-          {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
-        </Button>
+        <InputGroup>
+          <InputGroupInput placeholder="Buscar..." v-model="busqueda" />
+          <InputGroupAddon>
+            <SearchIcon />
+          </InputGroupAddon>
+          <InputGroupAddon align="inline-end">
+            <Spinner v-if="loadingItems" />
+            <span v-else>
+              {{ dataItems?.total ?? 0 }}
+              {{ (dataItems?.total ?? 0) === 1 ? 'resultado' : 'resultados' }}</span
+            >
+          </InputGroupAddon>
+        </InputGroup>
       </div>
     </div>
 

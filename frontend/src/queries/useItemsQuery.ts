@@ -10,12 +10,12 @@ import { useAuthStore } from '@/stores/auth.store'
 import { useQuery } from '@tanstack/vue-query'
 import { computed, type ComputedRef, type Ref } from 'vue'
 
-export function useGetItemsUser(pagina: Ref<number>, limite: number = 25) {
+export function useGetItemsUser(pagina: Ref<number>, limite: number = 25, busqueda: Ref<string>) {
   const authStore = useAuthStore()
 
   return useQuery({
-    queryKey: ['items', authStore.usuario?.id, pagina],
-    queryFn: () => getItemsService(pagina.value, limite),
+    queryKey: ['items', authStore.usuario?.id, pagina, busqueda],
+    queryFn: () => getItemsService(pagina.value, limite, busqueda.value),
     enabled: !!authStore.usuario?.id,
   })
 }
@@ -24,12 +24,13 @@ export function useGetFolderItems(
   idCarpeta: ComputedRef<string>,
   pagina: Ref<number>,
   limite: number = 25,
+  busqueda: Ref<string>,
 ) {
   const authStore = useAuthStore()
 
   return useQuery({
-    queryKey: ['itemsCarpeta', authStore.usuario?.id, idCarpeta, pagina],
-    queryFn: () => getItemsFolderService(idCarpeta.value, pagina.value, limite),
+    queryKey: ['itemsCarpeta', authStore.usuario?.id, idCarpeta, pagina, busqueda],
+    queryFn: () => getItemsFolderService(idCarpeta.value, pagina.value, limite, busqueda.value),
     enabled: computed(() => !!authStore.usuario?.id && !!idCarpeta.value),
   })
 }
