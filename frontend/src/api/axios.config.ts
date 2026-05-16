@@ -1,7 +1,8 @@
 import axios from 'axios'
 import router from '@/router'
+import config from '@/config/config'
 
-export default (url = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080') => {
+export default (url = config.API_BASE_URL) => {
   const api = axios.create({
     baseURL: url,
   })

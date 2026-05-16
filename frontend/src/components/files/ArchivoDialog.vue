@@ -15,6 +15,7 @@ import { formatearTamañoService } from '@/services/file.services'
 import { X } from 'lucide-vue-next'
 import Button from '../ui/button/Button.vue'
 import ScrollArea from '../ui/scroll-area/ScrollArea.vue'
+import config from '@/config/config'
 
 const props = defineProps<{
   subir: (formData: FormData) => Promise<unknown>
@@ -27,7 +28,7 @@ type ArchivoType = {
 
 const fileInput = useTemplateRef('fileInput')
 const archivos = ref<ArchivoType[]>([])
-const TAMAÑO_MAXIMO = 1024 * 1024 * 1024 // 1GB de momento (ya lo sincronizaré con el back en otro momento)
+const TAMAÑO_MAXIMO = config.MAX_UPLOAD_SIZE
 
 const hayErrores = computed(() => {
   if (archivos.value.some((f) => f.invalido) || archivos.value.length < 1) {
@@ -115,7 +116,9 @@ function reiniciarInputArchivos() {
                 <p :class="{ 'text-red-500': item.invalido }">
                   {{ formatearTamañoService(item.archivo.size) }}
                 </p>
-                <p v-if="item.invalido" class="text-xs text-red-500">Excede el límite de 1GB</p>
+                <p v-if="item.invalido" class="text-xs text-red-500">
+                  Excede el límite de {{ formatearTamañoService(config.MAX_UPLOAD_SIZE) }}
+                </p>
               </div>
             </div>
           </ScrollArea>
