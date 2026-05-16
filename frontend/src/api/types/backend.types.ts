@@ -2028,6 +2028,7 @@ export interface operations {
             query?: {
                 pagina?: number;
                 limite?: number;
+                busqueda?: string | null;
             };
             header?: never;
             path?: never;
@@ -2060,6 +2061,7 @@ export interface operations {
             query?: {
                 pagina?: number;
                 limite?: number;
+                busqueda?: string | null;
             };
             header?: never;
             path: {
@@ -2094,6 +2096,7 @@ export interface operations {
             query?: {
                 pagina?: number;
                 limite?: number;
+                busqueda?: string | null;
             };
             header?: never;
             path?: never;
@@ -2126,6 +2129,7 @@ export interface operations {
             query?: {
                 pagina?: number;
                 limite?: number;
+                busqueda?: string | null;
             };
             header?: never;
             path: {
@@ -2160,6 +2164,7 @@ export interface operations {
             query?: {
                 pagina?: number;
                 limite?: number;
+                busqueda?: string | null;
             };
             header?: never;
             path?: never;
@@ -2192,6 +2197,7 @@ export interface operations {
             query?: {
                 pagina?: number;
                 limite?: number;
+                busqueda?: string | null;
             };
             header?: never;
             path?: never;
