@@ -79,12 +79,12 @@ export function useGetReceivedItems(
   })
 }
 
-export function useGetSentItems(pagina: Ref<number>, limite: number = 25) {
+export function useGetSentItems(pagina: Ref<number>, limite: number = 25, busqueda: Ref<string>) {
   const authStore = useAuthStore()
 
   return useQuery({
-    queryKey: ['itemsCompartidos', authStore.usuario?.id, pagina],
-    queryFn: () => getSentItemsService(pagina.value, limite),
+    queryKey: ['itemsCompartidos', authStore.usuario?.id, pagina, busqueda],
+    queryFn: () => getSentItemsService(pagina.value, limite, busqueda.value),
     enabled: !!authStore.usuario?.id,
   })
 }

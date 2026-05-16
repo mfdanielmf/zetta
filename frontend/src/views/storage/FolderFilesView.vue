@@ -134,8 +134,8 @@ const setBusquedaDebounced = useDebounceFn((value: string) => {
   pagina.value = 1
 }, 500)
 
-watch(busqueda, async (nuevoValor: string) => {
-  await setBusquedaDebounced(nuevoValor)
+watch(busqueda, (nuevoValor: string) => {
+  setBusquedaDebounced(nuevoValor)
   selectedStore.reset()
 })
 

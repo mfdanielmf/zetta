@@ -82,9 +82,9 @@ export async function getReceivedItemsService(pagina: number, limite: number, bu
   }
 }
 
-export async function getSentItemsService(pagina: number, limite: number) {
+export async function getSentItemsService(pagina: number, limite: number, busqueda: string) {
   try {
-    const req = await itemsApi.obtenerItemsCompartidos({ pagina, limite })
+    const req = await itemsApi.obtenerItemsCompartidos({ pagina, limite, busqueda })
 
     return req.data
   } catch (e: unknown) {
