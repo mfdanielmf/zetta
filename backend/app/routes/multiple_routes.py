@@ -109,6 +109,33 @@ def share_multiple_items_with_user(req: multiple_schemas.ShareMultipleItemsReque
         raise HTTPException(400, detail=str(e2))
 
 
+@multiple_router.delete("/items/shared/sent", response_model=multiple_schemas.MultipleItemResponse)
+@limiter.limit(DEFAULT_RATE_LIMIT)
+def cancel_multiple_shared_items(req: multiple_schemas.ShareMultipleItemsRequest, request: Request, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        errores = multiple_services.cancelar_multiples_compartidos(
+            req=req, usuario=usuario, db=db)
+
+        if errores:
+            return {
+                "msg": "Proceso de cancelación completado",
+                "items_totales": len(req.items),
+                "errores": {
+                    "details": errores,
+                    "total_errores": len(errores)
+                }
+            }
+
+        return {
+            "msg": "Proceso de cancelación completado",
+            "items_totales": len(req.items)
+        }
+    except ex.UsuarioNoEncontradoException as e1:
+        raise HTTPException(404, detail=str(e1))
+    except ex.PropietarioException as e2:
+        raise HTTPException(400, detail=str(e2))
+
+
 @multiple_router.post("/items", response_class=FileResponse)
 def download_multiple_items_zip(req: list[multiple_schemas.ItemMultipleRequest], db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:

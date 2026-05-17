@@ -13,7 +13,7 @@ from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.models import exceptions as ex
-from app.services import file_services, folder_services, user_services
+from app.services import file_services, folder_services, user_services, shared_file_services, shared_folder_services
 from app.repositories import file_repo, folder_repo, multiple_repo, shared_file_repo, shared_folder_repo
 from app.schemas import multiple_schemas
 
@@ -262,27 +262,60 @@ def descargar_multiples_items(items: list[multiple_schemas.ItemMultipleRequest],
         for item in items:
             if item.tipo == "archivo":
                 archivo: File = file_services.obtener_archivo_permisos(
-                    id_archivo=item.id,
-                    usuario=usuario,
-                    db=db
-                )
+                    id_archivo=item.id, usuario=usuario, db=db)
 
-                zipf.write(
-                    archivo.path,
-                    arcname=archivo.nombre_original
-                )
+                zipf.write(archivo.path, arcname=archivo.nombre_original)
 
             else:
                 carpeta: Folder = folder_services.obtener_carpeta_usuario_permisos(
-                    id_carpeta=item.id,
-                    usuario=usuario,
-                    db=db
-                )
+                    id_carpeta=item.id, usuario=usuario, db=db)
 
                 folder_services.añadir_carpeta_a_zip(
-                    zipf=zipf,
-                    carpeta=carpeta,
-                    path_base=""
-                )
+                    zipf=zipf, carpeta=carpeta, path_base="")
 
     return zip_path
+
+
+def cancelar_multiples_compartidos(req: multiple_schemas.ShareMultipleItemsRequest, usuario: User, db: Session):
+    """
+    UsuarioNoEncontradoException
+    """
+    if req.correo_usuario.lower() == usuario.correo.lower():
+        raise ex.PropietarioException(
+            "Ya eres el propietario de los elementos")
+
+    receptor: User = user_services.obtener_usuario_correo(
+        correo=req.correo_usuario, db=db)
+
+    errores = []
+
+    for item in req.items:
+        nombre_item = "desconocido"
+
+        try:
+            if item.tipo == "archivo":
+                archivo_compartido: ArchivoCompartido = shared_file_services.obtener_archivo_compartido(
+                    id_archivo=item.id, id_receptor=receptor.id, db=db)
+
+                nombre_item = archivo_compartido.archivo.nombre_original or "desconocido"
+
+                db.delete(archivo_compartido)
+
+            else:
+                carpeta_compartida: CarpetaCompartida = shared_folder_services.obtener_carpeta_compartida(
+                    id_carpeta=item.id, id_receptor=receptor.id, db=db)
+
+                nombre_item = carpeta_compartida.carpeta.nombre_original or "desconocido"
+
+                db.delete(carpeta_compartida)
+
+        except Exception as e1:
+            errores.append({
+                "id_item": str(item.id),
+                "nombre_item": nombre_item,
+                "error": str(e1)
+            })
+
+    db.commit()
+
+    return errores
