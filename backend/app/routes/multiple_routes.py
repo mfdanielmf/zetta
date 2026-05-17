@@ -111,7 +111,7 @@ def share_multiple_items_with_user(req: multiple_schemas.ShareMultipleItemsReque
 
 @multiple_router.delete("/items/shared/sent", response_model=multiple_schemas.MultipleItemResponse)
 @limiter.limit(DEFAULT_RATE_LIMIT)
-def cancel_multiple_shared_items(req: multiple_schemas.ShareMultipleItemsRequest, request: Request, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def cancel_multiple_shared_items(req: list[multiple_schemas.ItemMultipleRequest], request: Request, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         errores = multiple_services.cancelar_multiples_compartidos(
             req=req, usuario=usuario, db=db)
@@ -119,7 +119,7 @@ def cancel_multiple_shared_items(req: multiple_schemas.ShareMultipleItemsRequest
         if errores:
             return {
                 "msg": "Proceso de cancelación completado",
-                "items_totales": len(req.items),
+                "items_totales": len(req),
                 "errores": {
                     "details": errores,
                     "total_errores": len(errores)
@@ -128,7 +128,7 @@ def cancel_multiple_shared_items(req: multiple_schemas.ShareMultipleItemsRequest
 
         return {
             "msg": "Proceso de cancelación completado",
-            "items_totales": len(req.items)
+            "items_totales": len(req)
         }
     except ex.UsuarioNoEncontradoException as e1:
         raise HTTPException(404, detail=str(e1))

@@ -276,34 +276,38 @@ def descargar_multiples_items(items: list[multiple_schemas.ItemMultipleRequest],
     return zip_path
 
 
-def cancelar_multiples_compartidos(req: multiple_schemas.ShareMultipleItemsRequest, usuario: User, db: Session):
+def cancelar_multiples_compartidos(req: list[multiple_schemas.ItemMultipleRequest], usuario: User, db: Session):
     """
     UsuarioNoEncontradoException
     """
-    if req.correo_usuario.lower() == usuario.correo.lower():
-        raise ex.PropietarioException(
-            "Ya eres el propietario de los elementos")
-
-    receptor: User = user_services.obtener_usuario_correo(
-        correo=req.correo_usuario, db=db)
-
     errores = []
 
-    for item in req.items:
+    for item in req:
         nombre_item = "desconocido"
 
         try:
+            if not item.id_compartido:
+                raise Exception("Falta id_compartido")
+
             if item.tipo == "archivo":
-                archivo_compartido: ArchivoCompartido = shared_file_services.obtener_archivo_compartido(
-                    id_archivo=item.id, id_receptor=receptor.id, db=db)
+                archivo_compartido: ArchivoCompartido = shared_file_services.obtener_archivo_compartido_no_receptor(
+                    id_compartido=item.id_compartido, id_propietario=usuario.id, db=db)
+
+                if not archivo_compartido:
+                    raise ex.ArchivoNoEncontradoException(
+                        "No se ha encontrado el archivo compartido")
 
                 nombre_item = archivo_compartido.archivo.nombre_original or "desconocido"
 
                 db.delete(archivo_compartido)
 
             else:
-                carpeta_compartida: CarpetaCompartida = shared_folder_services.obtener_carpeta_compartida(
-                    id_carpeta=item.id, id_receptor=receptor.id, db=db)
+                carpeta_compartida: CarpetaCompartida = shared_folder_services.obtener_carpeta_compartida_no_receptor(
+                    id_compartido=item.id_compartido, id_propietario=usuario.id, db=db)
+
+                if not carpeta_compartida:
+                    raise ex.CarpetaNoEncontradaException(
+                        "No se ha encontrado la carpeta compartida")
 
                 nombre_item = carpeta_compartida.carpeta.nombre_original or "desconocido"
 
@@ -311,7 +315,7 @@ def cancelar_multiples_compartidos(req: multiple_schemas.ShareMultipleItemsReque
 
         except Exception as e1:
             errores.append({
-                "id_item": str(item.id),
+                "id_item": str(item.id_compartido),
                 "nombre_item": nombre_item,
                 "error": str(e1)
             })
