@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/pagination'
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
-import { Download, Ellipsis, Folder, SearchIcon } from 'lucide-vue-next'
+import { Download, Ellipsis, Folder, SearchIcon, UserRoundX } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { downloadFolderService } from '@/services/folder.services'
@@ -51,6 +51,8 @@ import Spinner from '@/components/ui/spinner/Spinner.vue'
 import { useDownloadStore } from '@/stores/download.store'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { useDebounceFn } from '@vueuse/core'
+import { useCancelMultipleShared } from '@/queries/useMultipleQuery'
+import type { ItemMultipleRequest } from '@/api/types/types'
 
 const router = useRouter()
 const folderStore = useFolderStore()
@@ -94,6 +96,12 @@ const { data: dataItems, isLoading: loadingItems } = useGetSentItems(
   busquedaDebounced,
 )
 
+const {
+  mutateAsync: mutateCancelarMultiple,
+  isPending: pendingCancelarMultiple,
+  isSuccess: successCancelarMultiple,
+} = useCancelMultipleShared()
+
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
 
@@ -133,6 +141,7 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
       return {
         id: i.tipo === 'file' ? i.archivo.id : i.carpeta.id,
         tipo: (i.tipo === 'file' ? 'archivo' : 'carpeta') as 'archivo' | 'carpeta',
+        id_compartido: i.id
       }
     })
 
@@ -140,6 +149,33 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
   } else {
     selectedStore.reset()
   }
+}
+
+async function cancelarCompartido(idElemento: string, tipo: 'archivo' | 'carpeta', idCompartido: string) {
+  try {
+    const data: ItemMultipleRequest = [
+      {
+        id: idElemento,
+        tipo: tipo,
+        id_compartido: idCompartido
+      }
+    ]
+
+    await mutateCancelarMultiple(data)
+  } catch {}
+}
+
+async function cancelarCompartidoSeleccion() {
+  try {
+    if (selectedStore.hayItems) {
+      console.log(selectedStore.itemsSeleccionados);
+      await mutateCancelarMultiple(selectedStore.itemsSeleccionados)
+
+      if (successCancelarMultiple) selectedStore.reset()
+    } else {
+      toast.error('Selecciona items')
+    }
+  } catch {}
 }
 </script>
 
@@ -160,17 +196,29 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
         </InputGroupAddon>
       </InputGroup>
 
-      <Button
-        v-if="selectedStore.hayItems"
-        variant="outline"
-        class="cursor-pointer"
-        @click="descargarSeleccion"
-        :disabled="downloadStore.descargandoMultiple"
-      >
-        <Spinner v-if="downloadStore.descargandoMultiple" />
-        <Download v-else />
-        {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
-      </Button>
+      <div class="space-x-4" v-if="selectedStore.hayItems">
+        <Button
+          variant="outline"
+          class="cursor-pointer"
+          @click="descargarSeleccion"
+          :disabled="downloadStore.descargandoMultiple"
+        >
+          <Spinner v-if="downloadStore.descargandoMultiple" />
+          <Download v-else />
+          {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
+        </Button>
+
+        <Button
+          variant="outline"
+          class="cursor-pointer"
+          @click="cancelarCompartidoSeleccion"
+          :disabled="pendingCancelarMultiple"
+        >
+          <Spinner v-if="pendingCancelarMultiple" />
+          <UserRoundX v-else />
+          {{ pendingCancelarMultiple ? 'Cancelando...' : 'Cancelar compartido' }}
+        </Button>
+      </div>
     </div>
 
     <Table>
@@ -258,7 +306,7 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  class="hover:cursor-pointer"
+                  class="cursor-pointer"
                   @click="
                     item.tipo === 'folder'
                       ? descargarCarpeta(item.carpeta.id, item.carpeta.nombre_original)
@@ -267,6 +315,19 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
                 >
                   <Download />
                   Descargar
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  class="cursor-pointer"
+                  @click="
+                    cancelarCompartido(
+                      item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
+                      item.tipo === 'file' ? 'archivo' : 'carpeta',
+                      item.id
+                    )
+                  "
+                >
+                  <UserRoundX />
+                  Cancelar compartido
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
