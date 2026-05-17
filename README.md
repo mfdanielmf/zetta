@@ -9,20 +9,18 @@ Zetta permite subir archivos, organizarlos en carpetas, descargar archivos y car
 
 <table width="100%">
   <tr>
-    <td width="50%" align="center">
+    <td align="center">
       <img 
         src="./docs/img/login.png" 
         alt="Login" 
-        style="width:100%; height:260px; object-fit:cover; border-radius:10px;"
       >
       <br>
       <sub>Login</sub>
     </td>
-    <td width="50%" align="center">
+    <td align="center">
       <img 
         src="./docs/img/storage.png" 
         alt="Almacenamiento" 
-        style="width:100%; height:260px; object-fit:cover; border-radius:10px;"
       >
       <br>
       <sub>Almacenamiento</sub>
@@ -30,20 +28,18 @@ Zetta permite subir archivos, organizarlos en carpetas, descargar archivos y car
   </tr>
 
   <tr>
-    <td width="50%" align="center">
+    <td align="center">
       <img 
         src="./docs/img/papelera.png" 
         alt="Papelera" 
-        style="width:100%; height:260px; object-fit:cover; border-radius:10px;"
       >
       <br>
       <sub>Papelera</sub>
     </td>
-    <td width="50%" align="center">
+    <td align="center">
       <img 
         src="./docs/img/subida.png" 
         alt="Subida de archivos" 
-        style="width:100%; height:260px; object-fit:cover; border-radius:10px;"
       >
       <br>
       <sub>Subida de archivos</sub>
