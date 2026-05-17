@@ -7,6 +7,50 @@ Zetta permite subir archivos, organizarlos en carpetas, descargar archivos y car
 
 > Nota: La demo se ejecuta en infraestructura de nivel gratuito, por lo que los tiempos de carga iniciales pueden ser más largos de lo esperado.
 
+<table width="100%">
+  <tr>
+    <td width="50%" align="center">
+      <img 
+        src="./docs/img/login.png" 
+        alt="Login" 
+        style="width:100%; height:260px; object-fit:cover; border-radius:10px;"
+      >
+      <br>
+      <sub>Login</sub>
+    </td>
+    <td width="50%" align="center">
+      <img 
+        src="./docs/img/storage.png" 
+        alt="Almacenamiento" 
+        style="width:100%; height:260px; object-fit:cover; border-radius:10px;"
+      >
+      <br>
+      <sub>Almacenamiento</sub>
+    </td>
+  </tr>
+
+  <tr>
+    <td width="50%" align="center">
+      <img 
+        src="./docs/img/papelera.png" 
+        alt="Papelera" 
+        style="width:100%; height:260px; object-fit:cover; border-radius:10px;"
+      >
+      <br>
+      <sub>Papelera</sub>
+    </td>
+    <td width="50%" align="center">
+      <img 
+        src="./docs/img/subida.png" 
+        alt="Subida de archivos" 
+        style="width:100%; height:260px; object-fit:cover; border-radius:10px;"
+      >
+      <br>
+      <sub>Subida de archivos</sub>
+    </td>
+  </tr>
+</table>
+
 ## Índice
 
 - [Objetivos](#objetivos)
@@ -40,6 +84,7 @@ Zetta permite subir archivos, organizarlos en carpetas, descargar archivos y car
 ### Gestión de Archivos
 
 - Subida múltiple de archivos tanto dentro como fuera de carpetas
+- Progeso de descarga y subida en tiempo real
 - Organización jerárquica de carpetas con anidamiento ilimitado
 - Navegación y exploración de archivos y carpetas con paginación
 - Seguimiento de fecha de creación, tamaño de archivo, propietario...

@@ -54,7 +54,7 @@ const onSubmit = handleSubmit((data) => {
     <DialogContent class="sm:max-w-106.25">
       <DialogHeader>
         <DialogTitle>Compartir archivo</DialogTitle>
-        <DialogDescription>Comparte una archivo con cualquier usuario</DialogDescription>
+        <DialogDescription>Comparte un archivo con cualquier usuario</DialogDescription>
       </DialogHeader>
 
       <form @submit="onSubmit">
