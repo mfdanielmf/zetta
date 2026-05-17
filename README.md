@@ -1,9 +1,10 @@
 # Zetta Drive
 
 Sistema de almacenamiento y gestión de archivos en la nube inspirado en Google Drive.  
-Zetta permite subir archivos, organizarlos en carpetas, descargar archivos y carpetas comprimidas en ZIP, una papelera totalmente funcional que elimina items definitivamente después de 30 días o incluso la posibilidad de compartir archivos y carpetas con otros usuarios
+Zetta permite subir archivos, organizarlos en carpetas o descargar archivos y carpetas comprimidas en ZIP. Dispone de una papelera totalmente funcional que elimina items definitivamente después de 30 días, además de la posibilidad de compartir archivos y carpetas con otros usuarios.
 
-**URL Demo:** [https://zetta-drive.netlify.app/](https://zetta-drive.netlify.app/)
+**URL Demo:** [https://zetta-drive.netlify.app/](https://zetta-drive.netlify.app/)  
+**URL Desarrollo:** [https://develop--zetta-drive.netlify.app/](https://develop--zetta-drive.netlify.app/)
 
 > Nota: La demo se ejecuta en infraestructura de nivel gratuito, por lo que los tiempos de carga iniciales pueden ser más largos de lo esperado.
 
