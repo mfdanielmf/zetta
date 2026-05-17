@@ -17,6 +17,9 @@ def add_shared_folder_db(carpeta_compartida: CarpetaCompartida, db: Session) -> 
 def get_shared_folder(id_carpeta: UUID, id_receptor: UUID, db: Session) -> CarpetaCompartida | None:
     return db.query(CarpetaCompartida).filter_by(id_carpeta=id_carpeta, id_receptor=id_receptor).first()
 
+def get_shared_folder_no_receptor(id_compartido: UUID, id_propietario: UUID, db: Session) -> CarpetaCompartida | None:
+    return db.query(CarpetaCompartida).filter_by(id=id_compartido, id_propietario=id_propietario).first()
+
 
 def get_all_shared_folders_raiz(id_usuario: UUID, db: Session) -> list[CarpetaCompartida]:
     return (

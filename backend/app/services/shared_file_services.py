@@ -173,16 +173,16 @@ def obtener_archivos_recibidos_paginados(usuario: User, db: Session, pagina: int
     return total, recibidos_base
 
 
-def obtener_archivo_compartido(id_archivo: UUID, id_receptor: UUID, db: Session) -> ArchivoCompartido:
+def obtener_archivo_compartido_no_receptor(id_compartido: UUID, id_propietario: UUID, db: Session) -> ArchivoCompartido:
     """
     ArchivoNoEncontradoException
     """
 
-    archivo: ArchivoCompartido | None = shared_file_repo.get_shared_file(
-        id_archivo=id_archivo, id_receptor=id_receptor, db=db)
+    archivo: ArchivoCompartido | None = shared_file_repo.get_shared_file_no_receptor(
+        id_compartido=id_compartido, id_propietario=id_propietario, db=db)
 
     if not archivo:
         raise ex.ArchivoNoEncontradoException(
-            f"No se ha encontrado el archivo compartido con ID {id_archivo}")
+            f"No se ha encontrado el elemento compartido con ID {id_compartido}")
 
     return archivo

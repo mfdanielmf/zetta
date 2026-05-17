@@ -18,6 +18,10 @@ def get_shared_file(id_archivo: UUID, id_receptor: UUID, db: Session) -> Archivo
     return db.query(ArchivoCompartido).filter_by(id_archivo=id_archivo, id_receptor=id_receptor).first()
 
 
+def get_shared_file_no_receptor(id_compartido: UUID, id_propietario: UUID, db: Session) -> ArchivoCompartido | None:
+    return db.query(ArchivoCompartido).filter_by(id=id_compartido, id_propietario=id_propietario).first()
+
+
 def get_all_shared_files_raiz(id_usuario: UUID, db: Session) -> list[ArchivoCompartido]:
     return (
         db.query(ArchivoCompartido)

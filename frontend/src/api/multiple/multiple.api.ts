@@ -48,4 +48,7 @@ export default {
       throw e
     }
   },
+  cancelarCompartidoMultiple(data: ItemMultipleRequest) {
+    return api().delete<MultipleItemResponse>(URL + '/shared/sent', { data })
+  },
 }

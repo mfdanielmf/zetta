@@ -7,12 +7,12 @@ from pydantic import BaseModel, EmailStr
 class ItemMultipleRequest(BaseModel):
     id: UUID
     tipo: Literal["archivo", "carpeta"]
+    id_compartido: UUID | None = None
 
 
 class ShareMultipleItemsRequest(BaseModel):
     correo_usuario: EmailStr
     items: list[ItemMultipleRequest]
-
 
 class ErrorItemMultiple(BaseModel):
     id_item: UUID

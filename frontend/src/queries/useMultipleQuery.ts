@@ -1,5 +1,6 @@
 import type { ItemMultipleRequest, ShareMultipleItemsRequest } from '@/api/types/types'
 import {
+  cancelMultipleSharesService,
   deleteMultipleItemsService,
   restoreMultipleItemsService,
   sendItemsTrashService,
@@ -124,6 +125,32 @@ export function useRestoreMultiple() {
         toast.error(e.response?.data?.detail || 'Error al restaurar la selección')
       } else {
         toast.error('Error al restaurar la selección')
+      }
+    },
+  })
+}
+
+export function useCancelMultipleShared() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: ItemMultipleRequest) => cancelMultipleSharesService(data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCompartidos'],
+      })
+
+      toast.success(data?.msg || 'Proceso completado correctamente', {
+        description:
+          `Items procesados: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
+          '',
+      })
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al cancelar compartido')
+      } else {
+        toast.error('Error al cancelar compartido')
       }
     },
   })

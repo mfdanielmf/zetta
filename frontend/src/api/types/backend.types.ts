@@ -557,6 +557,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/multiple/items/shared/sent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Cancel Multiple Shared Items */
+        delete: operations["cancel_multiple_shared_items_api_v2_multiple_items_shared_sent_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -813,6 +830,8 @@ export interface components {
              * @enum {string}
              */
             tipo: "archivo" | "carpeta";
+            /** Id Compartido */
+            id_compartido?: string | null;
         };
         /** LoginRequest */
         LoginRequest: {
@@ -2365,6 +2384,39 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["ShareMultipleItemsRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MultipleItemResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_multiple_shared_items_api_v2_multiple_items_shared_sent_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ItemMultipleRequest"][];
             };
         };
         responses: {
