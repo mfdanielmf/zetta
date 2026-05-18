@@ -189,3 +189,26 @@ def get_all_files_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda
         query = query.filter(File.nombre_original.ilike(f"%{busqueda}%"))
 
     return query.order_by(File.fecha_eliminacion.desc()).all()
+
+def get_all_files_in_folder_trash_sorted(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, busqueda: str | None) -> list[File]:
+    query = (
+        db.query(File)
+        .outerjoin(ArchivoCompartido, ArchivoCompartido.id_archivo == File.id)
+        .filter(
+            File.id_carpeta == id_carpeta,
+            File.fecha_eliminacion != None,
+            or_(
+                File.id_usuario == id_usuario,
+                ArchivoCompartido.id_receptor == id_usuario,
+                File.id_carpeta.in_(
+                    db.query(CarpetaCompartida.id_carpeta).filter(
+                        CarpetaCompartida.id_receptor == id_usuario)
+                )
+            )
+        )
+    )
+
+    if busqueda:
+        query = query.filter(File.nombre_original.ilike(f"%{busqueda}%"))
+
+    return query.order_by(File.fecha_creacion.desc()).all()

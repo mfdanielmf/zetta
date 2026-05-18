@@ -200,3 +200,27 @@ def get_all_folders_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session, busque
         query = query.filter(Folder.nombre_original.ilike(f"%{busqueda}%"))
 
     return query.order_by(Folder.fecha_eliminacion.desc()).all()
+
+def get_folders_inside_folder_trash_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[Folder]:
+    query = (
+        db.query(Folder)
+        .outerjoin(CarpetaCompartida, CarpetaCompartida.id_carpeta == Folder.id)
+        .filter(
+            Folder.id_carpeta == id_carpeta,
+            Folder.fecha_eliminacion != None,
+            or_(
+                Folder.id_usuario == id_usuario,
+                CarpetaCompartida.id_receptor == id_usuario,
+                Folder.id_carpeta.in_(
+                    db.query(CarpetaCompartida.id_carpeta).filter(
+                        CarpetaCompartida.id_receptor == id_usuario
+                    )
+                )
+            )
+        )
+    )
+
+    if busqueda:
+        query = query.filter(Folder.nombre_original.ilike(f"%{busqueda}%"))
+
+    return query.order_by(Folder.fecha_creacion.desc()).all()
