@@ -280,8 +280,8 @@ async function descargarSeleccion() {
 
 <template>
   <div class="space-y-2">
-    <div class="flex flex-col gap-4 justify-between sm:flex-row">
-      <div class="flex gap-4 items-center justify-between">
+    <div class="flex flex-col gap-4 flex-wrap justify-between sm:flex-row">
+      <div class="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="outline" class="hover:cursor-pointer">
@@ -308,24 +308,6 @@ async function descargarSeleccion() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div class="flex items-center gap-4" v-if="selectedStore.hayItems">
-          <Button variant="outline" class="cursor-pointer" @click="compartirMultipleAbierto = true">
-            <Share2 />
-            Compartir
-          </Button>
-
-          <Button
-            variant="outline"
-            class="cursor-pointer"
-            @click="descargarSeleccion"
-            :disabled="downloadStore.descargandoMultiple"
-          >
-            <Spinner v-if="downloadStore.descargandoMultiple" />
-            <Download v-else />
-            {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
-          </Button>
-        </div>
-
         <InputGroup>
           <InputGroupInput placeholder="Buscar..." v-model="busqueda" id="busqueda" />
           <InputGroupAddon>
@@ -339,6 +321,24 @@ async function descargarSeleccion() {
             >
           </InputGroupAddon>
         </InputGroup>
+      </div>
+
+      <div class="flex items-center gap-4" v-if="selectedStore.hayItems">
+        <Button variant="outline" class="cursor-pointer" @click="compartirMultipleAbierto = true">
+          <Share2 />
+          Compartir
+        </Button>
+
+        <Button
+          variant="outline"
+          class="cursor-pointer"
+          @click="descargarSeleccion"
+          :disabled="downloadStore.descargandoMultiple"
+        >
+          <Spinner v-if="downloadStore.descargandoMultiple" />
+          <Download v-else />
+          {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
+        </Button>
       </div>
     </div>
 

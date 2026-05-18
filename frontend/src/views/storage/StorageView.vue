@@ -302,7 +302,7 @@ async function descargarSeleccion() {
 
 <template>
   <div class="space-y-2">
-    <div class="flex flex-col gap-4 justify-between sm:flex-row">
+    <div class="flex flex-col gap-4 flex-wrap justify-between sm:flex-row">
       <div class="flex gap-4 items-center">
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
@@ -483,23 +483,23 @@ async function descargarSeleccion() {
                   class="hover:cursor-pointer"
                   @click="
                     item.tipo === 'folder'
-                      ? mandarCarpetaPapelera(item.id)
-                      : mandarArchivoPapelera(item.id)
-                  "
-                >
-                  <Trash2 />
-                  Eliminar
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  class="hover:cursor-pointer"
-                  @click="
-                    item.tipo === 'folder'
                       ? abrirCompartirCarpeta(item.id)
                       : abrirCompartirArchivo(item.id)
                   "
                 >
                   <Share2 />
                   Compartir
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="
+                    item.tipo === 'folder'
+                      ? mandarCarpetaPapelera(item.id)
+                      : mandarArchivoPapelera(item.id)
+                  "
+                >
+                  <Trash2 />
+                  Eliminar
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

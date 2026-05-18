@@ -148,7 +148,7 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
 
 <template>
   <div class="space-y-2">
-    <div class="flex items-center justify-between gap-4">
+    <div class="flex items-center flex-wrap justify-between gap-4">
       <InputGroup class="max-w-73.5">
         <InputGroupInput placeholder="Buscar..." v-model="busqueda" id="busqueda" />
         <InputGroupAddon>
