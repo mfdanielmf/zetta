@@ -42,6 +42,9 @@ def get_folder_name_anidada(id_carpeta_padre: str, nombre_carpeta: str, usuario:
 def get_folder_id(id_carpeta: str, db: Session) -> Folder | None:
     return db.query(Folder).filter_by(id=id_carpeta).first()
 
+def get_folder_id_no_trash(id_carpeta: str, db: Session) -> Folder | None:
+    return db.query(Folder).filter(Folder.id == id_carpeta, Folder.fecha_eliminacion == None).first()
+
 
 def get_folders_user_raiz(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
     return db.query(Folder).filter(Folder.id_usuario == id_usuario, Folder.id_carpeta == None, Folder.fecha_eliminacion == None).all()

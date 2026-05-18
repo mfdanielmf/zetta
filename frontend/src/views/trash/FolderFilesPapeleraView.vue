@@ -85,6 +85,7 @@ const setBusquedaDebounced = useDebounceFn((value: string) => {
 
 watch(busqueda, (nuevoValor: string) => {
   setBusquedaDebounced(nuevoValor)
+  selectedStore.reset()
 })
 
 const { data: dataItems, isLoading: loadingItems } = useGetFolderTrashItems(
