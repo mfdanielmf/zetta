@@ -134,6 +134,7 @@ def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuari
         .outerjoin(ArchivoCompartido, ArchivoCompartido.id_archivo == File.id)
         .filter(
             File.id_carpeta == id_carpeta,
+            File.fecha_eliminacion == None,
             or_(
                 File.id_usuario == id_usuario,
                 ArchivoCompartido.id_receptor == id_usuario,

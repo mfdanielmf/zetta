@@ -137,6 +137,7 @@ def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUI
         .outerjoin(CarpetaCompartida, CarpetaCompartida.id_carpeta == Folder.id)
         .filter(
             Folder.id_carpeta == id_carpeta,
+            Folder.fecha_eliminacion == None,
             or_(
                 Folder.id_usuario == id_usuario,
                 CarpetaCompartida.id_receptor == id_usuario,
