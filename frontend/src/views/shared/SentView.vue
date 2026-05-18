@@ -141,7 +141,7 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
       return {
         id: i.tipo === 'file' ? i.archivo.id : i.carpeta.id,
         tipo: (i.tipo === 'file' ? 'archivo' : 'carpeta') as 'archivo' | 'carpeta',
-        id_compartido: i.id
+        id_compartido: i.id,
       }
     })
 
@@ -151,14 +151,18 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
   }
 }
 
-async function cancelarCompartido(idElemento: string, tipo: 'archivo' | 'carpeta', idCompartido: string) {
+async function cancelarCompartido(
+  idElemento: string,
+  tipo: 'archivo' | 'carpeta',
+  idCompartido: string,
+) {
   try {
     const data: ItemMultipleRequest = [
       {
         id: idElemento,
         tipo: tipo,
-        id_compartido: idCompartido
-      }
+        id_compartido: idCompartido,
+      },
     ]
 
     await mutateCancelarMultiple(data)
@@ -168,7 +172,7 @@ async function cancelarCompartido(idElemento: string, tipo: 'archivo' | 'carpeta
 async function cancelarCompartidoSeleccion() {
   try {
     if (selectedStore.hayItems) {
-      console.log(selectedStore.itemsSeleccionados);
+      console.log(selectedStore.itemsSeleccionados)
       await mutateCancelarMultiple(selectedStore.itemsSeleccionados)
 
       if (successCancelarMultiple) selectedStore.reset()
@@ -181,7 +185,7 @@ async function cancelarCompartidoSeleccion() {
 
 <template>
   <div class="space-y-2">
-    <div class="flex items-center justify-between gap-4">
+    <div class="flex items-center flex-wrap justify-between gap-4">
       <InputGroup class="max-w-73.5">
         <InputGroupInput placeholder="Buscar..." v-model="busqueda" id="busqueda" />
         <InputGroupAddon>
@@ -322,7 +326,7 @@ async function cancelarCompartidoSeleccion() {
                     cancelarCompartido(
                       item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
                       item.tipo === 'file' ? 'archivo' : 'carpeta',
-                      item.id
+                      item.id,
                     )
                   "
                 >

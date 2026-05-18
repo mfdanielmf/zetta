@@ -226,11 +226,11 @@ async function restaurarSeleccion() {
   <DialogEliminarMultiple
     v-model:open="eliminarMultipleAbierto"
     @eliminar-permanente="eliminarSeleccionPermanente"
-    :pending="pendingDeleteFolder"
+    :pending="pendingDeleteMultiple"
   />
 
   <div class="space-y-2">
-    <div class="flex flex-col gap-4 justify-between sm:flex-row">
+    <div class="flex flex-col gap-4 flex-wrap justify-between sm:flex-row">
       <div>
         <InputGroup>
           <InputGroupInput placeholder="Buscar..." v-model="busqueda" id="busqueda" />
