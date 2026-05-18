@@ -4,6 +4,7 @@ from sqlalchemy import or_
 from app.models.archivo_compartido import ArchivoCompartido
 from app.models.carpeta_compartida import CarpetaCompartida
 from app.models.file import File
+from app.models.folder import Folder
 from sqlalchemy.orm import Session
 
 from app.models.user import User
@@ -53,7 +54,17 @@ def get_file_trash(id_archivo: uuid.UUID, id_usuario: uuid.UUID, db: Session) ->
 
 
 def get_all_files_trash_raiz(id_usuario: uuid.UUID, db: Session) -> list[File]:
-    return db.query(File).filter(File.id_usuario == id_usuario, File.fecha_eliminacion != None, File.id_carpeta == None).all()
+   # Obtener  archivos que están eliminados y están en la raíz o los que están eliminados pero su carpeta no lo está
+    return db.query(File).outerjoin(
+        Folder, File.id_carpeta == Folder.id
+    ).filter(
+        File.id_usuario == id_usuario,
+        File.fecha_eliminacion != None,
+        or_(
+            File.id_carpeta == None,
+            Folder.fecha_eliminacion == None
+        )
+    ).order_by(File.fecha_eliminacion.desc()).all()
 
 
 def get_files_raiz(id_usuario: uuid.UUID, db: Session) -> list[File]:
@@ -78,13 +89,22 @@ def get_files_raiz_paginados(id_usuario: uuid.UUID, db: Session, offset: int, li
 
 
 def get_all_files_trash_raiz_paginados(id_usuario: uuid.UUID, db: Session, offset: int, limit: int) -> tuple[int, list[File]]:
-    query = db.query(File).filter(File.id_usuario == id_usuario,
-                                  File.fecha_eliminacion != None, File.id_carpeta == None)
+    # Obtener  archivos que están eliminados y están en la raíz o los que están eliminados pero su carpeta no lo está
+    query = db.query(File).outerjoin(
+        Folder, File.id_carpeta == Folder.id
+    ).filter(
+        File.id_usuario == id_usuario,
+        File.fecha_eliminacion != None,
+        or_(
+            File.id_carpeta == None,
+            Folder.fecha_eliminacion == None
+        )
+    )
 
     total: int = query.count()
 
     archivos: list[File] = query.order_by(
-        File.fecha_creacion.desc()).offset(offset).limit(limit).all()
+        File.fecha_eliminacion.desc()).offset(offset).limit(limit).all()
 
     return total, archivos
 
@@ -153,10 +173,16 @@ def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuari
 
 
 def get_all_files_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[File]:
-    query = db.query(File).filter(
+    # Obtener  archivos que están eliminados y están en la raíz o los que están eliminados pero su carpeta no lo está
+    query = db.query(File).outerjoin(
+        Folder, File.id_carpeta == Folder.id
+    ).filter(
         File.id_usuario == id_usuario,
         File.fecha_eliminacion != None,
-        File.id_carpeta == None
+        or_(
+            File.id_carpeta == None,
+            Folder.fecha_eliminacion == None
+        )
     )
 
     if busqueda:
