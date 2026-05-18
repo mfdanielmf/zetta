@@ -27,6 +27,10 @@ export function useMoveSelectedTrash() {
         queryKey: ['itemsPapelera'],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCarpeta'],
+      })
+
       toast.success(data?.msg || 'Proceso completado correctamente', {
         description:
           `Items procesados: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
@@ -116,6 +120,10 @@ export function useRestoreMultiple() {
 
       queryClient.invalidateQueries({
         queryKey: ['itemsPapelera'],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCarpeta'],
       })
 
       toast.success(data?.msg || 'Proceso completado correctamente', {

@@ -62,7 +62,7 @@ def get_folder_trash(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session) 
 def get_all_folders_trash_raiz(id_usuario: uuid.UUID, db: Session) -> list[Folder]:
     # Obtener carpetas que están eliminadas y están en la raíz o las que están eliminadas pero su carpeta no lo está
     CarpetaPadre = aliased(Folder)
-    
+
     query = db.query(Folder).outerjoin(
         CarpetaPadre, Folder.id_carpeta == CarpetaPadre.id
     ).filter(
@@ -73,7 +73,7 @@ def get_all_folders_trash_raiz(id_usuario: uuid.UUID, db: Session) -> list[Folde
             CarpetaPadre.fecha_eliminacion == None
         )
     )
-    
+
     return query.order_by(Folder.fecha_eliminacion.desc()).all()
 
 
@@ -97,7 +97,7 @@ def get_folders_user_raiz_paginadas(id_usuario: uuid.UUID, db: Session, offset: 
 def get_all_folders_trash_raiz_paginadas(id_usuario: uuid.UUID, db: Session, offset: int, limit: int) -> tuple[int, list[Folder]]:
    # Obtener carpetas que están eliminadas y están en la raíz o las que están eliminadas pero su carpeta no lo está
     CarpetaPadre = aliased(Folder)
-    
+
     query = db.query(Folder).outerjoin(
         CarpetaPadre, Folder.id_carpeta == CarpetaPadre.id
     ).filter(
@@ -184,7 +184,7 @@ def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUI
 def get_all_folders_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[Folder]:
     # Obtener carpetas que están eliminadas y están en la raíz o las que están eliminadas pero su carpeta no lo está
     CarpetaPadre = aliased(Folder)
-    
+
     query = db.query(Folder).outerjoin(
         CarpetaPadre, Folder.id_carpeta == CarpetaPadre.id
     ).filter(

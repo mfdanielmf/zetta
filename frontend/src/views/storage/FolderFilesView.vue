@@ -53,19 +53,21 @@ import {
   Plus,
   SearchIcon,
   Share2,
+  Trash2,
   Upload,
 } from 'lucide-vue-next'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { useSelectedStore } from '@/stores/selected.store'
-import { useShareMultiple } from '@/queries/useMultipleQuery'
+import { useMoveSelectedTrash, useShareMultiple } from '@/queries/useMultipleQuery'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
 import { useDownloadStore } from '@/stores/download.store'
 import { downloadMultipleService } from '@/services/multiple.services'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { useDebounceFn } from '@vueuse/core'
+import type { ItemMultipleRequest } from '@/api/types/types'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CompartirCarpetaDialog = defineAsyncComponent(
@@ -124,6 +126,11 @@ const {
   isSuccess: successShareMultiple,
   isPending: pendingShareMultiple,
 } = useShareMultiple()
+const {
+  mutateAsync: mutatePapeleraSelected,
+  isSuccess: successPapeleraSelected,
+  isPending: pendingPapeleraSelected,
+} = useMoveSelectedTrash()
 
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
@@ -276,6 +283,31 @@ async function descargarSeleccion() {
     selectedStore.reset()
   }
 }
+
+async function mandarPapeleraSeleccion() {
+  try {
+    if (selectedStore.hayItems) {
+      await mutatePapeleraSelected(selectedStore.itemsSeleccionados)
+
+      if (successPapeleraSelected) selectedStore.reset()
+    } else {
+      toast.error('Selecciona items')
+    }
+  } catch {}
+}
+
+async function mandarItemPapelera(idItem: string, tipo: 'file' | 'folder') {
+  try {
+    const data: ItemMultipleRequest = [
+      {
+        id: idItem,
+        tipo: tipo === 'file' ? 'archivo' : 'carpeta',
+      },
+    ]
+
+    await mutatePapeleraSelected(data)
+  } catch {}
+}
 </script>
 
 <template>
@@ -338,6 +370,16 @@ async function descargarSeleccion() {
           <Spinner v-if="downloadStore.descargandoMultiple" />
           <Download v-else />
           {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
+        </Button>
+
+        <Button
+          class="hover:cursor-pointer bg-red-600 hover:bg-red-700"
+          @click="mandarPapeleraSeleccion"
+          :disabled="pendingPapeleraSelected"
+        >
+          <Spinner v-if="pendingPapeleraSelected" />
+          <Trash2 v-else />
+          {{ pendingPapeleraSelected ? 'Eliminando...' : 'Eliminar' }}
         </Button>
       </div>
     </div>
@@ -457,6 +499,13 @@ async function descargarSeleccion() {
                 >
                   <Share2 />
                   Compartir
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="mandarItemPapelera(item.id, item.tipo)"
+                >
+                  <Trash2 />
+                  Eliminar
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
