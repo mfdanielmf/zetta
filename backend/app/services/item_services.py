@@ -78,9 +78,9 @@ def obtener_items_carpeta_papelera_paginados(id_carpeta: UUID, usuario: User, db
     folder_services.obtener_carpeta_papelera(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
-    carpetas: list[Folder] = folder_repo.get_folders_inside_folder_sorted(
+    carpetas: list[Folder] = folder_repo.get_folders_inside_folder_trash_sorted(
         id_carpeta=id_carpeta, id_usuario=usuario.id, db=db, busqueda=busqueda)
-    archivos: list[File] = file_repo.get_all_files_in_folder_sorted(id_carpeta=id_carpeta,
+    archivos: list[File] = file_repo.get_all_files_in_folder_trash_sorted(id_carpeta=id_carpeta,
                                                                     id_usuario=usuario.id, db=db, busqueda=busqueda)
 
     items: list[Union[Folder, File]] = carpetas + archivos

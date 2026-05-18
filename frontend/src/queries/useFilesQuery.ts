@@ -95,6 +95,10 @@ export function useRestoreFile() {
         queryKey: ['itemsPapelera'],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ["itemsCarpeta"]
+      })
+
       toast.success(data?.msg || 'Archivo restaurado correctamente')
     },
     onError: (e: unknown) => {
