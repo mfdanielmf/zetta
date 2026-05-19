@@ -35,7 +35,7 @@ import { useGetFolderTrashItems } from '@/queries/useItemsQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
-import { Ellipsis, Folder, SearchIcon, Trash2 } from 'lucide-vue-next'
+import { Ellipsis, Folder, RefreshCcw, SearchIcon, Trash2 } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
@@ -45,7 +45,7 @@ import Button from '@/components/ui/button/Button.vue'
 import { useSelectedStore } from '@/stores/selected.store'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import { toast } from 'vue-sonner'
-import { useDeleteMultiplePermanent } from '@/queries/useMultipleQuery'
+import { useDeleteMultiplePermanent, useRestoreMultiple } from '@/queries/useMultipleQuery'
 import DialogEliminarMultiple from '@/components/multiple/DialogEliminarMultiple.vue'
 import type { ItemMultipleRequest } from '@/api/types/types'
 
@@ -100,6 +100,11 @@ const {
   isPending: pendingDeleteMultiple,
   isSuccess: successDeleteMultiple,
 } = useDeleteMultiplePermanent()
+const {
+  mutateAsync: mutateRestoreMultiple,
+  isPending: pendingRestoreMultiple,
+  isSuccess: successRestoreMultiple,
+} = useRestoreMultiple()
 
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
@@ -153,6 +158,35 @@ async function eliminarItem(idItem: string, tipo: 'file' | 'folder') {
 
   try {
     await mutateDeleteMultiple(data)
+
+    if (successDeleteMultiple) selectedStore.reset()
+  } catch {}
+}
+
+async function restaurarSeleccion() {
+  try {
+    if (selectedStore.hayItems) {
+      await mutateRestoreMultiple(selectedStore.itemsSeleccionados)
+
+      if (successRestoreMultiple) selectedStore.reset()
+    } else {
+      toast.error('Selecciona items')
+    }
+  } catch {}
+}
+
+async function restaurarItem(idItem: string, tipo: 'file' | 'folder') {
+  const data: ItemMultipleRequest = [
+    {
+      id: idItem,
+      tipo: tipo === 'file' ? 'archivo' : 'carpeta',
+    },
+  ]
+
+  try {
+    await mutateRestoreMultiple(data)
+
+    if(successRestoreMultiple) selectedStore.reset()
   } catch {}
 }
 </script>
@@ -180,16 +214,29 @@ async function eliminarItem(idItem: string, tipo: 'file' | 'folder') {
         </InputGroupAddon>
       </InputGroup>
 
-      <Button
-        v-if="selectedStore.hayItems"
-        class="hover:cursor-pointer bg-red-600 hover:bg-red-700"
-        @click="eliminarMultipleAbierto = true"
-        :disabled="pendingDeleteMultiple"
-      >
-        <Spinner v-if="pendingDeleteMultiple" />
-        <Trash2 v-else />
-        {{ pendingDeleteMultiple ? 'Eliminando...' : 'Eliminar' }}
-      </Button>
+      <div class="space-x-4" v-if="selectedStore.hayItems">
+        <Button
+          variant="outline"
+          class="cursor-pointer"
+          @click="restaurarSeleccion"
+          :disabled="pendingRestoreMultiple"
+        >
+          <Spinner v-if="pendingRestoreMultiple" />
+          <RefreshCcw v-else />
+          {{ pendingRestoreMultiple ? 'Restaurando...' : 'Restaurar' }}
+        </Button>
+
+        <Button
+          v-if="selectedStore.hayItems"
+          class="hover:cursor-pointer bg-red-600 hover:bg-red-700"
+          @click="eliminarMultipleAbierto = true"
+          :disabled="pendingDeleteMultiple"
+        >
+          <Spinner v-if="pendingDeleteMultiple" />
+          <Trash2 v-else />
+          {{ pendingDeleteMultiple ? 'Eliminando...' : 'Eliminar' }}
+        </Button>
+      </div>
     </div>
 
     <Table>
@@ -259,6 +306,13 @@ async function eliminarItem(idItem: string, tipo: 'file' | 'folder') {
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  class="hover:cursor-pointer"
+                  @click="restaurarItem(item.id, item.tipo)"
+                >
+                  <RefreshCcw />
+                  Restaurar
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   class="hover:cursor-pointer"
                   @click="eliminarItem(item.id, item.tipo)"
