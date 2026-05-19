@@ -57,6 +57,10 @@ export function useMoveFileTrash() {
         queryKey: ['itemsPapelera'],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ["itemsCarpetaPapelera"]
+      })
+
       toast.success(data?.msg || 'Archivo eliminado correctamente. Puedes verlo en la papelera')
     },
     onError: (e: unknown) => {

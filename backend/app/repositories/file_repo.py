@@ -54,7 +54,7 @@ def get_file_trash(id_archivo: uuid.UUID, id_usuario: uuid.UUID, db: Session) ->
 
 
 def get_all_files_trash_raiz(id_usuario: uuid.UUID, db: Session) -> list[File]:
-   # Obtener  archivos que están eliminados y están en la raíz o los que están eliminados pero su carpeta no lo está
+   # Obtener archivos que están eliminados y están en la raíz o los que están eliminados pero su carpeta no lo está
     return db.query(File).outerjoin(
         Folder, File.id_carpeta == Folder.id
     ).filter(
@@ -135,10 +135,16 @@ def get_all_files_in_folder_paginados(id_carpeta: uuid.UUID, db: Session, id_usu
 
 
 def get_files_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[File]:
-    query = db.query(File).filter(
+    # Obtener archivos que no están eliminados pero su carpeta sí
+    query = db.query(File).outerjoin(
+        Folder, File.id_carpeta == Folder.id
+    ).filter(
         File.id_usuario == id_usuario,
-        File.id_carpeta == None,
-        File.fecha_eliminacion == None
+        File.fecha_eliminacion == None,
+        or_(
+            File.id_carpeta == None,
+            Folder.fecha_eliminacion != None
+        )
     )
 
     if busqueda:
@@ -189,6 +195,7 @@ def get_all_files_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda
         query = query.filter(File.nombre_original.ilike(f"%{busqueda}%"))
 
     return query.order_by(File.fecha_eliminacion.desc()).all()
+
 
 def get_all_files_in_folder_trash_sorted(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, busqueda: str | None) -> list[File]:
     query = (

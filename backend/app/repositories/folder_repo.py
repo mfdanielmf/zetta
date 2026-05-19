@@ -42,6 +42,7 @@ def get_folder_name_anidada(id_carpeta_padre: str, nombre_carpeta: str, usuario:
 def get_folder_id(id_carpeta: str, db: Session) -> Folder | None:
     return db.query(Folder).filter_by(id=id_carpeta).first()
 
+
 def get_folder_id_no_trash(id_carpeta: str, db: Session) -> Folder | None:
     return db.query(Folder).filter(Folder.id == id_carpeta, Folder.fecha_eliminacion == None).first()
 
@@ -146,10 +147,18 @@ def get_folders_inside_folder_paginadas(id_carpeta: uuid.UUID, id_usuario: uuid.
 
 
 def get_folders_user_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[Folder]:
-    query = db.query(Folder).filter(
+    # Mostrar en la raíz carpetas que han sido restauradas (la carpeta no tiene fecha de eliminación, pero su padre sí)
+    CarpetaPadre = aliased(Folder)
+
+    query = db.query(Folder).outerjoin(
+        CarpetaPadre, Folder.id_carpeta == CarpetaPadre.id
+    ).filter(
         Folder.id_usuario == id_usuario,
-        Folder.id_carpeta == None,
-        Folder.fecha_eliminacion == None
+        Folder.fecha_eliminacion == None,
+        or_(
+            Folder.id_carpeta == None,
+            CarpetaPadre.fecha_eliminacion != None
+        )
     )
 
     if busqueda:
@@ -203,6 +212,7 @@ def get_all_folders_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session, busque
         query = query.filter(Folder.nombre_original.ilike(f"%{busqueda}%"))
 
     return query.order_by(Folder.fecha_eliminacion.desc()).all()
+
 
 def get_folders_inside_folder_trash_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[Folder]:
     query = (
