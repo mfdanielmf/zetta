@@ -2,7 +2,7 @@ import os
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File as FileFA, Request
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from starlette.background import BackgroundTask
 
@@ -35,6 +35,7 @@ def get_folders(db: Session = Depends(get_db), usuario: User = Depends(get_curre
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
                 path=carpeta.path,
+                favorito=carpeta.favorito,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -62,6 +63,7 @@ def create_folder(request: Request, req: folder_schemas.FolderRequest, db: Sessi
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
                 path=carpeta.path,
+                favorito=carpeta.favorito,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -87,6 +89,7 @@ def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = D
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
                 path=carpeta.path,
+                favorito=carpeta.favorito,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -133,6 +136,7 @@ def get_files_of_folder_on_trash(id_carpeta: UUID, usuario: User = Depends(get_c
                     nombre_original=archivo_db.nombre_original,
                     path=archivo_db.path,
                     tamaño_bytes=archivo_db.tamaño_bytes,
+                    favorito=archivo_db.favorito,
                     fecha_creacion=archivo_db.fecha_creacion,
                     id_usuario=archivo_db.id_usuario,
                     nombre_usuario=archivo_db.usuario.nombre,
@@ -165,6 +169,7 @@ def get_folders_inside_folder_on_trash(id_carpeta: UUID, usuario: User = Depends
                     id=carpeta.id,
                     nombre_original=carpeta.nombre_original,
                     path=carpeta.path,
+                    favorito=carpeta.favorito,
                     fecha_creacion=carpeta.fecha_creacion,
                     id_usuario=carpeta.id_usuario,
                     nombre_usuario=carpeta.usuario.nombre,
@@ -212,6 +217,7 @@ def add_folder_to_trash(request: Request, id_carpeta: UUID, usuario: User = Depe
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
                 path=carpeta.path,
+                favorito=carpeta.favorito,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -238,6 +244,7 @@ def restore_folder_from_trash(id_carpeta: UUID, usuario: User = Depends(get_curr
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
                 path=carpeta.path,
+                favorito=carpeta.favorito,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -262,6 +269,7 @@ def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario
                     id=archivo_db.id,
                     nombre_original=archivo_db.nombre_original,
                     path=archivo_db.path,
+                    favorito=archivo_db.favorito,
                     tamaño_bytes=archivo_db.tamaño_bytes,
                     fecha_creacion=archivo_db.fecha_creacion,
                     id_usuario=archivo_db.id_usuario,
@@ -295,6 +303,7 @@ async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] 
                     id=archivo_guardado.id,
                     nombre_original=archivo_guardado.nombre_original,
                     path=archivo_guardado.path,
+                    favorito=archivo_guardado.favorito,
                     tamaño_bytes=archivo_guardado.tamaño_bytes,
                     fecha_creacion=archivo_guardado.fecha_creacion,
                     id_usuario=archivo_guardado.id_usuario,
@@ -327,6 +336,7 @@ def get_folders_of_folder(id_carpeta: UUID, usuario: User = Depends(get_current_
                     id=carpeta.id,
                     nombre_original=carpeta.nombre_original,
                     path=carpeta.path,
+                    favorito=carpeta.favorito,
                     fecha_creacion=carpeta.fecha_creacion,
                     id_usuario=carpeta.id_usuario,
                     nombre_usuario=carpeta.usuario.nombre,
@@ -356,6 +366,7 @@ def create_folder_in_folder(id_carpeta: UUID, req: folder_schemas.FolderRequest,
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
                 path=carpeta.path,
+                favorito=carpeta.favorito,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
