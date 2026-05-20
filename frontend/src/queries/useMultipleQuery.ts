@@ -5,6 +5,7 @@ import {
   restoreMultipleItemsService,
   sendItemsTrashService,
   shareMultipleItemsService,
+  toggleFavoriteMultipleService,
 } from '@/services/multiple.services'
 import { useAuthStore } from '@/stores/auth.store'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
@@ -32,7 +33,7 @@ export function useMoveSelectedTrash() {
       })
 
       queryClient.invalidateQueries({
-        queryKey: ["itemsCarpetaPapelera"]
+        queryKey: ['itemsCarpetaPapelera'],
       })
 
       toast.success(data?.msg || 'Proceso completado correctamente', {
@@ -131,7 +132,7 @@ export function useRestoreMultiple() {
       })
 
       queryClient.invalidateQueries({
-        queryKey: ["itemsCarpetaPapelera"]
+        queryKey: ['itemsCarpetaPapelera'],
       })
 
       toast.success(data?.msg || 'Proceso completado correctamente', {
@@ -171,6 +172,33 @@ export function useCancelMultipleShared() {
         toast.error(e.response?.data?.detail || 'Error al cancelar compartido')
       } else {
         toast.error('Error al cancelar compartido')
+      }
+    },
+  })
+}
+
+export function useToggleFavoriteMultiple() {
+  const authStore = useAuthStore()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: ItemMultipleRequest) => toggleFavoriteMultipleService(data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['items', authStore.usuario?.id],
+      })
+
+      if (data.errores && data.errores.total_errores > 0) {
+        toast.error('Error al actualizar el estado favorito')
+      } else {
+        toast.success('Favorito actualizado')
+      }
+    },
+    onError: (e: unknown) => {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.detail || 'Error al actualizar el estado favorito')
+      } else {
+        toast.error('Error al actualizar el estado favorito')
       }
     },
   })
