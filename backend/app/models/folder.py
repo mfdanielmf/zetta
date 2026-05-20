@@ -14,6 +14,7 @@ class Folder(Base):
     nombre_original = Column(String(100), nullable=False)
     path = Column(String, nullable=False)
     favorito = Column(Boolean, default=False, nullable=False)
+    fecha_favorito = Column(DateTime, default=func.now())
     fecha_creacion = Column(DateTime, default=func.now())
     fecha_eliminacion = Column(DateTime, nullable=True)
 

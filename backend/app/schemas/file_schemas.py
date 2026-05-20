@@ -16,6 +16,7 @@ class FileBase(BaseModel):
     id_carpeta: uuid.UUID | None = None
     nombre_usuario: str
     fecha_eliminacion: datetime | None = None
+    fecha_favorito: datetime | None = None
 
 
 class FileResponse(BaseModel):

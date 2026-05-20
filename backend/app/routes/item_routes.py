@@ -12,7 +12,7 @@ from app.models.archivo_compartido import ArchivoCompartido
 from app.models.file import File
 from app.models.user import User
 from app.models import exceptions as ex
-from app.services import item_services
+from app.services import item_services, favorite_services
 from app.schemas import file_schemas, item_schemas, folder_schemas
 
 item_router = APIRouter()
@@ -46,7 +46,8 @@ def get_items(
                     id_usuario=item.id_usuario,
                     nombre_usuario=item.usuario.nombre,
                     id_carpeta=item.id_carpeta,
-                    fecha_eliminacion=item.fecha_eliminacion
+                    fecha_eliminacion=item.fecha_eliminacion,
+                    fecha_favorito=item.fecha_favorito
                 )
             )
         else:
@@ -60,7 +61,8 @@ def get_items(
                     id_usuario=item.id_usuario,
                     nombre_usuario=item.usuario.nombre,
                     id_carpeta=item.id_carpeta,
-                    fecha_eliminacion=item.fecha_eliminacion
+                    fecha_eliminacion=item.fecha_eliminacion,
+                    fecha_favorito=item.fecha_favorito
                 )
             )
 
@@ -102,7 +104,8 @@ def get_items_folder(
                         id_usuario=item.id_usuario,
                         nombre_usuario=item.usuario.nombre,
                         id_carpeta=item.id_carpeta,
-                        fecha_eliminacion=item.fecha_eliminacion
+                        fecha_eliminacion=item.fecha_eliminacion,
+                        fecha_favorito=item.fecha_favorito
                     )
                 )
             else:
@@ -116,7 +119,8 @@ def get_items_folder(
                         id_usuario=item.id_usuario,
                         nombre_usuario=item.usuario.nombre,
                         id_carpeta=item.id_carpeta,
-                        fecha_eliminacion=item.fecha_eliminacion
+                        fecha_eliminacion=item.fecha_eliminacion,
+                        fecha_favorito=item.fecha_favorito
                     )
                 )
 
@@ -159,7 +163,8 @@ def get_items_trash(
                     id_usuario=item.id_usuario,
                     nombre_usuario=item.usuario.nombre,
                     id_carpeta=item.id_carpeta,
-                    fecha_eliminacion=item.fecha_eliminacion
+                    fecha_eliminacion=item.fecha_eliminacion,
+                    fecha_favorito=item.fecha_favorito
                 )
             )
         else:
@@ -173,7 +178,8 @@ def get_items_trash(
                     id_usuario=item.id_usuario,
                     nombre_usuario=item.usuario.nombre,
                     id_carpeta=item.id_carpeta,
-                    fecha_eliminacion=item.fecha_eliminacion
+                    fecha_eliminacion=item.fecha_eliminacion,
+                    fecha_favorito=item.fecha_favorito
                 )
             )
 
@@ -215,7 +221,8 @@ def get_items_folder_in_trash(
                         id_usuario=item.id_usuario,
                         nombre_usuario=item.usuario.nombre,
                         id_carpeta=item.id_carpeta,
-                        fecha_eliminacion=item.fecha_eliminacion
+                        fecha_eliminacion=item.fecha_eliminacion,
+                        fecha_favorito=item.fecha_favorito
                     )
                 )
             else:
@@ -229,7 +236,8 @@ def get_items_folder_in_trash(
                         id_usuario=item.id_usuario,
                         nombre_usuario=item.usuario.nombre,
                         id_carpeta=item.id_carpeta,
-                        fecha_eliminacion=item.fecha_eliminacion
+                        fecha_eliminacion=item.fecha_eliminacion,
+                        fecha_favorito=item.fecha_favorito
                     )
                 )
 
@@ -278,7 +286,8 @@ def get_sent_items(
                         id_usuario=item.archivo.id_usuario,
                         nombre_usuario=item.archivo.usuario.nombre,
                         id_carpeta=item.archivo.id_carpeta,
-                        fecha_eliminacion=item.archivo.fecha_eliminacion
+                        fecha_eliminacion=item.archivo.fecha_eliminacion,
+                        fecha_favorito=item.archivo.fecha_favorito
                     )
                 )
             )
@@ -298,7 +307,8 @@ def get_sent_items(
                         id_usuario=item.carpeta.id_usuario,
                         nombre_usuario=item.carpeta.usuario.nombre,
                         id_carpeta=item.carpeta.id_carpeta,
-                        fecha_eliminacion=item.carpeta.fecha_eliminacion
+                        fecha_eliminacion=item.carpeta.fecha_eliminacion,
+                        fecha_favorito=item.carpeta.fecha_favorito
                     )
                 )
             )
@@ -344,7 +354,8 @@ def get_received_items(
                         id_usuario=item.archivo.id_usuario,
                         nombre_usuario=item.archivo.usuario.nombre,
                         id_carpeta=item.archivo.id_carpeta,
-                        fecha_eliminacion=item.archivo.fecha_eliminacion
+                        fecha_eliminacion=item.archivo.fecha_eliminacion,
+                        fecha_favorito=item.archivo.fecha_favorito
                     )
                 )
             )
@@ -364,7 +375,8 @@ def get_received_items(
                         id_usuario=item.carpeta.id_usuario,
                         nombre_usuario=item.carpeta.usuario.nombre,
                         id_carpeta=item.carpeta.id_carpeta,
-                        fecha_eliminacion=item.carpeta.fecha_eliminacion
+                        fecha_eliminacion=item.carpeta.fecha_eliminacion,
+                        fecha_favorito=item.carpeta.fecha_favorito
                     )
                 )
             )
