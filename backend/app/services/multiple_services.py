@@ -348,7 +348,7 @@ def toggle_multiples_favoritos(req: list[multiple_schemas.ItemMultipleRequest], 
 
                 carpeta.favorito = not carpeta.favorito
 
-                folder_repo.update_folder(carpeta=carpeta, db=Session)
+                folder_repo.update_folder(carpeta=carpeta, db=db)
 
                 nombre_item = carpeta.nombre_original or "desconocido"
 
@@ -358,7 +358,5 @@ def toggle_multiples_favoritos(req: list[multiple_schemas.ItemMultipleRequest], 
                 "nombre_item": nombre_item,
                 "error": str(e1)
             })
-
-    db.commit()
 
     return errores
