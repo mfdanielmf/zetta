@@ -26,7 +26,8 @@ def test_crear_carpeta_success():
         path=f"{config.UPLOAD_DIR}/{usuario.id}/{id_test}",
         fecha_creacion="2026-01-21T01:44:31.825198",
         id_usuario=usuario.id,
-        usuario=usuario
+        usuario=usuario,
+        favorito=False
     )
 
     with patch("app.routes.folder_routes.folder_services.crear_carpeta") as mock_crear:

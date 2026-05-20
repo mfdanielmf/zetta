@@ -67,7 +67,8 @@ def test_get_anidadas_papelera_con_una_carpeta():
         id_usuario=usuario.id,
         usuario=usuario,
         fecha_eliminacion="2026-01-21T01:44:31.825198",
-        id_carpeta=random_id
+        id_carpeta=random_id,
+        favorito=False
     )
 
     with patch("app.routes.folder_routes.folder_services.obtener_carpetas_carpeta_papelera_paginadas") as mock_obtener:
@@ -112,7 +113,8 @@ def test_get_anidadas_con_varias_carpetas_papelera():
         id_usuario=usuario.id,
         usuario=usuario,
         fecha_eliminacion="2026-01-21T01:44:31.825198",
-        id_carpeta=random_id
+        id_carpeta=random_id,
+        favorito=False
     )
 
     carpeta_falsa2: Folder = Folder(
@@ -123,7 +125,8 @@ def test_get_anidadas_con_varias_carpetas_papelera():
         id_usuario=usuario.id,
         usuario=usuario,
         fecha_eliminacion="2026-01-21T01:44:31.825198",
-        id_carpeta=random_id
+        id_carpeta=random_id,
+        favorito=False
     )
 
     carpetas_falsas = [carpeta_falsa, carpeta_falsa2]

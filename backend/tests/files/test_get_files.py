@@ -45,7 +45,8 @@ def test_get_archivos_usuario_con_uploads():
         tamaño_bytes=10,
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
-        usuario=usuario
+        usuario=usuario,
+        favorito=False
     )
 
     with patch("app.routes.file_routes.file_services.obtener_archivos_usuario_paginados") as mock_obtener:
