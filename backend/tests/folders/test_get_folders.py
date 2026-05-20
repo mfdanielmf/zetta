@@ -45,7 +45,8 @@ def test_get_carpetas_usuario_con_uploads():
         path=f"uploads/{usuario.id}/testing",
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
-        usuario=usuario
+        usuario=usuario,
+        favorito=False
     )
 
     with patch("app.routes.folder_routes.folder_services.obtener_carpetas_usuario_raiz_paginadas") as mock_obtener:

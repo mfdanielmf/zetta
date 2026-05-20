@@ -24,7 +24,8 @@ def test_añadir_carpeta_papelera_success():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         usuario=usuario,
-        fecha_eliminacion=datetime.now()
+        fecha_eliminacion=datetime.now(),
+        favorito=False
     )
 
     with patch("app.routes.folder_routes.folder_services.añadir_carpeta_papelera") as mock_añadir:

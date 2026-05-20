@@ -36,7 +36,8 @@ def test_get_papelera_1_carpeta():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         fecha_eliminacion="2026-02-15T10:00:00",
-        usuario=usuario
+        usuario=usuario,
+        favorito=False
     )
 
     with patch("app.routes.folder_routes.folder_services.obtener_carpetas_papelera_raiz_paginadas") as mock_obtener:
@@ -72,7 +73,8 @@ def test_get_papelera_varias_carpetas():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         fecha_eliminacion="2026-02-15T10:00:00",
-        usuario=usuario
+        usuario=usuario,
+        favorito=False
     )
 
     carpeta2: Folder = Folder(
@@ -82,7 +84,8 @@ def test_get_papelera_varias_carpetas():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         fecha_eliminacion="2026-02-15T10:00:00",
-        usuario=usuario
+        usuario=usuario,
+        favorito=False
     )
 
     carpetas_falsas: list[Folder] = [carpeta, carpeta2]

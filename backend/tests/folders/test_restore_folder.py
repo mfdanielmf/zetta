@@ -23,7 +23,8 @@ def test_restaurar_carpeta():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         usuario=usuario,
-        fecha_eliminacion=None
+        fecha_eliminacion=None,
+        favorito=False
     )
 
     with patch("app.routes.folder_routes.folder_services.restaurar_carpeta_papelera") as mock_restaurar:
@@ -51,7 +52,8 @@ def test_restaurar_carpeta_id_no_encontrada():
     id_test: uuid.UUID = uuid.uuid4()
 
     with patch("app.routes.folder_routes.folder_services.restaurar_carpeta_papelera") as mock_restaurar:
-        mock_restaurar.side_effect = CarpetaNoEncontradaException("No se ha encontrado la carpeta")
+        mock_restaurar.side_effect = CarpetaNoEncontradaException(
+            "No se ha encontrado la carpeta")
 
         response = client.put(f"/api/folders/{id_test}/restaurar")
 

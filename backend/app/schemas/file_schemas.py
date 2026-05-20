@@ -11,6 +11,7 @@ class FileBase(BaseModel):
     path: str
     fecha_creacion: datetime
     tamaño_bytes: int
+    favorito: bool = False
     id_usuario: uuid.UUID
     id_carpeta: uuid.UUID | None = None
     nombre_usuario: str
@@ -33,6 +34,7 @@ class RestoreFileResponse(AddFileTrashResponse):
 
 class DeleteFilePermanentResponse(BaseModel):
     msg: str = "Archivo eliminado correctamente"
+
 
 class PaginatedFileResponse(BaseModel):
     items: list[FileBase]

@@ -323,3 +323,42 @@ def cancelar_multiples_compartidos(req: list[multiple_schemas.ItemMultipleReques
     db.commit()
 
     return errores
+
+
+def toggle_multiples_favoritos(req: list[multiple_schemas.ItemMultipleRequest], usuario: User, db: Session):
+    errores = []
+
+    for item in req:
+        nombre_item = "desconocido"
+
+        try:
+            if item.tipo == "archivo":
+                archivo: File = file_services.obtener_archivo_id(
+                    id=item.id, usuario=usuario, db=db)
+
+                archivo.favorito = not archivo.favorito
+
+                file_repo.update_file(archivo=archivo, db=db)
+
+                nombre_item = archivo.nombre_original or "desconocido"
+
+            else:
+                carpeta: Folder = folder_services.obtener_carpeta_usuario_id(
+                    id_carpeta=item.id, usuario=usuario, db=db)
+
+                carpeta.favorito = not carpeta.favorito
+
+                folder_repo.update_folder(carpeta=carpeta, db=Session)
+
+                nombre_item = carpeta.nombre_original or "desconocido"
+
+        except Exception as e1:
+            errores.append({
+                "id_item": str(item.id),
+                "nombre_item": nombre_item,
+                "error": str(e1)
+            })
+
+    db.commit()
+
+    return errores

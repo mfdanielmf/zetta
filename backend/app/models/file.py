@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, UUID, ForeignKey, String, DateTime, func, BigInteger
+from sqlalchemy import Boolean, Column, UUID, ForeignKey, String, DateTime, func, BigInteger
 from sqlalchemy.orm import relationship
 from app.database.db import Base
 
@@ -11,6 +11,7 @@ class File(Base):
     nombre_original = Column(String(100), nullable=False)
     path = Column(String, nullable=False)
     tamaño_bytes = Column(BigInteger, nullable=False)
+    favorito = Column(Boolean, default=False, nullable=False)
     fecha_creacion = Column(DateTime, default=func.now())
     fecha_eliminacion = Column(DateTime, nullable=True)
 

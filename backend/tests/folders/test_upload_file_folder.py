@@ -29,7 +29,8 @@ def test_subir_archivo_carpeta():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         id_carpeta=id_carpeta,
-        usuario=usuario
+        usuario=usuario,
+        favorito=False
     )
 
     with patch("app.routes.folder_routes.folder_services.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
@@ -146,7 +147,8 @@ def test_subir_varios_archivos_carpeta():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         id_carpeta=id_carpeta,
-        usuario=usuario
+        usuario=usuario,
+        favorito=False
     )
 
     archivo_falso2: File = File(
@@ -157,7 +159,8 @@ def test_subir_varios_archivos_carpeta():
         fecha_creacion="2026-01-22T01:44:31.825198",
         id_usuario=usuario.id,
         id_carpeta=id_carpeta,
-        usuario=usuario
+        usuario=usuario,
+        favorito=False
     )
 
     archivos_falsos = [archivo_falso, archivo_falso2]
