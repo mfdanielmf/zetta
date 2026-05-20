@@ -56,3 +56,9 @@ export async function cancelMultipleSharesService(data: ItemMultipleRequest) {
 
   return req.data
 }
+
+export async function toggleFavoriteMultipleService(data: ItemMultipleRequest) {
+  const req = await multipleApi.toggleFavoritoMultiple(data)
+
+  return req.data
+}

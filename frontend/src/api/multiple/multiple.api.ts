@@ -51,4 +51,7 @@ export default {
   cancelarCompartidoMultiple(data: ItemMultipleRequest) {
     return api().delete<MultipleItemResponse>(URL + '/shared/sent', { data })
   },
+  toggleFavoritoMultiple(data: ItemMultipleRequest) {
+    return api().put<MultipleItemResponse>(URL + '/favorite', data)
+  },
 }
