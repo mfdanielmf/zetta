@@ -281,7 +281,7 @@ def get_sent_items(
                         nombre_original=item.archivo.nombre_original,
                         path=item.archivo.path,
                         tamaño_bytes=item.archivo.tamaño_bytes,
-                        favorito=item.favorito,
+                        favorito=item.archivo.favorito,
                         fecha_creacion=item.archivo.fecha_creacion,
                         id_usuario=item.archivo.id_usuario,
                         nombre_usuario=item.archivo.usuario.nombre,
