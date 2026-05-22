@@ -488,6 +488,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/items/favorite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Favorite Items */
+        get: operations["get_favorite_items_api_v2_items_favorite_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/multiple/items": {
         parameters: {
             query?: never;
@@ -718,6 +735,8 @@ export interface components {
             nombre_usuario: string;
             /** Fecha Eliminacion */
             fecha_eliminacion?: string | null;
+            /** Fecha Favorito */
+            fecha_favorito?: string | null;
         };
         /** FileItem */
         FileItem: {
@@ -753,6 +772,8 @@ export interface components {
             nombre_usuario: string;
             /** Fecha Eliminacion */
             fecha_eliminacion?: string | null;
+            /** Fecha Favorito */
+            fecha_favorito?: string | null;
             /**
              * Tipo
              * @default file
@@ -799,6 +820,8 @@ export interface components {
             id_carpeta?: string | null;
             /** Fecha Eliminacion */
             fecha_eliminacion?: string | null;
+            /** Fecha Favorito */
+            fecha_favorito?: string | null;
         };
         /** FolderItem */
         FolderItem: {
@@ -832,6 +855,8 @@ export interface components {
             id_carpeta?: string | null;
             /** Fecha Eliminacion */
             fecha_eliminacion?: string | null;
+            /** Fecha Favorito */
+            fecha_favorito?: string | null;
             /**
              * Tipo
              * @default folder
@@ -2268,6 +2293,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedSharedItemResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_favorite_items_api_v2_items_favorite_get: {
+        parameters: {
+            query?: {
+                pagina?: number;
+                limite?: number;
+                busqueda?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedItemResponse"];
                 };
             };
             /** @description Validation Error */

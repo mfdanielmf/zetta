@@ -1,3 +1,4 @@
+import type { Params } from '@/types/types'
 import api from '../axios.config'
 import type {
   GetFolderItemsResponse,
@@ -9,12 +10,6 @@ import type {
 } from '../types/types'
 
 const URL = '/api/v2/items'
-
-type Params = {
-  pagina: number
-  limite: number
-  busqueda?: string
-}
 
 export default {
   obtenerItems(params: Params) {
