@@ -40,7 +40,8 @@ def get_folders(db: Session = Depends(get_db), usuario: User = Depends(get_curre
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
                 id_carpeta=carpeta.id_carpeta,
-                fecha_eliminacion=carpeta.fecha_eliminacion
+                fecha_eliminacion=carpeta.fecha_eliminacion,
+                fecha_favorito=carpeta.fecha_favorito
             )
             for carpeta in carpetas
         ],
@@ -67,7 +68,8 @@ def create_folder(request: Request, req: folder_schemas.FolderRequest, db: Sessi
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
-                fecha_eliminacion=carpeta.fecha_eliminacion
+                fecha_eliminacion=carpeta.fecha_eliminacion,
+                fecha_favorito=carpeta.fecha_favorito
             )
         }
     except ex.IdYaUsadaException as e:
@@ -94,7 +96,8 @@ def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = D
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
                 id_carpeta=carpeta.id_carpeta,
-                fecha_eliminacion=carpeta.fecha_eliminacion
+                fecha_eliminacion=carpeta.fecha_eliminacion,
+                fecha_favorito=carpeta.fecha_favorito
             )
             for carpeta in carpetas
         ],
@@ -141,7 +144,8 @@ def get_files_of_folder_on_trash(id_carpeta: UUID, usuario: User = Depends(get_c
                     id_usuario=archivo_db.id_usuario,
                     nombre_usuario=archivo_db.usuario.nombre,
                     id_carpeta=archivo_db.id_carpeta,
-                    fecha_eliminacion=archivo_db.fecha_eliminacion
+                    fecha_eliminacion=archivo_db.fecha_eliminacion,
+                    fecha_favorito=archivo_db.fecha_favorito
                 )
                 for archivo_db in archivos
             ],
@@ -174,7 +178,8 @@ def get_folders_inside_folder_on_trash(id_carpeta: UUID, usuario: User = Depends
                     id_usuario=carpeta.id_usuario,
                     nombre_usuario=carpeta.usuario.nombre,
                     id_carpeta=carpeta.id_carpeta,
-                    fecha_eliminacion=carpeta.fecha_eliminacion
+                    fecha_eliminacion=carpeta.fecha_eliminacion,
+                    fecha_favorito=carpeta.fecha_favorito
                 )
                 for carpeta in carpetas
             ],
@@ -221,7 +226,8 @@ def add_folder_to_trash(request: Request, id_carpeta: UUID, usuario: User = Depe
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
-                fecha_eliminacion=carpeta.fecha_eliminacion
+                fecha_eliminacion=carpeta.fecha_eliminacion,
+                fecha_favorito=carpeta.fecha_favorito
             )
         }
     except ex.CarpetaPapeleraException:
@@ -248,7 +254,8 @@ def restore_folder_from_trash(id_carpeta: UUID, usuario: User = Depends(get_curr
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
-                fecha_eliminacion=carpeta.fecha_eliminacion
+                fecha_eliminacion=carpeta.fecha_eliminacion,
+                fecha_favorito=carpeta.fecha_favorito
             )
         }
     except ex.CarpetaNoEncontradaException as e1:
@@ -275,7 +282,8 @@ def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario
                     id_usuario=archivo_db.id_usuario,
                     nombre_usuario=archivo_db.usuario.nombre,
                     id_carpeta=archivo_db.id_carpeta,
-                    fecha_eliminacion=archivo_db.fecha_eliminacion
+                    fecha_eliminacion=archivo_db.fecha_eliminacion,
+                    fecha_favorito=archivo_db.fecha_favorito
                 )
                 for archivo_db in archivos
             ],
@@ -309,7 +317,8 @@ async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] 
                     id_usuario=archivo_guardado.id_usuario,
                     nombre_usuario=archivo_guardado.usuario.nombre,
                     id_carpeta=archivo_guardado.id_carpeta,
-                    fecha_eliminacion=archivo_guardado.fecha_eliminacion
+                    fecha_eliminacion=archivo_guardado.fecha_eliminacion,
+                    fecha_favorito=archivo_guardado.fecha_favorito
                 )
                 for archivo_guardado in archivos
             ]
@@ -341,7 +350,8 @@ def get_folders_of_folder(id_carpeta: UUID, usuario: User = Depends(get_current_
                     id_usuario=carpeta.id_usuario,
                     nombre_usuario=carpeta.usuario.nombre,
                     id_carpeta=carpeta.id_carpeta,
-                    fecha_eliminacion=carpeta.fecha_eliminacion
+                    fecha_eliminacion=carpeta.fecha_eliminacion,
+                    fecha_favorito=carpeta.fecha_favorito
                 )
                 for carpeta in carpetas
             ],
@@ -371,7 +381,8 @@ def create_folder_in_folder(id_carpeta: UUID, req: folder_schemas.FolderRequest,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
                 id_carpeta=id_carpeta,
-                fecha_eliminacion=carpeta.fecha_eliminacion
+                fecha_eliminacion=carpeta.fecha_eliminacion,
+                fecha_favorito=carpeta.fecha_favorito
             )
         }
     except ex.IdYaUsadaException as e:
