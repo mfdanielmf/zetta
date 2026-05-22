@@ -200,6 +200,10 @@ export function useToggleFavoriteMultiple() {
         queryKey: ['favoritos'],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCarpeta'],
+      })
+
       if (data.errores && data.errores.total_errores > 0) {
         toast.error('Error al actualizar el estado favorito')
       } else {
