@@ -12,7 +12,7 @@ class File(Base):
     path = Column(String, nullable=False)
     tamaño_bytes = Column(BigInteger, nullable=False)
     favorito = Column(Boolean, default=False, nullable=False)
-    fecha_favorito = Column(DateTime, default=func.now())
+    fecha_favorito = Column(DateTime)
     fecha_creacion = Column(DateTime, default=func.now())
     fecha_eliminacion = Column(DateTime, nullable=True)
 

@@ -337,6 +337,7 @@ def toggle_multiples_favoritos(req: list[multiple_schemas.ItemMultipleRequest], 
                     id=item.id, usuario=usuario, db=db)
 
                 archivo.favorito = not archivo.favorito
+                archivo.fecha_favorito = datetime.now(timezone.utc)
 
                 file_repo.update_file(archivo=archivo, db=db)
 
@@ -347,6 +348,7 @@ def toggle_multiples_favoritos(req: list[multiple_schemas.ItemMultipleRequest], 
                     id_carpeta=item.id, usuario=usuario, db=db)
 
                 carpeta.favorito = not carpeta.favorito
+                carpeta.fecha_favorito = datetime.now(timezone.utc)
 
                 folder_repo.update_folder(carpeta=carpeta, db=db)
 
