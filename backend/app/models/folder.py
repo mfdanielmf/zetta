@@ -13,8 +13,6 @@ class Folder(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     nombre_original = Column(String(100), nullable=False)
     path = Column(String, nullable=False)
-    favorito = Column(Boolean, default=False, nullable=False)
-    fecha_favorito = Column(DateTime)
     fecha_creacion = Column(DateTime, default=func.now())
     fecha_eliminacion = Column(DateTime, nullable=True)
 
@@ -33,3 +31,4 @@ class Folder(Base):
         "Folder", back_populates="carpeta", cascade="all, delete-orphan")
     compartida_con = relationship(
         "CarpetaCompartida", back_populates="carpeta", passive_deletes=True)
+    favoritos = relationship("CarpetaCompartida", back_populates="carpeta", passive_deletes=True)
