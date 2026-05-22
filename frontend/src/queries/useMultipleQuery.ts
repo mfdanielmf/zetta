@@ -36,6 +36,10 @@ export function useMoveSelectedTrash() {
         queryKey: ['itemsCarpetaPapelera'],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ['favoritos'],
+      })
+
       toast.success(data?.msg || 'Proceso completado correctamente', {
         description:
           `Items procesados: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
@@ -135,6 +139,10 @@ export function useRestoreMultiple() {
         queryKey: ['itemsCarpetaPapelera'],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ['favoritos'],
+      })
+
       toast.success(data?.msg || 'Proceso completado correctamente', {
         description:
           `Items procesados: ${data.items_totales} | Errores: ${data.errores?.total_errores ? data.errores?.total_errores : 0}` ||
@@ -186,6 +194,10 @@ export function useToggleFavoriteMultiple() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ['items', authStore.usuario?.id],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['favoritos'],
       })
 
       if (data.errores && data.errores.total_errores > 0) {
