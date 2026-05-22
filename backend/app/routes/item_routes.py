@@ -302,7 +302,7 @@ def get_sent_items(
                         id=item.carpeta.id,
                         nombre_original=item.carpeta.nombre_original,
                         path=item.carpeta.path,
-                        favorito=item.favorito,
+                        favorito=item.carpeta.favorito,
                         fecha_creacion=item.carpeta.fecha_creacion,
                         id_usuario=item.carpeta.id_usuario,
                         nombre_usuario=item.carpeta.usuario.nombre,
