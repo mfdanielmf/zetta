@@ -22,6 +22,7 @@ const SentView = () => import('@/views/shared/SentView.vue')
 const SharedFolderView = () => import('@/views/shared/SharedFolderView.vue')
 const ReceivedFolderView = () => import('@/views/shared/ReceivedFolderView.vue')
 const NotFoundView = () => import('@/views/NotFoundView.vue')
+const FavoriteView = () => import('@/views/favorite/FavoriteView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -95,6 +96,16 @@ const router = createRouter({
                   component: SharedFolderView,
                 },
               ],
+            },
+          ],
+        },
+        {
+          path: 'favorite',
+          children: [
+            {
+              path: '',
+              name: 'favoritos',
+              component: FavoriteView,
             },
           ],
         },

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SidebarProps } from '@/components/ui/sidebar'
 
-import { Frame, GalleryVerticalEnd, HardDrive, Map, PieChart, Share2 } from 'lucide-vue-next'
+import { GalleryVerticalEnd, HardDrive, Share2, Star } from 'lucide-vue-next'
 import NavMain from '@/components/NavMain.vue'
 import NavUser from '@/components/NavUser.vue'
 import TeamSwitcher from '@/components/TeamSwitcher.vue'
@@ -72,23 +72,18 @@ const data = computed(() => ({
         },
       ],
     },
-  ],
-
-  projects: [
     {
-      name: 'Design Engineering',
+      title: 'Favoritos',
       url: '#',
-      icon: Frame,
-    },
-    {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart,
-    },
-    {
-      name: 'Travel',
-      url: '#',
-      icon: Map,
+      icon: Star,
+      isActive: route.path.startsWith('/favorite'),
+      items: [
+        {
+          title: 'Mis favoritos',
+          url: '/favorite',
+          isActive: isActive('/favorite'),
+        },
+      ],
     },
   ],
 }))

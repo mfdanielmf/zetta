@@ -13,7 +13,7 @@ def get_favorite_folders(id_usuario: UUID, db: Session, busqueda: str | None = N
     )
 
     if busqueda:
-        query.filter(Folder.nombre_original.ilike(f"%{busqueda}%"))
+        query = query.filter(Folder.nombre_original.ilike(f"%{busqueda}%"))
 
     return query.order_by(Folder.fecha_favorito.desc()).all()
 
@@ -26,6 +26,6 @@ def get_favorite_files(id_usuario: UUID, db: Session, busqueda: str | None = Non
     )
 
     if busqueda:
-        query.filter(File.nombre_original.ilike(f"%{busqueda}%"))
+        query = query.filter(File.nombre_original.ilike(f"%{busqueda}%"))
 
     return query.order_by(File.fecha_favorito.desc()).all()
