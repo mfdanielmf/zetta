@@ -53,6 +53,7 @@ import {
   Plus,
   SearchIcon,
   Share2,
+  Star,
   Trash2,
   Upload,
 } from 'lucide-vue-next'
@@ -60,7 +61,11 @@ import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { useSelectedStore } from '@/stores/selected.store'
-import { useMoveSelectedTrash, useShareMultiple } from '@/queries/useMultipleQuery'
+import {
+  useMoveSelectedTrash,
+  useShareMultiple,
+  useToggleFavoriteMultiple,
+} from '@/queries/useMultipleQuery'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
 import { useDownloadStore } from '@/stores/download.store'
@@ -131,7 +136,9 @@ const {
   isSuccess: successPapeleraSelected,
   isPending: pendingPapeleraSelected,
 } = useMoveSelectedTrash()
+const { mutateAsync: mutateToggleFavorito } = useToggleFavoriteMultiple()
 
+const loadingFavoritoId = ref<string | null>(null)
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
 const busqueda = ref<string>('')
@@ -308,6 +315,24 @@ async function mandarItemPapelera(idItem: string, tipo: 'file' | 'folder') {
     await mutatePapeleraSelected(data)
   } catch {}
 }
+
+async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
+  const data: ItemMultipleRequest = [
+    {
+      id: idItem,
+      tipo: tipo === 'file' ? 'archivo' : 'carpeta',
+    },
+  ]
+
+  try {
+    loadingFavoritoId.value = idItem
+
+    await mutateToggleFavorito(data)
+  } catch {
+  } finally {
+    loadingFavoritoId.value = null
+  }
+}
 </script>
 
 <template>
@@ -445,11 +470,21 @@ async function mandarItemPapelera(idItem: string, tipo: 'file' | 'folder') {
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
           <TableCell class="cursor-default" @click.stop>
-            <Checkbox
-              class="border-neutral-400"
-              :model-value="selectedStore.estaSeleccionado(item.id)"
-              @update:model-value="() => handleSelection(item.id, item.tipo)"
-            />
+            <div class="flex items-center gap-4">
+              <Checkbox
+                class="border-neutral-400"
+                :model-value="selectedStore.estaSeleccionado(item.id)"
+                @update:model-value="() => handleSelection(item.id, item.tipo)"
+              />
+
+              <Spinner v-if="loadingFavoritoId === item.id" />
+              <Star
+                v-else
+                @click.stop="añadirFavorito(item.id, item.tipo)"
+                :size="20"
+                :fill="item.favorito === true ? 'black' : 'transparent'"
+              />
+            </div>
           </TableCell>
 
           <TableCell class="font-medium">
