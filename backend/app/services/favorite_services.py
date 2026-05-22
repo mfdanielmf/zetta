@@ -18,6 +18,8 @@ def obtener_items_favoritos(db: Session, usuario: User, pagina: int, limite: int
 
     items: list[Union[Folder, File]] = carpetas + archivos
 
+    print(items)
+
     total: int = len(items)
 
     items_paginados = items[offset: offset + limite]
