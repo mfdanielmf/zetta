@@ -33,7 +33,7 @@ defineProps<{
     <SidebarMenu>
       <Collapsible
         v-for="item in items"
-        :key="item.title"
+        :key="item.title + item.isActive"
         as-child
         :default-open="item.isActive"
         class="group/collapsible"
