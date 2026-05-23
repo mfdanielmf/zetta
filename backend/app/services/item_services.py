@@ -30,7 +30,7 @@ def obtener_items_raiz_paginados(usuario: User, db: Session, pagina: int, limite
     return total, items_paginados
 
 
-def obtener_items_carpeta_paginados(id_carpeta: UUID, usuario: User, db: Session, pagina: int, limite: int, busqueda: str | None) -> tuple[int, list[Union[Folder, File]]]:
+def obtener_items_carpeta_paginados(id_carpeta: UUID, usuario: User, db: Session, pagina: int, limite: int, busqueda: str | None) -> tuple[int, list[Union[tuple[Folder, bool], tuple[File, bool]]]]:
     """
     CarpetaNoEncontradaException
     """
@@ -39,12 +39,13 @@ def obtener_items_carpeta_paginados(id_carpeta: UUID, usuario: User, db: Session
     folder_services.obtener_carpeta_usuario_permisos(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
-    carpetas: list[Folder] = folder_repo.get_folders_inside_folder_sorted(
+    carpetas: list[tuple[Folder, bool]] = folder_repo.get_folders_inside_folder_sorted(
         id_carpeta=id_carpeta, id_usuario=usuario.id, db=db, busqueda=busqueda)
-    archivos: list[File] = file_repo.get_all_files_in_folder_sorted(id_carpeta=id_carpeta,
-                                                                    id_usuario=usuario.id, db=db, busqueda=busqueda)
+    archivos: list[tuple[File, bool]] = file_repo.get_all_files_in_folder_sorted(id_carpeta=id_carpeta,
+                                                                                 id_usuario=usuario.id, db=db, busqueda=busqueda)
 
-    items: list[Union[Folder, File]] = carpetas + archivos
+    items: list[Union[tuple[Folder, bool],
+                      tuple[File, bool]]] = carpetas + archivos
 
     total: int = len(items)
 

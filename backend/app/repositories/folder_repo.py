@@ -158,7 +158,8 @@ def get_folders_user_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: s
 
     query = db.query(
         Folder,
-        exists_favorito.label("favorito")).outerjoin(CarpetaPadre).filter(
+        exists_favorito.label("favorito")
+    ).outerjoin(CarpetaPadre).filter(
         Folder.id_usuario == id_usuario,
         Folder.fecha_eliminacion == None,
         or_(
@@ -174,9 +175,14 @@ def get_folders_user_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: s
 
 
 # O propietario o usuario con permisos (acordarme de cambiarlo en algún momento en el resto de queries antiguas)
-def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[Folder]:
+def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[tuple[Folder, bool]]:
+    exists_favorito = db.query(CarpetaFavorita.id).filter(
+        CarpetaFavorita.id_carpeta == Folder.id,
+        CarpetaFavorita.id_usuario == id_usuario
+    ).exists()
+
     query = (
-        db.query(Folder)
+        db.query(Folder, exists_favorito.label("favorito"))
         .outerjoin(CarpetaCompartida, CarpetaCompartida.id_carpeta == Folder.id)
         .filter(
             Folder.id_carpeta == id_carpeta,

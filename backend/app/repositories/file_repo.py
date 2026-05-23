@@ -160,9 +160,14 @@ def get_files_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | No
 
 
 # O propietario o usuario con permisos (acordarme de cambiarlo en algún momento en el resto de queries antiguas)
-def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, busqueda: str | None) -> list[File]:
+def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, busqueda: str | None) -> list[tuple[File, bool]]:
+    exists_favorito = db.query(ArchivoFavorito.id).filter(
+        ArchivoFavorito.id_archivo == File.id,
+        ArchivoFavorito.id_usuario == id_usuario
+    ).exists()
+
     query = (
-        db.query(File)
+        db.query(File, exists_favorito.label("favorito"))
         .outerjoin(ArchivoCompartido, ArchivoCompartido.id_archivo == File.id)
         .filter(
             File.id_carpeta == id_carpeta,
