@@ -107,6 +107,11 @@ const router = createRouter({
               name: 'favoritos',
               component: FavoriteView,
             },
+            {
+              path: ':id',
+              name: 'carpetaFavorita',
+              component: FolderFilesView,
+            },
           ],
         },
       ],

@@ -188,7 +188,7 @@ async function mandarCarpetaPapelera(idCarpeta: string) {
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
 
-  router.push({ name: 'carpeta', params: { id: idCarpeta } })
+  router.push({ name: 'carpetaFavorita', params: { id: idCarpeta } })
 }
 
 async function compartirCarpeta(correo: string) {

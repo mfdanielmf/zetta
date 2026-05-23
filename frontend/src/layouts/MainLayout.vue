@@ -35,6 +35,12 @@ const mainBreadcrumb = computed(() => {
       titulo: 'Compartidos',
       nameDetalle: 'carpetaCompartida',
     }
+  } else if (route.name === 'favoritos' || route.path.startsWith('/favorite')) {
+    return {
+      name: 'favoritos',
+      titulo: 'Favoritos',
+      nameDetalle: 'carpetaFavorita',
+    }
   } else {
     return {
       name: 'recibidos',
