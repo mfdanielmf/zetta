@@ -193,7 +193,8 @@ router.afterEach((to) => {
     to.name != 'carpeta' &&
     to.name != 'carpetaPapelera' &&
     to.name != 'carpetaCompartida' &&
-    to.name != 'carpetaRecibida'
+    to.name != 'carpetaRecibida' &&
+    to.name != 'carpetaFavorita'
   ) {
     folderStore.limpiarCarpetas()
   }
