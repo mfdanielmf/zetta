@@ -455,7 +455,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
             </div>
           </TableCell>
           <TableCell class="font-medium">
-            {{ item.usuario.nombre }}
+            {{ item.tipo === 'file' ? item.archivo.nombre_usuario : item.carpeta.nombre_usuario }}
           </TableCell>
           <TableCell class="font-medium">
             {{ item.tipo === 'file' ? formatearTamañoService(item.archivo.tamaño_bytes) : '-' }}
