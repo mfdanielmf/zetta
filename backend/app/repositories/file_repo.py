@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy import or_
 from app.models.archivo_compartido import ArchivoCompartido
+from app.models.archivo_favorito import ArchivoFavorito
 from app.models.carpeta_compartida import CarpetaCompartida
 from app.models.file import File
 from app.models.folder import Folder
@@ -134,10 +135,15 @@ def get_all_files_in_folder_paginados(id_carpeta: uuid.UUID, db: Session, id_usu
     return total, archivos
 
 
-def get_files_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[File]:
+def get_files_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[tuple[File, bool]]:
     # Obtener archivos que no están eliminados pero su carpeta sí
-    query = db.query(File).outerjoin(
-        Folder, File.id_carpeta == Folder.id
+    exists_favorito = db.query(ArchivoFavorito.id).filter(
+        ArchivoFavorito.id_archivo == File.id,
+        ArchivoFavorito.id_usuario == id_usuario
+    ).exists()
+
+    query = db.query(File, exists_favorito.label("favorito")).outerjoin(
+        Folder
     ).filter(
         File.id_usuario == id_usuario,
         File.fecha_eliminacion == None,

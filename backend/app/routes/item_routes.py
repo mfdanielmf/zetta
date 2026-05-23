@@ -32,35 +32,39 @@ def get_items(
     total, items = item_services.obtener_items_raiz_paginados(
         usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
-    items_serializados: list[Union[file_schemas.FileBase,
-                                   file_schemas.File]] = []
+    items_serializados: list[Union[item_schemas.FileItem,
+                                   item_schemas.FolderItem]] = []
 
     for item in items:
-        if isinstance(item, File):
+        entidad, favorito = item
+
+        if isinstance(entidad, File):
             items_serializados.append(
                 item_schemas.FileItem(
-                    id=item.id,
-                    nombre_original=item.nombre_original,
-                    path=item.path,
-                    tamaño_bytes=item.tamaño_bytes,
-                    fecha_creacion=item.fecha_creacion,
-                    id_usuario=item.id_usuario,
-                    nombre_usuario=item.usuario.nombre,
-                    id_carpeta=item.id_carpeta,
-                    fecha_eliminacion=item.fecha_eliminacion,
+                    id=entidad.id,
+                    nombre_original=entidad.nombre_original,
+                    path=entidad.path,
+                    tamaño_bytes=entidad.tamaño_bytes,
+                    fecha_creacion=entidad.fecha_creacion,
+                    id_usuario=entidad.id_usuario,
+                    nombre_usuario=entidad.usuario.nombre,
+                    id_carpeta=entidad.id_carpeta,
+                    fecha_eliminacion=entidad.fecha_eliminacion,
+                    favorito=favorito
                 )
             )
         else:
             items_serializados.append(
                 item_schemas.FolderItem(
-                    id=item.id,
-                    nombre_original=item.nombre_original,
-                    path=item.path,
-                    fecha_creacion=item.fecha_creacion,
-                    id_usuario=item.id_usuario,
-                    nombre_usuario=item.usuario.nombre,
-                    id_carpeta=item.id_carpeta,
-                    fecha_eliminacion=item.fecha_eliminacion,
+                    id=entidad.id,
+                    nombre_original=entidad.nombre_original,
+                    path=entidad.path,
+                    fecha_creacion=entidad.fecha_creacion,
+                    id_usuario=entidad.id_usuario,
+                    nombre_usuario=entidad.usuario.nombre,
+                    id_carpeta=entidad.id_carpeta,
+                    fecha_eliminacion=entidad.fecha_eliminacion,
+                    favorito=favorito
                 )
             )
 
