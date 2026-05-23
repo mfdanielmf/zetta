@@ -3,6 +3,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.carpeta_compartida import CarpetaCompartida
+from app.models.carpeta_favorita import CarpetaFavorita
 from app.models.folder import Folder
 
 
@@ -16,6 +17,7 @@ def add_shared_folder_db(carpeta_compartida: CarpetaCompartida, db: Session) -> 
 
 def get_shared_folder(id_carpeta: UUID, id_receptor: UUID, db: Session) -> CarpetaCompartida | None:
     return db.query(CarpetaCompartida).filter_by(id_carpeta=id_carpeta, id_receptor=id_receptor).first()
+
 
 def get_shared_folder_no_receptor(id_compartido: UUID, id_propietario: UUID, db: Session) -> CarpetaCompartida | None:
     return db.query(CarpetaCompartida).filter_by(id=id_compartido, id_propietario=id_propietario).first()
@@ -85,9 +87,14 @@ def get_all_received_folders_raiz_paginadas(id_usuario: UUID, db: Session, offse
     return total, carpetas_recibidas
 
 
-def get_all_shared_folders_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[CarpetaCompartida]:
+def get_all_shared_folders_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[tuple[CarpetaCompartida, bool]]:
+    exists_favorito = db.query(CarpetaFavorita.id).filter(
+        CarpetaFavorita.id_carpeta == CarpetaCompartida.id_carpeta,
+        CarpetaFavorita.id_usuario == id_usuario
+    ).exists()
+
     query = (
-        db.query(CarpetaCompartida)
+        db.query(CarpetaCompartida, exists_favorito.label("favorito"))
         .options(
             joinedload(CarpetaCompartida.propietario),
             joinedload(CarpetaCompartida.receptor),

@@ -3,6 +3,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.archivo_compartido import ArchivoCompartido
+from app.models.archivo_favorito import ArchivoFavorito
 from app.models.file import File
 
 
@@ -85,9 +86,14 @@ def get_all_received_files_raiz_paginados(id_usuario: UUID, db: Session, offset:
     return total, archivos_recibidos
 
 
-def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[ArchivoCompartido]:
+def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[tuple[ArchivoCompartido, bool]]:
+    exists_favorito = db.query(ArchivoFavorito.id).filter(
+        ArchivoFavorito.id_archivo == ArchivoCompartido.id_archivo,
+        ArchivoFavorito.id_usuario == id_usuario
+    ).exists()
+
     query = (
-        db.query(ArchivoCompartido)
+        db.query(ArchivoCompartido, exists_favorito.label("favorito"))
         .options(
             joinedload(ArchivoCompartido.propietario),
             joinedload(ArchivoCompartido.receptor),
