@@ -808,6 +808,11 @@ export interface components {
              * @constant
              */
             tipo: "file";
+            /**
+             * Favorito
+             * @default false
+             */
+            favorito: boolean;
         };
         /** FileResponse */
         FileResponse: {
@@ -877,6 +882,11 @@ export interface components {
              * @constant
              */
             tipo: "folder";
+            /**
+             * Favorito
+             * @default false
+             */
+            favorito: boolean;
         };
         /** FolderRequest */
         FolderRequest: {
