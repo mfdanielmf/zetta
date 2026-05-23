@@ -31,7 +31,7 @@ const data = computed(() => ({
     {
       name: 'Zetta',
       logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
+      plan: 'Drive',
     },
   ],
 
