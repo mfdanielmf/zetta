@@ -88,7 +88,7 @@ def get_all_received_files_raiz_paginados(id_usuario: UUID, db: Session, offset:
 
 def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[tuple[ArchivoCompartido, bool]]:
     exists_favorito = db.query(ArchivoFavorito.id).filter(
-        ArchivoFavorito.id_archivo == File.id,
+        ArchivoFavorito.id_archivo == ArchivoCompartido.id_archivo,
         ArchivoFavorito.id_usuario == id_usuario
     ).exists()
 

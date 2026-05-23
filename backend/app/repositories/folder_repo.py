@@ -183,7 +183,7 @@ def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUI
 
     query = (
         db.query(Folder, exists_favorito.label("favorito"))
-        .outerjoin(CarpetaCompartida, CarpetaCompartida.id_carpeta == Folder.id)
+        .outerjoin(CarpetaCompartida)
         .filter(
             Folder.id_carpeta == id_carpeta,
             Folder.fecha_eliminacion == None,

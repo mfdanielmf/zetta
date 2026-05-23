@@ -32,8 +32,8 @@ def get_items(
     total, items = item_services.obtener_items_raiz_paginados(
         usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
 
-    items_serializados: list[Union[item_schemas.FileItem,
-                                   item_schemas.FolderItem]] = []
+    items_serializados: list[Union[item_schemas.FolderItem,
+                                   item_schemas.FileItem]] = []
 
     for item in items:
         entidad, favorito = item

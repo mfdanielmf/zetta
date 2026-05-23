@@ -204,6 +204,10 @@ export function useToggleFavoriteMultiple() {
         queryKey: ['itemsCarpeta'],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCompartidos'],
+      })
+
       if (data.errores && data.errores.total_errores > 0) {
         toast.error('Error al actualizar el estado favorito')
       } else {
