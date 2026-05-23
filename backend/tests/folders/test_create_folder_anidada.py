@@ -29,8 +29,7 @@ def test_crear_carpeta_success():
         fecha_creacion="2026-01-21T01:44:31.825198",
         id_usuario=usuario.id,
         usuario=usuario,
-        id_carpeta=id_padre,
-        favorito=False
+        id_carpeta=id_padre
     )
 
     with patch("app.routes.folder_routes.folder_services.crear_carpeta_anidada") as mock_crear:

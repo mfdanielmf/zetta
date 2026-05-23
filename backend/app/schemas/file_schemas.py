@@ -11,12 +11,10 @@ class FileBase(BaseModel):
     path: str
     fecha_creacion: datetime
     tamaño_bytes: int
-    favorito: bool = False
     id_usuario: uuid.UUID
     id_carpeta: uuid.UUID | None = None
     nombre_usuario: str
     fecha_eliminacion: datetime | None = None
-    fecha_favorito: datetime | None = None
 
 
 class FileResponse(BaseModel):

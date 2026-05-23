@@ -11,8 +11,6 @@ class File(Base):
     nombre_original = Column(String(100), nullable=False)
     path = Column(String, nullable=False)
     tamaño_bytes = Column(BigInteger, nullable=False)
-    favorito = Column(Boolean, default=False, nullable=False)
-    fecha_favorito = Column(DateTime)
     fecha_creacion = Column(DateTime, default=func.now())
     fecha_eliminacion = Column(DateTime, nullable=True)
 
@@ -27,3 +25,4 @@ class File(Base):
         "Folder", back_populates="archivos", passive_deletes=True)
     compartido_con = relationship(
         "ArchivoCompartido", back_populates="archivo", passive_deletes=True)
+    favoritos = relationship("ArchivoFavorito", back_populates="archivo", passive_deletes=True)

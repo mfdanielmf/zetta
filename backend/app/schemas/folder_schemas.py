@@ -17,12 +17,10 @@ class FolderBase(BaseModel):
     nombre_original: str
     path: str
     fecha_creacion: datetime
-    favorito: bool = False
     id_usuario: uuid.UUID
     nombre_usuario: str
     id_carpeta: uuid.UUID | None = None
     fecha_eliminacion: datetime | None = None
-    fecha_favorito: datetime | None = None
 
 
 class FolderResponse(BaseModel):

@@ -22,8 +22,7 @@ def test_añadir_archivo_papelera_success():
         tamaño_bytes=10,
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
-        usuario=usuario,
-        favorito=False
+        usuario=usuario
     )
 
     with patch("app.routes.file_routes.file_services.añadir_archivo_papelera") as mock_añadir:

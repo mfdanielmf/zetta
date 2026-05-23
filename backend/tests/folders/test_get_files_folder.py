@@ -27,8 +27,7 @@ def test_obtener_archivos_carpeta():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         id_carpeta=id_carpeta,
-        usuario=usuario,
-        favorito=False
+        usuario=usuario
     )
 
     with patch("app.routes.folder_routes.file_services.obtener_archivos_carpeta_paginados") as mock_obtener:

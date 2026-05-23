@@ -24,7 +24,6 @@ def test_restaurar_archivo():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         usuario=usuario,
-        favorito=False
     )
 
     with patch("app.routes.file_routes.file_services.restaurar_archivo_papelera") as mock_restaurar:

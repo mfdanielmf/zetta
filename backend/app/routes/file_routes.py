@@ -30,13 +30,11 @@ def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current
                 nombre_original=archivo_db.nombre_original,
                 path=archivo_db.path,
                 tamaño_bytes=archivo_db.tamaño_bytes,
-                favorito=archivo_db.favorito,
                 fecha_creacion=archivo_db.fecha_creacion,
                 id_usuario=archivo_db.id_usuario,
                 nombre_usuario=archivo_db.usuario.nombre,
                 id_carpeta=archivo_db.id_carpeta,
                 fecha_eliminacion=archivo_db.fecha_eliminacion,
-                fecha_favorito=archivo_db.fecha_favorito
             )
             for archivo_db in archivos
         ],
@@ -63,13 +61,11 @@ async def upload_file(request: Request, file_upload: list[UploadFile] = File(...
                     nombre_original=archivo.nombre_original,
                     path=archivo.path,
                     tamaño_bytes=archivo.tamaño_bytes,
-                    favorito=archivo.favorito,
                     fecha_creacion=archivo.fecha_creacion,
                     id_usuario=archivo.id_usuario,
                     nombre_usuario=archivo.usuario.nombre,
                     id_carpeta=archivo.id_carpeta,
                     fecha_eliminacion=archivo.fecha_eliminacion,
-                    fecha_favorito=archivo.fecha_favorito
                 ) for archivo in archivos
             ]
         }
@@ -95,13 +91,11 @@ def get_files_trash(usuario: User = Depends(get_current_user), db: Session = Dep
                 nombre_original=archivo_db.nombre_original,
                 path=archivo_db.path,
                 tamaño_bytes=archivo_db.tamaño_bytes,
-                favorito=archivo_db.favorito,
                 fecha_creacion=archivo_db.fecha_creacion,
                 id_usuario=archivo_db.id_usuario,
                 nombre_usuario=archivo_db.usuario.nombre,
                 id_carpeta=archivo_db.id_carpeta,
                 fecha_eliminacion=archivo_db.fecha_eliminacion,
-                fecha_favorito=archivo_db.fecha_favorito
             )
             for archivo_db in archivos
         ],
@@ -153,13 +147,11 @@ def restore_file_from_trash(id_archivo: UUID, db: Session = Depends(get_db), usu
                 nombre_original=archivo.nombre_original,
                 path=archivo.path,
                 tamaño_bytes=archivo.tamaño_bytes,
-                favorito=archivo.favorito,
                 fecha_creacion=archivo.fecha_creacion,
                 id_usuario=archivo.id_usuario,
                 nombre_usuario=archivo.usuario.nombre,
                 id_carpeta=archivo.id_carpeta,
                 fecha_eliminacion=archivo.fecha_eliminacion,
-                fecha_favorito=archivo.fecha_favorito
             )
         }
 
@@ -182,13 +174,11 @@ def add_file_to_trash(request: Request, id_archivo: UUID, db: Session = Depends(
                 nombre_original=archivo.nombre_original,
                 path=archivo.path,
                 tamaño_bytes=archivo.tamaño_bytes,
-                favorito=archivo.favorito,
                 fecha_creacion=archivo.fecha_creacion,
                 id_usuario=archivo.id_usuario,
                 nombre_usuario=archivo.usuario.nombre,
                 id_carpeta=archivo.id_carpeta,
-                fecha_eliminacion=archivo.fecha_eliminacion,
-                fecha_favorito=archivo.fecha_favorito
+                fecha_eliminacion=archivo.fecha_eliminacion
             )
         }
 

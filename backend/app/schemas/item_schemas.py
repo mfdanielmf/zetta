@@ -2,6 +2,7 @@ from typing import Literal, Union
 
 from pydantic import BaseModel
 
+from app.schemas.favorite_schemas import FavoriteFileBase, FavoriteFolderBase
 from app.schemas.file_schemas import FileBase
 from app.schemas.folder_schemas import FolderBase
 from app.schemas.shared_file_schemas import ArchivoCompartidoBase
@@ -33,6 +34,13 @@ class PaginatedItemResponse(BaseModel):
 
 class PaginatedSharedItemResponse(BaseModel):
     items: list[Union[SharedFolderItem, SharedFileItem]]
+    total: int
+    pagina: int
+    limite: int
+
+
+class PaginatedFavoriteItemReponse(BaseModel):
+    items: list[Union[FavoriteFolderBase, FavoriteFileBase]]
     total: int
     pagina: int
     limite: int

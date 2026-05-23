@@ -23,8 +23,7 @@ def test_restaurar_carpeta():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         usuario=usuario,
-        fecha_eliminacion=None,
-        favorito=False
+        fecha_eliminacion=None
     )
 
     with patch("app.routes.folder_routes.folder_services.restaurar_carpeta_papelera") as mock_restaurar:

@@ -25,8 +25,7 @@ def test_subir_archivo():
         path=f"uploads/{id}.txt",
         fecha_creacion="2026-01-21T01:44:31.825198",
         id_usuario=id,
-        usuario=usuario_falso,
-        favorito=False
+        usuario=usuario_falso
     )
 
     with patch("app.routes.file_routes.file_services.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
@@ -72,7 +71,6 @@ def test_subir_varios_archivos():
         fecha_creacion="2026-01-21T01:44:31.825198",
         id_usuario=id,
         usuario=usuario_falso,
-        favorito=False
     )
 
     archivo_falso2: File = File(
@@ -83,7 +81,6 @@ def test_subir_varios_archivos():
         fecha_creacion="2026-01-22T01:44:31.825198",
         id_usuario=id,
         usuario=usuario_falso,
-        favorito=False
     )
 
     archivos_falsos = [archivo_falso, archivo_falso2]

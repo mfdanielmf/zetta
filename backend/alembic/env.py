@@ -12,6 +12,8 @@ from app.models.file import File
 from app.models.folder import Folder
 from app.models.carpeta_compartida import CarpetaCompartida
 from app.models.archivo_compartido import ArchivoCompartido
+from app.models.archivo_favorito import ArchivoFavorito
+from app.models.carpeta_favorita import CarpetaFavorita
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

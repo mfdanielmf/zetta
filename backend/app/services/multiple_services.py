@@ -8,13 +8,15 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.models.archivo_compartido import ArchivoCompartido
+from app.models.archivo_favorito import ArchivoFavorito
 from app.models.carpeta_compartida import CarpetaCompartida
+from app.models.carpeta_favorita import CarpetaFavorita
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.models import exceptions as ex
 from app.services import file_services, folder_services, user_services, shared_file_services, shared_folder_services
-from app.repositories import file_repo, folder_repo, multiple_repo, shared_file_repo, shared_folder_repo
+from app.repositories import file_repo, folder_repo, multiple_repo, shared_file_repo, shared_folder_repo, favorite_repo
 from app.schemas import multiple_schemas
 
 
@@ -336,10 +338,18 @@ def toggle_multiples_favoritos(req: list[multiple_schemas.ItemMultipleRequest], 
                 archivo: File = file_services.obtener_archivo_id(
                     id=item.id, usuario=usuario, db=db)
 
-                archivo.favorito = not archivo.favorito
-                archivo.fecha_favorito = datetime.now(timezone.utc)
+                favorito: ArchivoFavorito | None = favorite_repo.get_favorite_file_user_by_file_id(
+                    id_archivo=archivo.id, id_usuario=usuario.id, db=db)
 
-                file_repo.update_file(archivo=archivo, db=db)
+                if favorito:
+                    favorite_repo.delete_favorite_file_no_commit(
+                        favorito=favorito, db=db)
+                else:
+                    favorito_insertar = ArchivoFavorito(
+                        id_usuario=usuario.id, id_archivo=archivo.id)
+
+                    favorite_repo.add_favorite_file_no_commit(
+                        favorito=favorito_insertar, db=db)
 
                 nombre_item = archivo.nombre_original or "desconocido"
 
@@ -347,10 +357,18 @@ def toggle_multiples_favoritos(req: list[multiple_schemas.ItemMultipleRequest], 
                 carpeta: Folder = folder_services.obtener_carpeta_usuario_id(
                     id_carpeta=item.id, usuario=usuario, db=db)
 
-                carpeta.favorito = not carpeta.favorito
-                carpeta.fecha_favorito = datetime.now(timezone.utc)
+                favorito: CarpetaFavorita | None = favorite_repo.get_favorite_folder_user_by_folder_id(
+                    id_carpeta=carpeta.id, id_usuario=usuario.id, db=db)
 
-                folder_repo.update_folder(carpeta=carpeta, db=db)
+                if favorito:
+                    favorite_repo.delete_favorite_folder_no_commit(
+                        favorito=favorito, db=db)
+                else:
+                    favorito_insertar = CarpetaFavorita(
+                        id_usuario=usuario.id, id_carpeta=carpeta.id)
+
+                    favorite_repo.add_favorite_folder_no_commit(
+                        favorito=favorito_insertar, db=db)
 
                 nombre_item = carpeta.nombre_original or "desconocido"
 
@@ -360,5 +378,7 @@ def toggle_multiples_favoritos(req: list[multiple_schemas.ItemMultipleRequest], 
                 "nombre_item": nombre_item,
                 "error": str(e1)
             })
+
+    db.commit()
 
     return errores
