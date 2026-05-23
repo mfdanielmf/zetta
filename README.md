@@ -96,6 +96,11 @@ Zetta permite subir archivos, organizarlos en carpetas o descargar archivos y ca
 - Distinción entre permisos de propietario y receptor
 - Ver elementos compartidos o recibidos y la posibilidad de descargarlos
 
+### Favoritos
+
+- Añadir archivos y carpetas a favoritos
+- Visualizar contenido destacado
+
 ### Características de Seguridad
 
 - Middleware CORS para solicitudes de origen cruzado
