@@ -110,9 +110,14 @@ def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: st
     return query.order_by(ArchivoCompartido.fecha_compartido.desc()).all()
 
 
-def get_all_received_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[ArchivoCompartido]:
+def get_all_received_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[tuple[ArchivoCompartido, bool]]:
+    exists_favorito = db.query(ArchivoFavorito.id).filter(
+        ArchivoFavorito.id_archivo == ArchivoCompartido.id_archivo,
+        ArchivoFavorito.id_usuario == id_usuario
+    ).exists()
+        
     query = (
-        db.query(ArchivoCompartido)
+        db.query(ArchivoCompartido, exists_favorito.label("favorito"))
         .options(
             joinedload(ArchivoCompartido.propietario),
             joinedload(ArchivoCompartido.receptor),

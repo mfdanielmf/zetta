@@ -335,43 +335,51 @@ def get_received_items(
                                    file_schemas.File]] = []
 
     for item in items:
-        if isinstance(item, ArchivoCompartido):
+        entidad, favorito = item
+
+        if isinstance(entidad, ArchivoCompartido):
+            archivo: File = entidad.archivo
+
             items_serializados.append(
                 item_schemas.SharedFileItem(
-                    id=item.id,
-                    fecha_compartido=item.fecha_compartido,
-                    propietario=item.propietario,
-                    receptor=item.receptor,
+                    id=entidad.id,
+                    fecha_compartido=entidad.fecha_compartido,
+                    propietario=entidad.propietario,
+                    receptor=entidad.receptor,
                     archivo=file_schemas.FileBase(
-                        id=item.archivo.id,
-                        nombre_original=item.archivo.nombre_original,
-                        path=item.archivo.path,
-                        tamaño_bytes=item.archivo.tamaño_bytes,
-                        fecha_creacion=item.archivo.fecha_creacion,
-                        id_usuario=item.archivo.id_usuario,
-                        nombre_usuario=item.archivo.usuario.nombre,
-                        id_carpeta=item.archivo.id_carpeta,
-                        fecha_eliminacion=item.archivo.fecha_eliminacion,
-                    )
+                        id=archivo.id,
+                        nombre_original=archivo.nombre_original,
+                        path=archivo.path,
+                        tamaño_bytes=archivo.tamaño_bytes,
+                        fecha_creacion=archivo.fecha_creacion,
+                        id_usuario=archivo.id_usuario,
+                        nombre_usuario=archivo.usuario.nombre,
+                        id_carpeta=archivo.id_carpeta,
+                        fecha_eliminacion=archivo.fecha_eliminacion,
+                    ),
+                    favorito=favorito
                 )
             )
         else:
+            carpeta: Folder = entidad.carpeta
+
             items_serializados.append(
                 item_schemas.SharedFolderItem(
-                    id=item.id,
-                    fecha_compartido=item.fecha_compartido,
-                    propietario=item.propietario,
-                    receptor=item.receptor,
+                    id=entidad.id,
+                    fecha_compartido=entidad.fecha_compartido,
+                    propietario=entidad.propietario,
+                    receptor=entidad.receptor,
                     carpeta=folder_schemas.FolderBase(
-                        id=item.carpeta.id,
-                        nombre_original=item.carpeta.nombre_original,
-                        path=item.carpeta.path,
-                        fecha_creacion=item.carpeta.fecha_creacion,
-                        id_usuario=item.carpeta.id_usuario,
-                        nombre_usuario=item.carpeta.usuario.nombre,
-                        id_carpeta=item.carpeta.id_carpeta,
-                        fecha_eliminacion=item.carpeta.fecha_eliminacion,
-                    )
+                        id=carpeta.id,
+                        nombre_original=carpeta.nombre_original,
+                        path=carpeta.path,
+                        fecha_creacion=carpeta.fecha_creacion,
+                        id_usuario=carpeta.id_usuario,
+                        nombre_usuario=carpeta.usuario.nombre,
+                        id_carpeta=carpeta.id_carpeta,
+                        fecha_eliminacion=carpeta.fecha_eliminacion,
+                    ),
+                    favorito=favorito
                 )
             )
 

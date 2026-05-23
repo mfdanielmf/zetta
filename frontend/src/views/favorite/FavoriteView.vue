@@ -59,6 +59,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { useDebounceFn } from '@vueuse/core'
 import type { ItemMultipleRequest } from '@/api/types/types'
 import { useGetFavoriteItems } from '@/queries/useFavoritesQuery'
+import { useAuthStore } from '@/stores/auth.store'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
@@ -78,6 +79,7 @@ const router = useRouter()
 const folderStore = useFolderStore()
 const selectedStore = useSelectedStore()
 const downloadStore = useDownloadStore()
+const authStore = useAuthStore()
 
 const mutacionInsertar = useInsertFiles()
 const { mutateAsync: mutateArchivoPapelera } = useMoveFileTrash()
@@ -146,6 +148,10 @@ const todosSeleccionados = computed(() => {
     selectedStore.itemsSeleccionados.length === dataItems.value.items.length
   )
 })
+
+function esPropietario(nombrePropietario: string) {
+  return authStore.usuario?.nombre === nombrePropietario
+}
 
 const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
@@ -455,7 +461,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
             </div>
           </TableCell>
           <TableCell class="font-medium">
-            {{ item.usuario.nombre }}
+            {{ item.tipo === 'file' ? item.archivo.nombre_usuario : item.carpeta.nombre_usuario }}
           </TableCell>
           <TableCell class="font-medium">
             {{ item.tipo === 'file' ? formatearTamañoService(item.archivo.tamaño_bytes) : '-' }}
@@ -485,6 +491,13 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
                   Descargar
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  v-if="
+                    esPropietario(
+                      item.tipo === 'file'
+                        ? item.archivo.nombre_usuario
+                        : item.carpeta.nombre_usuario,
+                    )
+                  "
                   class="hover:cursor-pointer"
                   @click="
                     item.tipo === 'folder'
@@ -496,6 +509,13 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
                   Compartir
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  v-if="
+                    esPropietario(
+                      item.tipo === 'file'
+                        ? item.archivo.nombre_usuario
+                        : item.carpeta.nombre_usuario,
+                    )
+                  "
                   class="hover:cursor-pointer"
                   @click="
                     item.tipo === 'folder'
