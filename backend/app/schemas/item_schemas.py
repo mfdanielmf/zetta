@@ -11,10 +11,12 @@ from app.schemas.shared_folder_schemas import CarpetaCompartidaBase
 
 class FileItem(FileBase):
     tipo: Literal["file"] = "file"
+    favorito: bool = False
 
 
 class FolderItem(FolderBase):
     tipo: Literal["folder"] = "folder"
+    favorito: bool = False
 
 
 class SharedFileItem(ArchivoCompartidoBase):
