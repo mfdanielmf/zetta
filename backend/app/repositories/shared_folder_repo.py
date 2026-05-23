@@ -111,9 +111,14 @@ def get_all_shared_folders_raiz_sorted(id_usuario: UUID, db: Session, busqueda: 
     return query.order_by(CarpetaCompartida.fecha_compartido.desc()).all()
 
 
-def get_all_received_folders_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[CarpetaCompartida]:
+def get_all_received_folders_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[tuple[CarpetaCompartida, bool]]:
+    exists_favorito = db.query(CarpetaFavorita.id).filter(
+        CarpetaFavorita.id_carpeta == CarpetaCompartida.id_carpeta,
+        CarpetaFavorita.id_usuario == id_usuario
+    ).exists()
+
     query = (
-        db.query(CarpetaCompartida)
+        db.query(CarpetaCompartida, exists_favorito.label("favorito"))
         .options(
             joinedload(CarpetaCompartida.propietario),
             joinedload(CarpetaCompartida.receptor),

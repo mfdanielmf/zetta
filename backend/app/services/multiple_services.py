@@ -335,8 +335,8 @@ def toggle_multiples_favoritos(req: list[multiple_schemas.ItemMultipleRequest], 
 
         try:
             if item.tipo == "archivo":
-                archivo: File = file_services.obtener_archivo_id(
-                    id=item.id, usuario=usuario, db=db)
+                archivo: File = file_services.obtener_archivo_permisos(
+                    id_archivo=item.id, usuario=usuario, db=db)
 
                 favorito: ArchivoFavorito | None = favorite_repo.get_favorite_file_user_by_file_id(
                     id_archivo=archivo.id, id_usuario=usuario.id, db=db)
@@ -354,7 +354,7 @@ def toggle_multiples_favoritos(req: list[multiple_schemas.ItemMultipleRequest], 
                 nombre_item = archivo.nombre_original or "desconocido"
 
             else:
-                carpeta: Folder = folder_services.obtener_carpeta_usuario_id(
+                carpeta: Folder = folder_services.obtener_carpeta_usuario_permisos(
                     id_carpeta=item.id, usuario=usuario, db=db)
 
                 favorito: CarpetaFavorita | None = favorite_repo.get_favorite_folder_user_by_folder_id(
