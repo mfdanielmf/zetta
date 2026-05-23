@@ -73,6 +73,7 @@ import { downloadMultipleService } from '@/services/multiple.services'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { useDebounceFn } from '@vueuse/core'
 import type { ItemMultipleRequest } from '@/api/types/types'
+import esPropietario from '@/utils/esPropietario'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CompartirCarpetaDialog = defineAsyncComponent(
@@ -529,6 +530,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
                   Descargar
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  v-if="esPropietario(item.nombre_usuario)"
                   class="hover:cursor-pointer"
                   @click="
                     item.tipo === 'folder'
@@ -540,6 +542,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
                   Compartir
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  v-if="esPropietario(item.nombre_usuario)"
                   class="hover:cursor-pointer"
                   @click="mandarItemPapelera(item.id, item.tipo)"
                 >

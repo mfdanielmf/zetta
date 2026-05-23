@@ -59,7 +59,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { useDebounceFn } from '@vueuse/core'
 import type { ItemMultipleRequest } from '@/api/types/types'
 import { useGetFavoriteItems } from '@/queries/useFavoritesQuery'
-import { useAuthStore } from '@/stores/auth.store'
+import esPropietario from '@/utils/esPropietario'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
@@ -79,7 +79,6 @@ const router = useRouter()
 const folderStore = useFolderStore()
 const selectedStore = useSelectedStore()
 const downloadStore = useDownloadStore()
-const authStore = useAuthStore()
 
 const mutacionInsertar = useInsertFiles()
 const { mutateAsync: mutateArchivoPapelera } = useMoveFileTrash()
@@ -148,10 +147,6 @@ const todosSeleccionados = computed(() => {
     selectedStore.itemsSeleccionados.length === dataItems.value.items.length
   )
 })
-
-function esPropietario(nombrePropietario: string) {
-  return authStore.usuario?.nombre === nombrePropietario
-}
 
 const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
