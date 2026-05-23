@@ -49,13 +49,11 @@ def share_file_with_user(request: Request, req: shared_file_schemas.ShareFileReq
                     nombre_original=archivo_compartido.archivo.nombre_original,
                     path=archivo_compartido.archivo.path,
                     tamaño_bytes=archivo_compartido.archivo.tamaño_bytes,
-                    favorito=archivo_compartido.archivo.favorito,
                     fecha_creacion=archivo_compartido.archivo.fecha_creacion,
                     id_usuario=archivo_compartido.archivo.id_usuario,
                     nombre_usuario=archivo_compartido.archivo.usuario.nombre,
                     id_carpeta=archivo_compartido.archivo.id_carpeta,
                     fecha_eliminacion=archivo_compartido.archivo.fecha_eliminacion,
-                    fecha_favorito=archivo_compartido.archivo.fecha_favorito
                 )
             }
         }
@@ -103,13 +101,11 @@ def share_folder_with_user(request: Request, req: shared_folder_schemas.ShareFol
                     id=carpeta_compartida.carpeta.id,
                     nombre_original=carpeta_compartida.carpeta.nombre_original,
                     path=carpeta_compartida.carpeta.path,
-                    favorito=carpeta_compartida.carpeta.favorito,
                     fecha_creacion=carpeta_compartida.carpeta.fecha_creacion,
                     id_usuario=carpeta_compartida.carpeta.id_usuario,
                     nombre_usuario=carpeta_compartida.carpeta.usuario.nombre,
                     id_carpeta=carpeta_compartida.carpeta.id_carpeta,
                     fecha_eliminacion=carpeta_compartida.carpeta.fecha_eliminacion,
-                    fecha_favorito=carpeta_compartida.carpeta.fecha_favorito
                 )
             }
         }

@@ -2,23 +2,21 @@ from typing import Union
 
 from sqlalchemy.orm import Session
 
-from app.models.file import File
-from app.models.folder import Folder
+from app.models.archivo_favorito import ArchivoFavorito
+from app.models.carpeta_favorita import CarpetaFavorita
 from app.models.user import User
 from app.repositories import favorite_repo
 
 
-def obtener_items_favoritos(db: Session, usuario: User, pagina: int, limite: int, busqueda: str | None) -> tuple[int, list[Union[Folder, File]]]:
+def obtener_items_favoritos(db: Session, usuario: User, pagina: int, limite: int, busqueda: str | None) -> tuple[int, list[Union[CarpetaFavorita, ArchivoFavorito]]]:
     offset: int = (pagina - 1) * limite
 
-    carpetas: list[Folder] = favorite_repo.get_favorite_folders(
+    carpetas: list[CarpetaFavorita] = favorite_repo.get_favorite_folders(
         id_usuario=usuario.id, db=db, busqueda=busqueda)
-    archivos: list[File] = favorite_repo.get_favorite_files(
+    archivos: list[ArchivoFavorito] = favorite_repo.get_favorite_files(
         id_usuario=usuario.id, db=db, busqueda=busqueda)
 
-    items: list[Union[Folder, File]] = carpetas + archivos
-
-    print(items)
+    items: list[Union[CarpetaFavorita, ArchivoFavorito]] = carpetas + archivos
 
     total: int = len(items)
 

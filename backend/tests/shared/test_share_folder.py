@@ -26,8 +26,7 @@ def test_crear_compartir_carpeta_success():
         path=f"uploads/{usuario.id}/{id_carpeta}",
         fecha_creacion="2026-01-21T01:44:31.825198",
         id_usuario=usuario.id,
-        usuario=usuario,
-        favorito=False
+        usuario=usuario
     )
 
     usuario_falso2 = User(

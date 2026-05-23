@@ -26,8 +26,7 @@ def test_descargar_carpeta_existente():
         path=f"uploads/{usuario.id}/testing",
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
-        usuario=usuario,
-        favorito=False
+        usuario=usuario
     )
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as tmp:

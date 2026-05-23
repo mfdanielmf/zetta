@@ -27,8 +27,7 @@ def test_compartir_archivo_success():
         tamaño_bytes=10,
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
-        usuario=usuario,
-        favorito=False
+        usuario=usuario
     )
 
     usuario_falso2: User = User(

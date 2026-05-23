@@ -39,7 +39,6 @@ def test_get_archivo_papelera():
         id_usuario=usuario.id,
         fecha_eliminacion="2026-02-15T10:00:00",
         usuario=usuario,
-        favorito=False
     )
 
     with patch("app.routes.file_routes.file_services.obtener_archivos_papelera_raiz_paginados") as mock_obtener:
@@ -77,8 +76,7 @@ def test_get_archivos_multiples_papelera():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         fecha_eliminacion="2026-02-15T10:00:00",
-        usuario=usuario,
-        favorito=False
+        usuario=usuario
     )
 
     archivo_fake2 = File(
@@ -89,8 +87,7 @@ def test_get_archivos_multiples_papelera():
         fecha_creacion="2026-01-22T01:44:31.825198",
         id_usuario=usuario.id,
         fecha_eliminacion="2026-02-15T10:00:00",
-        usuario=usuario,
-        favorito=False
+        usuario=usuario
     )
 
     archivos_falsos = [archivo_fake, archivo_fake2]

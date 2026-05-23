@@ -28,3 +28,7 @@ class User(Base):
         "ArchivoCompartido", back_populates="propietario", foreign_keys=[ArchivoCompartido.id_propietario], passive_deletes=True)
     archivos_recibidos = relationship(
         "ArchivoCompartido", back_populates="receptor", foreign_keys=[ArchivoCompartido.id_receptor], passive_deletes=True)
+    carpetas_favoritas = relationship(
+        "CarpetaFavorita", back_populates="usuario", passive_deletes=True)
+    archivos_favoritos = relationship(
+        "ArchivoFavorito", back_populates="usuario", passive_deletes=True)

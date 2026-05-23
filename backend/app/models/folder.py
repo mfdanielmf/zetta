@@ -31,4 +31,5 @@ class Folder(Base):
         "Folder", back_populates="carpeta", cascade="all, delete-orphan")
     compartida_con = relationship(
         "CarpetaCompartida", back_populates="carpeta", passive_deletes=True)
-    favoritos = relationship("CarpetaCompartida", back_populates="carpeta", passive_deletes=True)
+    favoritos = relationship(
+        "CarpetaFavorita", back_populates="carpeta", passive_deletes=True)
