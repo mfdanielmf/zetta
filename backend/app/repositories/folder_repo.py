@@ -4,6 +4,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session, aliased
 
 from app.models.carpeta_compartida import CarpetaCompartida
+from app.models.carpeta_favorita import CarpetaFavorita
 from app.models.folder import Folder
 from app.models.user import User
 
@@ -146,13 +147,19 @@ def get_folders_inside_folder_paginadas(id_carpeta: uuid.UUID, id_usuario: uuid.
     return total, carpetas
 
 
-def get_folders_user_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[Folder]:
+def get_folders_user_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[tuple[Folder, bool]]:
     # Mostrar en la raíz carpetas que han sido restauradas (la carpeta no tiene fecha de eliminación, pero su padre sí)
     CarpetaPadre = aliased(Folder)
 
-    query = db.query(Folder).outerjoin(
-        CarpetaPadre, Folder.id_carpeta == CarpetaPadre.id
-    ).filter(
+    exists_favorito = db.query(CarpetaFavorita.id).filter(
+        CarpetaFavorita.id_carpeta == Folder.id,
+        CarpetaFavorita.id_usuario == id_usuario
+    ).exists()
+
+    query = db.query(
+        Folder,
+        exists_favorito.label("favorito")
+    ).outerjoin(CarpetaPadre).filter(
         Folder.id_usuario == id_usuario,
         Folder.fecha_eliminacion == None,
         or_(
@@ -168,9 +175,14 @@ def get_folders_user_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: s
 
 
 # O propietario o usuario con permisos (acordarme de cambiarlo en algún momento en el resto de queries antiguas)
-def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[Folder]:
+def get_folders_inside_folder_sorted(id_carpeta: uuid.UUID, id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[tuple[Folder, bool]]:
+    exists_favorito = db.query(CarpetaFavorita.id).filter(
+        CarpetaFavorita.id_carpeta == Folder.id,
+        CarpetaFavorita.id_usuario == id_usuario
+    ).exists()
+
     query = (
-        db.query(Folder)
+        db.query(Folder, exists_favorito.label("favorito"))
         .outerjoin(CarpetaCompartida, CarpetaCompartida.id_carpeta == Folder.id)
         .filter(
             Folder.id_carpeta == id_carpeta,

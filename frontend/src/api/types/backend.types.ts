@@ -701,6 +701,48 @@ export interface components {
             /** Total Errores */
             total_errores: number;
         };
+        /** FavoriteFileBase */
+        FavoriteFileBase: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Fecha Favorito
+             * Format: date-time
+             */
+            fecha_favorito: string;
+            usuario: components["schemas"]["UserReturn"];
+            archivo: components["schemas"]["FileBase"];
+            /**
+             * Tipo
+             * @default file
+             * @constant
+             */
+            tipo: "file";
+        };
+        /** FavoriteFolderBase */
+        FavoriteFolderBase: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Fecha Favorito
+             * Format: date-time
+             */
+            fecha_favorito: string;
+            usuario: components["schemas"]["UserReturn"];
+            carpeta: components["schemas"]["FolderBase"];
+            /**
+             * Tipo
+             * @default folder
+             * @constant
+             */
+            tipo: "folder";
+        };
         /** FileBase */
         FileBase: {
             /**
@@ -720,11 +762,6 @@ export interface components {
             /** Tamaño Bytes */
             "tama\u00F1o_bytes": number;
             /**
-             * Favorito
-             * @default false
-             */
-            favorito: boolean;
-            /**
              * Id Usuario
              * Format: uuid
              */
@@ -735,8 +772,6 @@ export interface components {
             nombre_usuario: string;
             /** Fecha Eliminacion */
             fecha_eliminacion?: string | null;
-            /** Fecha Favorito */
-            fecha_favorito?: string | null;
         };
         /** FileItem */
         FileItem: {
@@ -757,11 +792,6 @@ export interface components {
             /** Tamaño Bytes */
             "tama\u00F1o_bytes": number;
             /**
-             * Favorito
-             * @default false
-             */
-            favorito: boolean;
-            /**
              * Id Usuario
              * Format: uuid
              */
@@ -772,14 +802,17 @@ export interface components {
             nombre_usuario: string;
             /** Fecha Eliminacion */
             fecha_eliminacion?: string | null;
-            /** Fecha Favorito */
-            fecha_favorito?: string | null;
             /**
              * Tipo
              * @default file
              * @constant
              */
             tipo: "file";
+            /**
+             * Favorito
+             * @default false
+             */
+            favorito: boolean;
         };
         /** FileResponse */
         FileResponse: {
@@ -805,11 +838,6 @@ export interface components {
              */
             fecha_creacion: string;
             /**
-             * Favorito
-             * @default false
-             */
-            favorito: boolean;
-            /**
              * Id Usuario
              * Format: uuid
              */
@@ -820,8 +848,6 @@ export interface components {
             id_carpeta?: string | null;
             /** Fecha Eliminacion */
             fecha_eliminacion?: string | null;
-            /** Fecha Favorito */
-            fecha_favorito?: string | null;
         };
         /** FolderItem */
         FolderItem: {
@@ -840,11 +866,6 @@ export interface components {
              */
             fecha_creacion: string;
             /**
-             * Favorito
-             * @default false
-             */
-            favorito: boolean;
-            /**
              * Id Usuario
              * Format: uuid
              */
@@ -855,14 +876,17 @@ export interface components {
             id_carpeta?: string | null;
             /** Fecha Eliminacion */
             fecha_eliminacion?: string | null;
-            /** Fecha Favorito */
-            fecha_favorito?: string | null;
             /**
              * Tipo
              * @default folder
              * @constant
              */
             tipo: "folder";
+            /**
+             * Favorito
+             * @default false
+             */
+            favorito: boolean;
         };
         /** FolderRequest */
         FolderRequest: {
@@ -921,6 +945,17 @@ export interface components {
             /** Items Totales */
             items_totales: number;
             errores?: components["schemas"]["ErroresMultiple"] | null;
+        };
+        /** PaginatedFavoriteItemReponse */
+        PaginatedFavoriteItemReponse: {
+            /** Items */
+            items: (components["schemas"]["FavoriteFolderBase"] | components["schemas"]["FavoriteFileBase"])[];
+            /** Total */
+            total: number;
+            /** Pagina */
+            pagina: number;
+            /** Limite */
+            limite: number;
         };
         /** PaginatedFileResponse */
         PaginatedFileResponse: {
@@ -2325,7 +2360,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PaginatedItemResponse"];
+                    "application/json": components["schemas"]["PaginatedFavoriteItemReponse"];
                 };
             };
             /** @description Validation Error */

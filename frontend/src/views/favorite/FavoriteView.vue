@@ -417,7 +417,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
           :key="item.id"
           @click="
             item.tipo === 'folder'
-              ? handleNavigationDetallesCarpeta(item.id, item.nombre_original)
+              ? handleNavigationDetallesCarpeta(item.carpeta.id, item.carpeta.nombre_original)
               : null
           "
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
@@ -433,9 +433,14 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
               <Spinner v-if="loadingFavoritoId === item.id" />
               <Star
                 v-else
-                @click.stop="añadirFavorito(item.id, item.tipo)"
+                @click.stop="
+                  añadirFavorito(
+                    item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
+                    item.tipo,
+                  )
+                "
                 :size="20"
-                :fill="item.favorito === true ? 'black' : 'transparent'"
+                fill="black"
               />
             </div>
           </TableCell>
@@ -443,18 +448,20 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
               <Folder :size="20" v-if="item.tipo === 'folder'" />
-              <component :is="getIconExtension(item.nombre_original)" :size="20" v-else />
-              {{ item.nombre_original }}
+              <component :is="getIconExtension(item.archivo.nombre_original)" :size="20" v-else />
+              {{
+                item.tipo === 'file' ? item.archivo.nombre_original : item.carpeta.nombre_original
+              }}
             </div>
           </TableCell>
           <TableCell class="font-medium">
-            {{ item.nombre_usuario }}
+            {{ item.usuario.nombre }}
           </TableCell>
           <TableCell class="font-medium">
-            {{ item.tipo === 'file' ? formatearTamañoService(item.tamaño_bytes) : '-' }}
+            {{ item.tipo === 'file' ? formatearTamañoService(item.archivo.tamaño_bytes) : '-' }}
           </TableCell>
           <TableCell class="font-medium">
-            {{ formatDateService(item.fecha_favorito ? item.fecha_favorito : item.fecha_creacion) }}
+            {{ formatDateService(item.fecha_favorito ? item.fecha_favorito : '-') }}
           </TableCell>
           <TableCell>
             <DropdownMenu>
@@ -470,8 +477,8 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
                   class="hover:cursor-pointer"
                   @click="
                     item.tipo === 'folder'
-                      ? descargarCarpeta(item.id, item.nombre_original)
-                      : descargarArchivo(item.id, item.nombre_original)
+                      ? descargarCarpeta(item.carpeta.id, item.carpeta.nombre_original)
+                      : descargarArchivo(item.archivo.id, item.archivo.nombre_original)
                   "
                 >
                   <Download />
@@ -481,8 +488,8 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
                   class="hover:cursor-pointer"
                   @click="
                     item.tipo === 'folder'
-                      ? abrirCompartirCarpeta(item.id)
-                      : abrirCompartirArchivo(item.id)
+                      ? abrirCompartirCarpeta(item.carpeta.id)
+                      : abrirCompartirArchivo(item.archivo.id)
                   "
                 >
                   <Share2 />
@@ -492,8 +499,8 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
                   class="hover:cursor-pointer"
                   @click="
                     item.tipo === 'folder'
-                      ? mandarCarpetaPapelera(item.id)
-                      : mandarArchivoPapelera(item.id)
+                      ? mandarCarpetaPapelera(item.carpeta.id)
+                      : mandarArchivoPapelera(item.archivo.id)
                   "
                 >
                   <Trash2 />
