@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-vue-next'
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  ChevronsUpDown,
+  HardDrive,
+  LogOut,
+  Star,
+  Trash2,
+} from 'lucide-vue-next'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -21,7 +29,7 @@ import { useAuthStore } from '@/stores/auth.store'
 import { useRouter } from 'vue-router'
 import type { UserReturn } from '@/api/types/types'
 
-const props = defineProps<{
+defineProps<{
   user: UserReturn
 }>()
 
@@ -30,8 +38,8 @@ const { isMobile } = useSidebar()
 const authStore = useAuthStore()
 const router = useRouter()
 
-async function handleLogout() {
-  const success = await authStore.cerrarSesion()
+function handleLogout() {
+  const success = authStore.cerrarSesion()
 
   if (success) router.push({ name: 'login' })
 }
@@ -79,26 +87,41 @@ async function handleLogout() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <Sparkles />
-              Upgrade to Pro
+            <DropdownMenuItem as-child>
+              <RouterLink :to="{ name: 'archivos' }">
+                <HardDrive />
+                Mi Unidad
+              </RouterLink>
+            </DropdownMenuItem>
+            <DropdownMenuItem as-child>
+              <RouterLink :to="{ name: 'papelera' }">
+                <Trash2 />
+                Papelera
+              </RouterLink>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <BadgeCheck />
-              Account
+            <DropdownMenuItem as-child>
+              <RouterLink :to="{ name: 'recibidos' }">
+                <ArrowDownLeft />
+                Recibidos
+              </RouterLink>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <CreditCard />
-              Billing
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Bell />
-              Notifications
+            <DropdownMenuItem as-child>
+              <RouterLink :to="{ name: 'compartidos' }">
+                <ArrowUpRight />
+                Enviados
+              </RouterLink>
             </DropdownMenuItem>
           </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem as-child>
+            <RouterLink :to="{ name: 'favoritos' }">
+              <Star />
+              Favoritos
+            </RouterLink>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem @click="handleLogout">
             <LogOut />
