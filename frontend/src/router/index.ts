@@ -107,6 +107,11 @@ const router = createRouter({
               name: 'favoritos',
               component: FavoriteView,
             },
+            {
+              path: ':id',
+              name: 'carpetaFavorita',
+              component: FolderFilesView,
+            },
           ],
         },
       ],
@@ -188,7 +193,8 @@ router.afterEach((to) => {
     to.name != 'carpeta' &&
     to.name != 'carpetaPapelera' &&
     to.name != 'carpetaCompartida' &&
-    to.name != 'carpetaRecibida'
+    to.name != 'carpetaRecibida' &&
+    to.name != 'carpetaFavorita'
   ) {
     folderStore.limpiarCarpetas()
   }

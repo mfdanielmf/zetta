@@ -59,7 +59,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { useDebounceFn } from '@vueuse/core'
 import type { ItemMultipleRequest } from '@/api/types/types'
 import { useGetFavoriteItems } from '@/queries/useFavoritesQuery'
-import { useAuthStore } from '@/stores/auth.store'
+import esPropietario from '@/utils/esPropietario'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CrearCarpetaDialog = defineAsyncComponent(
@@ -79,7 +79,6 @@ const router = useRouter()
 const folderStore = useFolderStore()
 const selectedStore = useSelectedStore()
 const downloadStore = useDownloadStore()
-const authStore = useAuthStore()
 
 const mutacionInsertar = useInsertFiles()
 const { mutateAsync: mutateArchivoPapelera } = useMoveFileTrash()
@@ -149,10 +148,6 @@ const todosSeleccionados = computed(() => {
   )
 })
 
-function esPropietario(nombrePropietario: string) {
-  return authStore.usuario?.nombre === nombrePropietario
-}
-
 const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
 const compartirCarpetaAbierto = ref<boolean>(false)
@@ -188,7 +183,7 @@ async function mandarCarpetaPapelera(idCarpeta: string) {
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
 
-  router.push({ name: 'carpeta', params: { id: idCarpeta } })
+  router.push({ name: 'carpetaFavorita', params: { id: idCarpeta } })
 }
 
 async function compartirCarpeta(correo: string) {
