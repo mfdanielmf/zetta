@@ -21,10 +21,12 @@ class FolderItem(FolderBase):
 
 class SharedFileItem(ArchivoCompartidoBase):
     tipo: Literal["file"] = "file"
+    favorito: bool = False
 
 
 class SharedFolderItem(CarpetaCompartidaBase):
     tipo: Literal["folder"] = "folder"
+    favorito: bool = False
 
 
 class PaginatedItemResponse(BaseModel):
