@@ -197,6 +197,8 @@ def download_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user),
         )
     except ex.CarpetaNoEncontradaException as e1:
         raise HTTPException(404, detail=str(e1))
+    except Exception:
+        raise HTTPException(500, detail="Error interno al generar el ZIP")
 
 
 @folder_router.delete("/{id_carpeta}", response_model=folder_schemas.AddFolderTrashResponse)

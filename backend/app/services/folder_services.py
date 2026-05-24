@@ -361,8 +361,15 @@ def descargar_carpeta(id_carpeta: uuid.UUID, usuario: User, db: Session) -> tupl
     zip_path: str = archivo_temp.name
     archivo_temp.close()
 
-    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-        añadir_carpeta_a_zip(zipf=zipf, carpeta=carpeta, path_base="")
+    try:
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+            añadir_carpeta_a_zip(zipf=zipf, carpeta=carpeta, path_base="")
+    except Exception:
+        # Eliminar zip si ocurre cualquier error
+        if os.path.exists(zip_path):
+            os.remove(zip_path)
+
+        raise
 
     return zip_path, carpeta
 
@@ -376,8 +383,9 @@ def añadir_carpeta_a_zip(zipf: zipfile.ZipFile, carpeta: Folder, path_base: str
     # Añadimos los archivos que tenga la carpeta al zip
     for archivo in carpeta.archivos:
         if archivo.fecha_eliminacion is None:
-            zipf.write(
-                archivo.path, arcname=f"{path_actual}{archivo.nombre_original}")
+            if os.path.exists(archivo.path):
+                zipf.write(
+                    archivo.path, arcname=f"{path_actual}{archivo.nombre_original}")
 
     # Añadimos las carpetas anidadas
     for carpeta_anidada in carpeta.carpetas:

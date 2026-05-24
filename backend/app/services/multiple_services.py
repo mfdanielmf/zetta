@@ -259,23 +259,31 @@ def descargar_multiples_items(items: list[multiple_schemas.ItemMultipleRequest],
     zip_path: str = archivo_temp.name
     archivo_temp.close()
 
-    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+    try:
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
 
-        for item in items:
-            if item.tipo == "archivo":
-                archivo: File = file_services.obtener_archivo_permisos(
-                    id_archivo=item.id, usuario=usuario, db=db)
+            for item in items:
+                if item.tipo == "archivo":
+                    archivo: File = file_services.obtener_archivo_permisos(
+                        id_archivo=item.id, usuario=usuario, db=db)
 
-                zipf.write(archivo.path, arcname=archivo.nombre_original)
+                    if os.path.exists(archivo.path):
+                        zipf.write(
+                            archivo.path, arcname=archivo.nombre_original)
 
-            else:
-                carpeta: Folder = folder_services.obtener_carpeta_usuario_permisos(
-                    id_carpeta=item.id, usuario=usuario, db=db)
+                else:
+                    carpeta: Folder = folder_services.obtener_carpeta_usuario_permisos(
+                        id_carpeta=item.id, usuario=usuario, db=db)
 
-                folder_services.añadir_carpeta_a_zip(
-                    zipf=zipf, carpeta=carpeta, path_base="")
+                    folder_services.añadir_carpeta_a_zip(
+                        zipf=zipf, carpeta=carpeta, path_base="")
 
-    return zip_path
+        return zip_path
+    except Exception:
+        if os.path.exists(zip_path):
+            os.remove(zip_path)
+
+            raise
 
 
 def cancelar_multiples_compartidos(req: list[multiple_schemas.ItemMultipleRequest], usuario: User, db: Session):
