@@ -2,9 +2,9 @@ import itemsApi from '@/api/items/items.api'
 import axios from 'axios'
 import { toast } from 'vue-sonner'
 
-export async function getItemsService(pagina: number, limite: number) {
+export async function getItemsService(pagina: number, limite: number, busqueda: string) {
   try {
-    const req = await itemsApi.obtenerItems({ pagina, limite })
+    const req = await itemsApi.obtenerItems({ pagina, limite, busqueda })
 
     return req.data
   } catch (e: unknown) {
@@ -16,9 +16,14 @@ export async function getItemsService(pagina: number, limite: number) {
   }
 }
 
-export async function getItemsFolderService(idCarpeta: string, pagina: number, limite: number) {
+export async function getItemsFolderService(
+  idCarpeta: string,
+  pagina: number,
+  limite: number,
+  busqueda: string,
+) {
   try {
-    const req = await itemsApi.obtenerItemsCarpeta(idCarpeta, { pagina, limite })
+    const req = await itemsApi.obtenerItemsCarpeta(idCarpeta, { pagina, limite, busqueda })
 
     return req.data
   } catch (e: unknown) {
@@ -30,9 +35,9 @@ export async function getItemsFolderService(idCarpeta: string, pagina: number, l
   }
 }
 
-export async function getItemsTrashService(pagina: number, limite: number) {
+export async function getItemsTrashService(pagina: number, limite: number, busqueda: string) {
   try {
-    const req = await itemsApi.obtenerItemsPapelera({ pagina, limite })
+    const req = await itemsApi.obtenerItemsPapelera({ pagina, limite, busqueda })
 
     return req.data
   } catch (e: unknown) {
@@ -48,9 +53,10 @@ export async function getItemsFolderTrashService(
   idCarpeta: string,
   pagina: number,
   limite: number,
+  busqueda: string,
 ) {
   try {
-    const req = await itemsApi.obtenerItemsCarpetaPapelera(idCarpeta, { pagina, limite })
+    const req = await itemsApi.obtenerItemsCarpetaPapelera(idCarpeta, { pagina, limite, busqueda })
 
     return req.data
   } catch (e: unknown) {
@@ -62,9 +68,9 @@ export async function getItemsFolderTrashService(
   }
 }
 
-export async function getReceivedItemsService(pagina: number, limite: number) {
+export async function getReceivedItemsService(pagina: number, limite: number, busqueda: string) {
   try {
-    const req = await itemsApi.obtenerItemsRecibidos({ pagina, limite })
+    const req = await itemsApi.obtenerItemsRecibidos({ pagina, limite, busqueda })
 
     return req.data
   } catch (e: unknown) {
@@ -76,9 +82,9 @@ export async function getReceivedItemsService(pagina: number, limite: number) {
   }
 }
 
-export async function getSentItemsService(pagina: number, limite: number) {
+export async function getSentItemsService(pagina: number, limite: number, busqueda: string) {
   try {
-    const req = await itemsApi.obtenerItemsCompartidos({ pagina, limite })
+    const req = await itemsApi.obtenerItemsCompartidos({ pagina, limite, busqueda })
 
     return req.data
   } catch (e: unknown) {

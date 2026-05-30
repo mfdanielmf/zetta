@@ -41,8 +41,8 @@ import { downloadFolderService } from '@/services/folder.services'
 
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
-import { Download, Ellipsis, Folder } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import { Download, Ellipsis, Folder, SearchIcon, Star } from 'lucide-vue-next'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSelectedStore } from '@/stores/selected.store'
 import { useDownloadStore } from '@/stores/download.store'
@@ -50,6 +50,10 @@ import { downloadMultipleService } from '@/services/multiple.services'
 import { toast } from 'vue-sonner'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
+import { useDebounceFn } from '@vueuse/core'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import type { ItemMultipleRequest } from '@/api/types/types'
+import { useToggleFavoriteMultiple } from '@/queries/useMultipleQuery'
 
 const router = useRouter()
 const folderStore = useFolderStore()
@@ -73,10 +77,27 @@ const todosSeleccionados = computed(() => {
   )
 })
 
+const loadingFavoritoId = ref<string | null>(null)
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
+const busqueda = ref<string>('')
+const busquedaDebounced = ref<string>('')
+const setBusquedaDebounced = useDebounceFn((value: string) => {
+  busquedaDebounced.value = value
+  pagina.value = 1
+}, 500)
 
-const { data: dataItems, isLoading: loadingItems } = useGetReceivedItems(pagina, limite)
+watch(busqueda, (nuevoValor: string) => {
+  setBusquedaDebounced(nuevoValor)
+  selectedStore.reset()
+})
+
+const { data: dataItems, isLoading: loadingItems } = useGetReceivedItems(
+  pagina,
+  limite,
+  busquedaDebounced,
+)
+const { mutateAsync: mutateToggleFavorito } = useToggleFavoriteMultiple()
 
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
@@ -125,12 +146,45 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
     selectedStore.reset()
   }
 }
+
+async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
+  const data: ItemMultipleRequest = [
+    {
+      id: idItem,
+      tipo: tipo === 'file' ? 'archivo' : 'carpeta',
+    },
+  ]
+
+  try {
+    loadingFavoritoId.value = idItem
+
+    await mutateToggleFavorito(data)
+  } catch {
+  } finally {
+    loadingFavoritoId.value = null
+  }
+}
 </script>
 
 <template>
   <div class="space-y-2">
-    <div class="flex items-center justify-end gap-4" v-if="selectedStore.hayItems">
+    <div class="flex items-center flex-wrap justify-between gap-4">
+      <InputGroup class="max-w-73.5">
+        <InputGroupInput placeholder="Buscar..." v-model="busqueda" id="busqueda" />
+        <InputGroupAddon>
+          <SearchIcon />
+        </InputGroupAddon>
+        <InputGroupAddon align="inline-end">
+          <Spinner v-if="loadingItems" />
+          <span v-else>
+            {{ dataItems?.total ?? 0 }}
+            {{ (dataItems?.total ?? 0) === 1 ? 'resultado' : 'resultados' }}</span
+          >
+        </InputGroupAddon>
+      </InputGroup>
+
       <Button
+        v-if="selectedStore.hayItems"
         variant="outline"
         class="cursor-pointer"
         @click="descargarSeleccion"
@@ -180,21 +234,40 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
           <TableCell class="cursor-default" @click.stop>
-            <Checkbox
-              class="border-neutral-400"
-              :model-value="
-                selectedStore.estaSeleccionado(
-                  item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
-                )
-              "
-              @update:model-value="
-                () =>
-                  handleSelection(
+            <div class="flex items-center gap-4">
+              <Checkbox
+                class="border-neutral-400"
+                :model-value="
+                  selectedStore.estaSeleccionado(
+                    item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
+                  )
+                "
+                @update:model-value="
+                  () =>
+                    handleSelection(
+                      item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
+                      item.tipo,
+                    )
+                "
+              />
+
+              <Spinner
+                v-if="
+                  loadingFavoritoId === (item.tipo === 'file' ? item.archivo.id : item.carpeta.id)
+                "
+              />
+              <Star
+                v-else
+                @click.stop="
+                  añadirFavorito(
                     item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
                     item.tipo,
                   )
-              "
-            />
+                "
+                :size="20"
+                :fill="item.favorito === true ? 'black' : 'transparent'"
+              />
+            </div>
           </TableCell>
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">

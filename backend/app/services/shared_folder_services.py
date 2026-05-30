@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy.orm import Session
 
 from app.models.carpeta_compartida import CarpetaCompartida
@@ -162,3 +164,13 @@ def obtener_carpetas_recibidas_paginadas(usuario: User, db: Session, pagina: int
         )
 
     return total, recibidos_base
+
+
+def obtener_carpeta_compartida_no_receptor(id_compartido: UUID, id_propietario: UUID, db: Session) -> CarpetaCompartida:
+    carpeta: CarpetaCompartida | None = shared_folder_repo.get_shared_folder_no_receptor(id_compartido=id_compartido, id_propietario=id_propietario, db=db)
+
+    if not carpeta:
+        raise ex.CarpetaNoEncontradaException(
+            f"No se ha encontrado el elemento compartido con ID {id_compartido}")
+
+    return carpeta

@@ -1,3 +1,4 @@
+import os
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, Request
@@ -34,7 +35,7 @@ def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current
                 id_usuario=archivo_db.id_usuario,
                 nombre_usuario=archivo_db.usuario.nombre,
                 id_carpeta=archivo_db.id_carpeta,
-                fecha_eliminacion=archivo_db.fecha_eliminacion
+                fecha_eliminacion=archivo_db.fecha_eliminacion,
             )
             for archivo_db in archivos
         ],
@@ -65,7 +66,7 @@ async def upload_file(request: Request, file_upload: list[UploadFile] = File(...
                     id_usuario=archivo.id_usuario,
                     nombre_usuario=archivo.usuario.nombre,
                     id_carpeta=archivo.id_carpeta,
-                    fecha_eliminacion=archivo.fecha_eliminacion
+                    fecha_eliminacion=archivo.fecha_eliminacion,
                 ) for archivo in archivos
             ]
         }
@@ -95,7 +96,7 @@ def get_files_trash(usuario: User = Depends(get_current_user), db: Session = Dep
                 id_usuario=archivo_db.id_usuario,
                 nombre_usuario=archivo_db.usuario.nombre,
                 id_carpeta=archivo_db.id_carpeta,
-                fecha_eliminacion=archivo_db.fecha_eliminacion
+                fecha_eliminacion=archivo_db.fecha_eliminacion,
             )
             for archivo_db in archivos
         ],
@@ -123,10 +124,14 @@ def delete_file_permanent(request: Request, id_archivo: UUID, usuario: User = De
 
 
 @file_router.get("/{id_archivo}", response_class=FileResp)
-def download_files(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+def download_file(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
     try:
         archivo: File = file_services.obtener_archivo_permisos(
             id_archivo=id_archivo, usuario=usuario, db=db)
+
+        if not os.path.exists(archivo.path):
+            raise HTTPException(
+                404, detail="No se ha encontrado el archivo en el sistema de almacenamiento")
 
         return FileResp(path=archivo.path, filename=archivo.nombre_original)
     except ex.ArchivoNoEncontradoException:
@@ -151,7 +156,7 @@ def restore_file_from_trash(id_archivo: UUID, db: Session = Depends(get_db), usu
                 id_usuario=archivo.id_usuario,
                 nombre_usuario=archivo.usuario.nombre,
                 id_carpeta=archivo.id_carpeta,
-                fecha_eliminacion=archivo.fecha_eliminacion
+                fecha_eliminacion=archivo.fecha_eliminacion,
             )
         }
 

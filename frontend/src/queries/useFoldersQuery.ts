@@ -138,6 +138,14 @@ export function useMoveFolderTrash() {
         queryKey: ['itemsCarpeta'],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCarpetaPapelera'],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['favoritos'],
+      })
+
       toast.success(data?.msg || 'Carpeta eliminada correctamente. Puedes verla en la papelera')
     },
     onError: (e: unknown) => {
@@ -176,6 +184,10 @@ export function useRestoreFolder() {
 
       queryClient.invalidateQueries({
         queryKey: ['itemsCarpeta'],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['favoritos'],
       })
 
       toast.success(data?.msg || 'Carpeta restaurada correctamente')

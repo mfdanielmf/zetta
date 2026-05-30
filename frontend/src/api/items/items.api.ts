@@ -1,3 +1,4 @@
+import type { Params } from '@/types/types'
 import api from '../axios.config'
 import type {
   GetFolderItemsResponse,
@@ -11,24 +12,24 @@ import type {
 const URL = '/api/v2/items'
 
 export default {
-  obtenerItems(params: { pagina: number; limite: number }) {
-    return api().get<GetItemsResponse>(URL, { params: params })
+  obtenerItems(params: Params) {
+    return api().get<GetItemsResponse>(URL, { params })
   },
-  obtenerItemsCarpeta(idCarpeta: string, params: { pagina: number; limite: number }) {
-    return api().get<GetFolderItemsResponse>(URL + `/${idCarpeta}/items`, { params: params })
+  obtenerItemsCarpeta(idCarpeta: string, params: Params) {
+    return api().get<GetFolderItemsResponse>(URL + `/${idCarpeta}/items`, { params })
   },
-  obtenerItemsPapelera(params: { pagina: number; limite: number }) {
-    return api().get<GetItemsTrashResponse>(URL + '/trash', { params: params })
+  obtenerItemsPapelera(params: Params) {
+    return api().get<GetItemsTrashResponse>(URL + '/trash', { params })
   },
-  obtenerItemsCarpetaPapelera(idCarpeta: string, params: { pagina: number; limite: number }) {
+  obtenerItemsCarpetaPapelera(idCarpeta: string, params: Params) {
     return api().get<GetItemsFolderTrashResponse>(URL + `/trash/${idCarpeta}/items`, {
       params: params,
     })
   },
-  obtenerItemsRecibidos(params: { pagina: number; limite: number }) {
-    return api().get<GetReceivedItemsResponse>(URL + '/shared/received', { params: params })
+  obtenerItemsRecibidos(params: Params) {
+    return api().get<GetReceivedItemsResponse>(URL + '/shared/received', { params })
   },
-  obtenerItemsCompartidos(params: { pagina: number; limite: number }) {
-    return api().get<GetSentItemsResponse>(URL + '/shared/sent', { params: params })
+  obtenerItemsCompartidos(params: Params) {
+    return api().get<GetSentItemsResponse>(URL + '/shared/sent', { params })
   },
 }

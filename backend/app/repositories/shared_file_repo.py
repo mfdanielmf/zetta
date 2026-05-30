@@ -3,6 +3,8 @@ from uuid import UUID
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.archivo_compartido import ArchivoCompartido
+from app.models.archivo_favorito import ArchivoFavorito
+from app.models.file import File
 
 
 def add_shared_file_db(archivo_compartido: ArchivoCompartido, db: Session) -> ArchivoCompartido:
@@ -15,6 +17,10 @@ def add_shared_file_db(archivo_compartido: ArchivoCompartido, db: Session) -> Ar
 
 def get_shared_file(id_archivo: UUID, id_receptor: UUID, db: Session) -> ArchivoCompartido | None:
     return db.query(ArchivoCompartido).filter_by(id_archivo=id_archivo, id_receptor=id_receptor).first()
+
+
+def get_shared_file_no_receptor(id_compartido: UUID, id_propietario: UUID, db: Session) -> ArchivoCompartido | None:
+    return db.query(ArchivoCompartido).filter_by(id=id_compartido, id_propietario=id_propietario).first()
 
 
 def get_all_shared_files_raiz(id_usuario: UUID, db: Session) -> list[ArchivoCompartido]:
@@ -80,29 +86,49 @@ def get_all_received_files_raiz_paginados(id_usuario: UUID, db: Session, offset:
     return total, archivos_recibidos
 
 
-def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session) -> list[ArchivoCompartido]:
-    return (
-        db.query(ArchivoCompartido)
+def get_all_shared_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[tuple[ArchivoCompartido, bool]]:
+    exists_favorito = db.query(ArchivoFavorito.id).filter(
+        ArchivoFavorito.id_archivo == ArchivoCompartido.id_archivo,
+        ArchivoFavorito.id_usuario == id_usuario
+    ).exists()
+
+    query = (
+        db.query(ArchivoCompartido, exists_favorito.label("favorito"))
         .options(
             joinedload(ArchivoCompartido.propietario),
             joinedload(ArchivoCompartido.receptor),
             joinedload(ArchivoCompartido.archivo)
         )
         .filter_by(id_propietario=id_usuario)
-        .order_by(ArchivoCompartido.fecha_compartido.desc())
-        .all()
     )
 
+    if busqueda:
+        query = query.join(ArchivoCompartido.archivo).filter(
+            File.nombre_original.ilike(f"%{busqueda}%")
+        )
 
-def get_all_received_files_raiz_sorted(id_usuario: UUID, db: Session) -> list[ArchivoCompartido]:
-    return (
-        db.query(ArchivoCompartido)
+    return query.order_by(ArchivoCompartido.fecha_compartido.desc()).all()
+
+
+def get_all_received_files_raiz_sorted(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[tuple[ArchivoCompartido, bool]]:
+    exists_favorito = db.query(ArchivoFavorito.id).filter(
+        ArchivoFavorito.id_archivo == ArchivoCompartido.id_archivo,
+        ArchivoFavorito.id_usuario == id_usuario
+    ).exists()
+        
+    query = (
+        db.query(ArchivoCompartido, exists_favorito.label("favorito"))
         .options(
             joinedload(ArchivoCompartido.propietario),
             joinedload(ArchivoCompartido.receptor),
             joinedload(ArchivoCompartido.archivo)
         )
         .filter_by(id_receptor=id_usuario)
-        .order_by(ArchivoCompartido.fecha_compartido.desc())
-        .all()
     )
+
+    if busqueda:
+        query = query.join(ArchivoCompartido.archivo).filter(
+            File.nombre_original.ilike(f"%{busqueda}%")
+        )
+
+    return query.order_by(ArchivoCompartido.fecha_compartido.desc()).all()

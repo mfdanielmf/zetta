@@ -18,8 +18,15 @@ def test_subir_archivo():
 
     id: uuid.UUID = uuid.uuid4()
     usuario_falso: User = User(id=id, nombre="testinggg")
-    archivo_falso: File = File(id=id, nombre_original="test.txt", tamaño_bytes="20",
-                               path=f"uploads/{id}.txt", fecha_creacion="2026-01-21T01:44:31.825198", id_usuario=id, usuario=usuario_falso)
+    archivo_falso: File = File(
+        id=id,
+        nombre_original="test.txt",
+        tamaño_bytes="20",
+        path=f"uploads/{id}.txt",
+        fecha_creacion="2026-01-21T01:44:31.825198",
+        id_usuario=id,
+        usuario=usuario_falso
+    )
 
     with patch("app.routes.file_routes.file_services.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.return_value = archivo_falso
@@ -56,10 +63,25 @@ def test_subir_varios_archivos():
 
     id: uuid.UUID = uuid.uuid4()
     usuario_falso: User = User(id=id, nombre="testinggg")
-    archivo_falso: File = File(id=id, nombre_original="test.txt", tamaño_bytes="20",
-                               path=f"uploads/{id}.txt", fecha_creacion="2026-01-21T01:44:31.825198", id_usuario=id, usuario=usuario_falso)
-    archivo_falso2: File = File(id=id, nombre_original="test2.txt", tamaño_bytes="100",
-                                path=f"uploads/{id}.txt", fecha_creacion="2026-01-22T01:44:31.825198", id_usuario=id, usuario=usuario_falso)
+    archivo_falso: File = File(
+        id=id,
+        nombre_original="test.txt",
+        tamaño_bytes="20",
+        path=f"uploads/{id}.txt",
+        fecha_creacion="2026-01-21T01:44:31.825198",
+        id_usuario=id,
+        usuario=usuario_falso,
+    )
+
+    archivo_falso2: File = File(
+        id=id,
+        nombre_original="test2.txt",
+        tamaño_bytes="100",
+        path=f"uploads/{id}.txt",
+        fecha_creacion="2026-01-22T01:44:31.825198",
+        id_usuario=id,
+        usuario=usuario_falso,
+    )
 
     archivos_falsos = [archivo_falso, archivo_falso2]
 

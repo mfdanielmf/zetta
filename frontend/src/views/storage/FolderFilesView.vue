@@ -45,16 +45,35 @@ import config from '@/config/config'
 import { downloadFolderService } from '@/services/folder.services'
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
-import { Download, Ellipsis, Folder, FolderPlus, Plus, Share2, Upload } from 'lucide-vue-next'
-import { computed, defineAsyncComponent, ref } from 'vue'
+import {
+  Download,
+  Ellipsis,
+  Folder,
+  FolderPlus,
+  Plus,
+  SearchIcon,
+  Share2,
+  Star,
+  Trash2,
+  Upload,
+} from 'lucide-vue-next'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { useSelectedStore } from '@/stores/selected.store'
-import { useShareMultiple } from '@/queries/useMultipleQuery'
+import {
+  useMoveSelectedTrash,
+  useShareMultiple,
+  useToggleFavoriteMultiple,
+} from '@/queries/useMultipleQuery'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
 import { useDownloadStore } from '@/stores/download.store'
 import { downloadMultipleService } from '@/services/multiple.services'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import { useDebounceFn } from '@vueuse/core'
+import type { ItemMultipleRequest } from '@/api/types/types'
+import esPropietario from '@/utils/esPropietario'
 
 const ArchivoDialog = defineAsyncComponent(() => import('@/components/files/ArchivoDialog.vue'))
 const CompartirCarpetaDialog = defineAsyncComponent(
@@ -113,11 +132,34 @@ const {
   isSuccess: successShareMultiple,
   isPending: pendingShareMultiple,
 } = useShareMultiple()
+const {
+  mutateAsync: mutatePapeleraSelected,
+  isSuccess: successPapeleraSelected,
+  isPending: pendingPapeleraSelected,
+} = useMoveSelectedTrash()
+const { mutateAsync: mutateToggleFavorito } = useToggleFavoriteMultiple()
 
+const loadingFavoritoId = ref<string | null>(null)
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
+const busqueda = ref<string>('')
+const busquedaDebounced = ref<string>('')
+const setBusquedaDebounced = useDebounceFn((value: string) => {
+  busquedaDebounced.value = value
+  pagina.value = 1
+}, 500)
 
-const { data: dataItems, isLoading: loadingItems } = useGetFolderItems(idCarpeta, pagina, limite)
+watch(busqueda, (nuevoValor: string) => {
+  setBusquedaDebounced(nuevoValor)
+  selectedStore.reset()
+})
+
+const { data: dataItems, isLoading: loadingItems } = useGetFolderItems(
+  idCarpeta,
+  pagina,
+  limite,
+  busquedaDebounced,
+)
 
 const subirAbierto = ref<boolean>(false)
 const crearAbierto = ref<boolean>(false)
@@ -149,7 +191,11 @@ async function crearCarpeta(nombreCarpeta: string) {
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
 
-  router.push({ name: 'carpeta', params: { id: idCarpeta } })
+  if (route.name === 'favorito' || route.name === 'carpetaFavorita') {
+    router.push({ name: 'carpetaFavorita', params: { id: idCarpeta } })
+  } else {
+    router.push({ name: 'carpeta', params: { id: idCarpeta } })
+  }
 }
 
 async function compartirCarpeta(correo: string) {
@@ -249,36 +295,95 @@ async function descargarSeleccion() {
     selectedStore.reset()
   }
 }
+
+async function mandarPapeleraSeleccion() {
+  try {
+    if (selectedStore.hayItems) {
+      await mutatePapeleraSelected(selectedStore.itemsSeleccionados)
+
+      if (successPapeleraSelected) selectedStore.reset()
+    } else {
+      toast.error('Selecciona items')
+    }
+  } catch {}
+}
+
+async function mandarItemPapelera(idItem: string, tipo: 'file' | 'folder') {
+  try {
+    const data: ItemMultipleRequest = [
+      {
+        id: idItem,
+        tipo: tipo === 'file' ? 'archivo' : 'carpeta',
+      },
+    ]
+
+    await mutatePapeleraSelected(data)
+  } catch {}
+}
+
+async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
+  const data: ItemMultipleRequest = [
+    {
+      id: idItem,
+      tipo: tipo === 'file' ? 'archivo' : 'carpeta',
+    },
+  ]
+
+  try {
+    loadingFavoritoId.value = idItem
+
+    await mutateToggleFavorito(data)
+  } catch {
+  } finally {
+    loadingFavoritoId.value = null
+  }
+}
 </script>
 
 <template>
   <div class="space-y-2">
-    <div class="flex gap-4 justify-between">
-      <DropdownMenu>
-        <DropdownMenuTrigger as-child>
-          <Button variant="outline" class="hover:cursor-pointer">
-            <Plus />
-            Añadir
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-56" align="start">
-          <DropdownMenuLabel>Archivos</DropdownMenuLabel>
-          <DropdownMenuGroup>
-            <DropdownMenuItem class="hover:cursor-pointer" @click="subirAbierto = true">
-              <Upload />
-              Subir archivos
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel>Organización</DropdownMenuLabel>
-          <DropdownMenuGroup>
-            <DropdownMenuItem class="hover:cursor-pointer" @click="crearAbierto = true">
-              <FolderPlus />
-              Crear carpeta
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <div class="flex flex-col gap-4 flex-wrap justify-between sm:flex-row">
+      <div class="flex items-center gap-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button variant="outline" class="hover:cursor-pointer">
+              <Plus />
+              Añadir
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent class="w-56" align="start">
+            <DropdownMenuLabel>Archivos</DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuItem class="hover:cursor-pointer" @click="subirAbierto = true">
+                <Upload />
+                Subir archivos
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>Organización</DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuItem class="hover:cursor-pointer" @click="crearAbierto = true">
+                <FolderPlus />
+                Crear carpeta
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <InputGroup>
+          <InputGroupInput placeholder="Buscar..." v-model="busqueda" id="busqueda" />
+          <InputGroupAddon>
+            <SearchIcon />
+          </InputGroupAddon>
+          <InputGroupAddon align="inline-end">
+            <Spinner v-if="loadingItems" />
+            <span v-else>
+              {{ dataItems?.total ?? 0 }}
+              {{ (dataItems?.total ?? 0) === 1 ? 'resultado' : 'resultados' }}</span
+            >
+          </InputGroupAddon>
+        </InputGroup>
+      </div>
 
       <div class="flex items-center gap-4" v-if="selectedStore.hayItems">
         <Button variant="outline" class="cursor-pointer" @click="compartirMultipleAbierto = true">
@@ -295,6 +400,16 @@ async function descargarSeleccion() {
           <Spinner v-if="downloadStore.descargandoMultiple" />
           <Download v-else />
           {{ downloadStore.descargandoMultiple ? 'Descargando...' : 'Descargar' }}
+        </Button>
+
+        <Button
+          class="hover:cursor-pointer bg-red-600 hover:bg-red-700"
+          @click="mandarPapeleraSeleccion"
+          :disabled="pendingPapeleraSelected"
+        >
+          <Spinner v-if="pendingPapeleraSelected" />
+          <Trash2 v-else />
+          {{ pendingPapeleraSelected ? 'Eliminando...' : 'Eliminar' }}
         </Button>
       </div>
     </div>
@@ -360,11 +475,21 @@ async function descargarSeleccion() {
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
           <TableCell class="cursor-default" @click.stop>
-            <Checkbox
-              class="border-neutral-400"
-              :model-value="selectedStore.estaSeleccionado(item.id)"
-              @update:model-value="() => handleSelection(item.id, item.tipo)"
-            />
+            <div class="flex items-center gap-4">
+              <Checkbox
+                class="border-neutral-400"
+                :model-value="selectedStore.estaSeleccionado(item.id)"
+                @update:model-value="() => handleSelection(item.id, item.tipo)"
+              />
+
+              <Spinner v-if="loadingFavoritoId === item.id" />
+              <Star
+                v-else
+                @click.stop="añadirFavorito(item.id, item.tipo)"
+                :size="20"
+                :fill="item.favorito === true ? 'black' : 'transparent'"
+              />
+            </div>
           </TableCell>
 
           <TableCell class="font-medium">
@@ -405,6 +530,7 @@ async function descargarSeleccion() {
                   Descargar
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  v-if="esPropietario(item.nombre_usuario)"
                   class="hover:cursor-pointer"
                   @click="
                     item.tipo === 'folder'
@@ -414,6 +540,14 @@ async function descargarSeleccion() {
                 >
                   <Share2 />
                   Compartir
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  v-if="esPropietario(item.nombre_usuario)"
+                  class="hover:cursor-pointer"
+                  @click="mandarItemPapelera(item.id, item.tipo)"
+                >
+                  <Trash2 />
+                  Eliminar
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

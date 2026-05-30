@@ -33,8 +33,8 @@ import {
 
 import { useDeleteFilePermanent, useRestoreFile } from '@/queries/useFilesQuery'
 import { formatDateService, formatearTamañoService } from '@/services/file.services'
-import { Ellipsis, Folder, RefreshCcw, Trash2 } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import { Ellipsis, Folder, RefreshCcw, SearchIcon, Trash2 } from 'lucide-vue-next'
+import { computed, ref, watch } from 'vue'
 import { useDeleteFolderPermanent, useRestoreFolder } from '@/queries/useFoldersQuery'
 import getIconExtension from '@/utils/iconMap'
 import { useRouter } from 'vue-router'
@@ -48,6 +48,8 @@ import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import { useDeleteMultiplePermanent, useRestoreMultiple } from '@/queries/useMultipleQuery'
 import { toast } from 'vue-sonner'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
+import { useDebounceFn } from '@vueuse/core'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 
 const router = useRouter()
 const folderStore = useFolderStore()
@@ -59,6 +61,17 @@ const eliminarMultipleAbierto = ref<boolean>(false)
 const idEliminar = ref<string>('')
 const pagina = ref<number>(1)
 const limite = 25
+const busqueda = ref<string>('')
+const busquedaDebounced = ref<string>('')
+const setBusquedaDebounced = useDebounceFn((value: string) => {
+  busquedaDebounced.value = value
+  pagina.value = 1
+}, 500)
+
+watch(busqueda, (nuevoValor: string) => {
+  setBusquedaDebounced(nuevoValor)
+  selectedStore.reset()
+})
 
 const { mutateAsync: mutateRestoreFile } = useRestoreFile()
 const { mutateAsync: mutateRestoreFolder } = useRestoreFolder()
@@ -83,7 +96,11 @@ const {
   isSuccess: successRestoreMultiple,
 } = useRestoreMultiple()
 
-const { data: dataItems, isLoading: loadingItems } = useGetItemsPapelera(pagina, limite)
+const { data: dataItems, isLoading: loadingItems } = useGetItemsPapelera(
+  pagina,
+  limite,
+  busquedaDebounced,
+)
 
 const noData = computed(() => {
   if (!dataItems.value || dataItems.value.total < 1) {
@@ -209,31 +226,49 @@ async function restaurarSeleccion() {
   <DialogEliminarMultiple
     v-model:open="eliminarMultipleAbierto"
     @eliminar-permanente="eliminarSeleccionPermanente"
-    :pending="pendingDeleteFolder"
+    :pending="pendingDeleteMultiple"
   />
 
   <div class="space-y-2">
-    <div class="flex items-center justify-end gap-4" v-if="selectedStore.hayItems">
-      <Button
-        variant="outline"
-        class="cursor-pointer"
-        @click="restaurarSeleccion"
-        :disabled="pendingRestoreMultiple"
-      >
-        <Spinner v-if="pendingRestoreMultiple" />
-        <RefreshCcw v-else />
-        {{ pendingRestoreMultiple ? 'Restaurando...' : 'Restaurar' }}
-      </Button>
+    <div class="flex flex-col gap-4 flex-wrap justify-between sm:flex-row">
+      <div>
+        <InputGroup>
+          <InputGroupInput placeholder="Buscar..." v-model="busqueda" id="busqueda" />
+          <InputGroupAddon>
+            <SearchIcon />
+          </InputGroupAddon>
+          <InputGroupAddon align="inline-end">
+            <Spinner v-if="loadingItems" />
+            <span v-else>
+              {{ dataItems?.total ?? 0 }}
+              {{ (dataItems?.total ?? 0) === 1 ? 'resultado' : 'resultados' }}</span
+            >
+          </InputGroupAddon>
+        </InputGroup>
+      </div>
 
-      <Button
-        class="hover:cursor-pointer bg-red-600 hover:bg-red-700"
-        @click="eliminarMultipleAbierto = true"
-        :disabled="pendingDeleteMultiple"
-      >
-        <Spinner v-if="pendingDeleteMultiple" />
-        <Trash2 v-else />
-        {{ pendingDeleteMultiple ? 'Eliminando...' : 'Eliminar' }}
-      </Button>
+      <div class="space-x-4" v-if="selectedStore.hayItems">
+        <Button
+          variant="outline"
+          class="cursor-pointer"
+          @click="restaurarSeleccion"
+          :disabled="pendingRestoreMultiple"
+        >
+          <Spinner v-if="pendingRestoreMultiple" />
+          <RefreshCcw v-else />
+          {{ pendingRestoreMultiple ? 'Restaurando...' : 'Restaurar' }}
+        </Button>
+
+        <Button
+          class="hover:cursor-pointer bg-red-600 hover:bg-red-700"
+          @click="eliminarMultipleAbierto = true"
+          :disabled="pendingDeleteMultiple"
+        >
+          <Spinner v-if="pendingDeleteMultiple" />
+          <Trash2 v-else />
+          {{ pendingDeleteMultiple ? 'Eliminando...' : 'Eliminar' }}
+        </Button>
+      </div>
     </div>
 
     <Table>

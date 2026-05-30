@@ -53,7 +53,7 @@ def share_file_with_user(request: Request, req: shared_file_schemas.ShareFileReq
                     id_usuario=archivo_compartido.archivo.id_usuario,
                     nombre_usuario=archivo_compartido.archivo.usuario.nombre,
                     id_carpeta=archivo_compartido.archivo.id_carpeta,
-                    fecha_eliminacion=archivo_compartido.archivo.fecha_eliminacion
+                    fecha_eliminacion=archivo_compartido.archivo.fecha_eliminacion,
                 )
             }
         }
@@ -105,7 +105,7 @@ def share_folder_with_user(request: Request, req: shared_folder_schemas.ShareFol
                     id_usuario=carpeta_compartida.carpeta.id_usuario,
                     nombre_usuario=carpeta_compartida.carpeta.usuario.nombre,
                     id_carpeta=carpeta_compartida.carpeta.id_carpeta,
-                    fecha_eliminacion=carpeta_compartida.carpeta.fecha_eliminacion
+                    fecha_eliminacion=carpeta_compartida.carpeta.fecha_eliminacion,
                 )
             }
         }

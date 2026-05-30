@@ -55,6 +55,7 @@ export default {
       })
 
       downloadStore.estado = 'completado'
+      downloadStore.porcentaje = 100
 
       return res
     } catch (e: unknown) {

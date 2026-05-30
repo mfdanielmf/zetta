@@ -38,7 +38,7 @@ def test_get_archivo_papelera():
         fecha_creacion="2026-02-15T10:00:00",
         id_usuario=usuario.id,
         fecha_eliminacion="2026-02-15T10:00:00",
-        usuario=usuario
+        usuario=usuario,
     )
 
     with patch("app.routes.file_routes.file_services.obtener_archivos_papelera_raiz_paginados") as mock_obtener:

@@ -51,3 +51,14 @@ export async function downloadMultipleService(data: ItemMultipleRequest) {
     toast.error('Ha ocurrido un error al descargar el contenido')
   }
 }
+export async function cancelMultipleSharesService(data: ItemMultipleRequest) {
+  const req = await multipleApi.cancelarCompartidoMultiple(data)
+
+  return req.data
+}
+
+export async function toggleFavoriteMultipleService(data: ItemMultipleRequest) {
+  const req = await multipleApi.toggleFavoritoMultiple(data)
+
+  return req.data
+}

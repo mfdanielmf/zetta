@@ -57,6 +57,14 @@ export function useMoveFileTrash() {
         queryKey: ['itemsPapelera'],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCarpetaPapelera'],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['favoritos'],
+      })
+
       toast.success(data?.msg || 'Archivo eliminado correctamente. Puedes verlo en la papelera')
     },
     onError: (e: unknown) => {
@@ -93,6 +101,14 @@ export function useRestoreFile() {
 
       queryClient.invalidateQueries({
         queryKey: ['itemsPapelera'],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCarpeta'],
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['favoritos'],
       })
 
       toast.success(data?.msg || 'Archivo restaurado correctamente')

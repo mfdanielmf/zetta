@@ -317,19 +317,59 @@ def obtener_carpeta_usuario_permisos(id_carpeta: str, usuario: User, db: Session
         f"No se ha encontrado la carpeta con id {id_carpeta}")
 
 
+def obtener_carpeta_usuario_permisos_no_papelera(id_carpeta: str, usuario: User, db: Session) -> Folder:
+    """
+    CarpetaNoEncontradaException
+    """
+    carpeta: Folder | None = folder_repo.get_folder_id_no_trash(
+        id_carpeta=id_carpeta, db=db)
+
+    if not carpeta:
+        raise ex.CarpetaNoEncontradaException(
+            f"No se ha encontrado la carpeta con id {id_carpeta}")
+
+    # Devolvemos la carpeta si el usuario es el propietario o la carpeta está compartida con él
+    if carpeta.id_usuario == usuario.id:
+        return carpeta
+
+    carpeta_actual: Folder = carpeta
+
+    # Si la carpeta está anidada, buscamos si algún padre está compartido
+    while carpeta_actual:
+        if shared_folder_repo.get_shared_folder(id_carpeta=carpeta_actual.id, id_receptor=usuario.id, db=db):
+            return carpeta
+
+        # Raíz
+        if not carpeta_actual.id_carpeta:
+            break
+
+        carpeta_actual = folder_repo.get_folder_id(
+            id_carpeta=carpeta_actual.id_carpeta, db=db)
+
+    raise ex.CarpetaNoEncontradaException(
+        f"No se ha encontrado la carpeta con id {id_carpeta}")
+
+
 def descargar_carpeta(id_carpeta: uuid.UUID, usuario: User, db: Session) -> tuple[io.BytesIO, Folder]:
     """
     CarpetaNoEncontradaException
     """
-    carpeta: Folder = obtener_carpeta_usuario_permisos(
+    carpeta: Folder = obtener_carpeta_usuario_permisos_no_papelera(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
     archivo_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
     zip_path: str = archivo_temp.name
     archivo_temp.close()
 
-    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-        añadir_carpeta_a_zip(zipf=zipf, carpeta=carpeta, path_base="")
+    try:
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+            añadir_carpeta_a_zip(zipf=zipf, carpeta=carpeta, path_base="")
+    except Exception:
+        # Eliminar zip si ocurre cualquier error
+        if os.path.exists(zip_path):
+            os.remove(zip_path)
+
+        raise
 
     return zip_path, carpeta
 
@@ -342,13 +382,16 @@ def añadir_carpeta_a_zip(zipf: zipfile.ZipFile, carpeta: Folder, path_base: str
 
     # Añadimos los archivos que tenga la carpeta al zip
     for archivo in carpeta.archivos:
-        zipf.write(
-            archivo.path, arcname=f"{path_actual}{archivo.nombre_original}")
+        if archivo.fecha_eliminacion is None:
+            if os.path.exists(archivo.path):
+                zipf.write(
+                    archivo.path, arcname=f"{path_actual}{archivo.nombre_original}")
 
     # Añadimos las carpetas anidadas
     for carpeta_anidada in carpeta.carpetas:
-        añadir_carpeta_a_zip(
-            zipf=zipf, carpeta=carpeta_anidada, path_base=path_actual)
+        if carpeta_anidada.fecha_eliminacion is None:
+            añadir_carpeta_a_zip(
+                zipf=zipf, carpeta=carpeta_anidada, path_base=path_actual)
 
 
 def obtener_carpetas_usuario_raiz_paginadas(usuario: User, db: Session, pagina: int, limite: int) -> tuple[int, list[Folder]]:

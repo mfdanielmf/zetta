@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, UUID, ForeignKey, String, DateTime, func, BigInteger
+from sqlalchemy import Boolean, Column, UUID, ForeignKey, String, DateTime, func, BigInteger
 from sqlalchemy.orm import relationship
 from app.database.db import Base
 
@@ -25,3 +25,4 @@ class File(Base):
         "Folder", back_populates="archivos", passive_deletes=True)
     compartido_con = relationship(
         "ArchivoCompartido", back_populates="archivo", passive_deletes=True)
+    favoritos = relationship("ArchivoFavorito", back_populates="archivo", passive_deletes=True)
