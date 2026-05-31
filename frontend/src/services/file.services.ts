@@ -51,18 +51,31 @@ export async function downloadFileService(id: string, nombre: string) {
       type: contentType,
     })
 
-    const url = window.URL || window.webkitURL
+    const url = window.URL.createObjectURL(blob)
 
-    const objectUrl = url.createObjectURL(blob)
+    const esIos =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+
+    if (esIos) {
+      const win = window.open(url, '_blank')
+
+      if (!win) {
+        window.location.href = url
+      }
+
+      setTimeout(() => URL.revokeObjectURL(url), 3000)
+      return
+    }
 
     const link = document.createElement('a')
-    link.href = objectUrl
+    link.href = url
     link.setAttribute('download', nombre)
     document.body.appendChild(link)
     link.click()
     link.remove()
 
-    window.URL.revokeObjectURL(objectUrl)
+    window.URL.revokeObjectURL(url)
   } catch {
     toast.error('Ha ocurrido un error al descargar los archivos')
   }
