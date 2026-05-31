@@ -47,35 +47,35 @@ export async function downloadFileService(id: string, nombre: string) {
         ? req.headers['content-type']
         : 'application/octet-stream'
 
-    const blob = new Blob([req.data], {
-      type: contentType,
-    })
+    const blob = new Blob([req.data], { type: contentType })
+    const objectUrl = URL.createObjectURL(blob)
 
-    const url = window.URL.createObjectURL(blob)
-
-    const esIos =
+    const isIOS =
       /iPad|iPhone|iPod/.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
 
-    if (esIos) {
-      const win = window.open(url, '_blank')
+    if (isIOS) {
+      const link = document.createElement('a')
+      link.href = objectUrl
 
-      if (!win) {
-        window.location.href = url
-      }
+      link.target = '_blank'
 
-      setTimeout(() => URL.revokeObjectURL(url), 3000)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 8000)
       return
     }
 
     const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', nombre)
+    link.href = objectUrl
+    link.download = nombre
     document.body.appendChild(link)
     link.click()
     link.remove()
 
-    window.URL.revokeObjectURL(url)
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 2000)
   } catch {
     toast.error('Ha ocurrido un error al descargar los archivos')
   }
