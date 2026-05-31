@@ -51,16 +51,18 @@ export async function downloadFileService(id: string, nombre: string) {
       type: contentType,
     })
 
-    const url = window.URL.createObjectURL(blob)
+    const url = window.URL || window.webkitURL
+
+    const objectUrl = url.createObjectURL(blob)
 
     const link = document.createElement('a')
-    link.href = url
+    link.href = objectUrl
     link.setAttribute('download', nombre)
     document.body.appendChild(link)
     link.click()
     link.remove()
 
-    setTimeout(() => URL.revokeObjectURL(url), 2000)
+    window.URL.revokeObjectURL(objectUrl)
   } catch {
     toast.error('Ha ocurrido un error al descargar los archivos')
   }
