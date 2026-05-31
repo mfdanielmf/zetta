@@ -48,6 +48,10 @@ import { toast } from 'vue-sonner'
 import { useDeleteMultiplePermanent, useRestoreMultiple } from '@/queries/useMultipleQuery'
 import DialogEliminarMultiple from '@/components/multiple/DialogEliminarMultiple.vue'
 import type { ItemMultipleRequest } from '@/api/types/types'
+import DialogEliminarArchivo from '@/components/files/DialogEliminarArchivo.vue'
+import DialogEliminarCarpeta from '@/components/folders/DialogEliminarCarpeta.vue'
+import { useDeleteFilePermanent } from '@/queries/useFilesQuery'
+import { useDeleteFolderPermanent } from '@/queries/useFoldersQuery'
 
 const route = useRoute()
 const router = useRouter()
@@ -73,6 +77,9 @@ const todosSeleccionados = computed(() => {
   )
 })
 
+const idEliminar = ref<string>('')
+const eliminarArchivoAbierto = ref<boolean>(false)
+const eliminarCarpetaAbierto = ref<boolean>(false)
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
 const eliminarMultipleAbierto = ref<boolean>(false)
@@ -105,6 +112,16 @@ const {
   isPending: pendingRestoreMultiple,
   isSuccess: successRestoreMultiple,
 } = useRestoreMultiple()
+const {
+  mutateAsync: mutateDeleteFilePermanent,
+  isPending: pendingDeleteFile,
+  isSuccess: successDeleteFile,
+} = useDeleteFilePermanent()
+const {
+  mutateAsync: mutateDeleteFolderPermanent,
+  isPending: pendingDeleteFolder,
+  isSuccess: successDeleteFolder,
+} = useDeleteFolderPermanent()
 
 function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
   folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
@@ -148,21 +165,6 @@ async function eliminarSeleccionPermanente() {
   } catch {}
 }
 
-async function eliminarItem(idItem: string, tipo: 'file' | 'folder') {
-  const data: ItemMultipleRequest = [
-    {
-      id: idItem,
-      tipo: tipo === 'file' ? 'archivo' : 'carpeta',
-    },
-  ]
-
-  try {
-    await mutateDeleteMultiple(data)
-
-    if (successDeleteMultiple) selectedStore.reset()
-  } catch {}
-}
-
 async function restaurarSeleccion() {
   try {
     if (selectedStore.hayItems) {
@@ -186,12 +188,48 @@ async function restaurarItem(idItem: string, tipo: 'file' | 'folder') {
   try {
     await mutateRestoreMultiple(data)
 
-    if(successRestoreMultiple) selectedStore.reset()
+    if (successRestoreMultiple) selectedStore.reset()
+  } catch {}
+}
+
+function handleOpenDialogArchivo(id: string) {
+  idEliminar.value = id
+  eliminarArchivoAbierto.value = true
+}
+
+function handleOpenDialogCarpeta(id: string) {
+  idEliminar.value = id
+  eliminarCarpetaAbierto.value = true
+}
+
+async function eliminarArchivoPermanente(idArchivo: string) {
+  try {
+    await mutateDeleteFilePermanent(idArchivo)
+
+    if (successDeleteFile) eliminarArchivoAbierto.value = false
+  } catch {}
+}
+
+async function eliminarCarpetaPermanente(idCarpeta: string) {
+  try {
+    await mutateDeleteFolderPermanent(idCarpeta)
+
+    if (successDeleteFolder) eliminarCarpetaAbierto.value = false
   } catch {}
 }
 </script>
 
 <template>
+  <DialogEliminarArchivo
+    v-model:open="eliminarArchivoAbierto"
+    @eliminar-permanente="eliminarArchivoPermanente(idEliminar)"
+    :pending="pendingDeleteFile"
+  />
+  <DialogEliminarCarpeta
+    v-model:open="eliminarCarpetaAbierto"
+    @eliminar-permanente="eliminarCarpetaPermanente(idEliminar)"
+    :pending="pendingDeleteFolder"
+  />
   <DialogEliminarMultiple
     v-model:open="eliminarMultipleAbierto"
     @eliminar-permanente="eliminarSeleccionPermanente"
@@ -315,7 +353,11 @@ async function restaurarItem(idItem: string, tipo: 'file' | 'folder') {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   class="hover:cursor-pointer"
-                  @click="eliminarItem(item.id, item.tipo)"
+                  @click="
+                    item.tipo === 'folder'
+                      ? handleOpenDialogCarpeta(item.id)
+                      : handleOpenDialogArchivo(item.id)
+                  "
                 >
                   <Trash2 />
                   Eliminar definitivamente

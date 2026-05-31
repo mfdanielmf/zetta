@@ -137,6 +137,10 @@ export function useDeleteFilePermanent() {
         queryKey: ['itemsCompartidos'],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCarpetaPapelera'],
+      })
+
       toast.success(data?.msg || 'Archivo eliminado correctamente')
     },
     onError: (e: unknown) => {

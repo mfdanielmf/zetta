@@ -216,6 +216,10 @@ export function useDeleteFolderPermanent() {
         queryKey: ['itemsCompartidos'],
       })
 
+      queryClient.invalidateQueries({
+        queryKey: ['itemsCarpetaPapelera'],
+      })
+
       toast.success(data?.msg || 'Carpeta eliminada correctamente')
     },
     onError: (e: unknown) => {
