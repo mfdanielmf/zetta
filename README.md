@@ -20,7 +20,7 @@ Zetta permite subir archivos, organizarlos en carpetas o descargar archivos y ca
     </td>
     <td align="center">
       <img 
-        src="./docs/img/storage.png" 
+        src="./docs/img/almacenamiento.png" 
         alt="Almacenamiento" 
       >
       <br>
@@ -441,14 +441,13 @@ Respuestas exitosas:
 1. **Permisos avanzados:** Permisos de lectura/escritura/eliminación para elementos compartidos
 2. **Vista previa de archivos:** Vista previa para imágenes, PDFs, documentos...
 3. **Filtrado:** Opciones de filtrado avanzado
-4. **Aplicación móvil:** Aplicaciones móvil para IOS y Android
+4. **URL temporal:** Enlaces temporales para permitir descargas de recursos a cualquier usuario sin cuenta en Zetta
 5. **Integración con buckets de almacenamiento:** Integración con Amazon S3 para almacenar los archivos (actualmente se guardan en el propio sistema de archivos del servidor)
 6. **Colaboración en tiempo real**: Permitir invitar a otros usuarios a editar el mismo archivo en tiempo real
 7. **Pausar, cancelar y reanudar**: Permitir pausar, cancelar o reanudar tanto descargas como subidas de archivos y carpetas
 
 ### Mejoras de Rendimiento
 
-- Implementar capa de caché (Redis) para datos de acceso frecuente
 - Optimizar subidas y descargas de archivos
 - Optimizar consultas a base de datos y añadir indexación
 
@@ -464,4 +463,4 @@ TFC Grado Superior Desarrollo de Aplicaciones Web.
 
 ---
 
-**Última Actualización:** 17/05/2026
+**Última Actualización:** 31/05/2026
