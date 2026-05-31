@@ -60,7 +60,7 @@ export async function downloadFileService(id: string, nombre: string) {
     link.click()
     link.remove()
 
-    window.URL.revokeObjectURL(url)
+    setTimeout(() => URL.revokeObjectURL(url), 2000)
   } catch {
     toast.error('Ha ocurrido un error al descargar los archivos')
   }
