@@ -252,7 +252,7 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
 
     const arr = items?.map((i) => {
       return {
-        id: i.id,
+        id: i.tipo === 'file' ? i.archivo.id : i.carpeta.id,
         tipo: (i.tipo === 'file' ? 'archivo' : 'carpeta') as 'archivo' | 'carpeta',
       }
     })
@@ -427,8 +427,18 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
             <div class="flex items-center gap-4">
               <Checkbox
                 class="border-neutral-400"
-                :model-value="selectedStore.estaSeleccionado(item.id)"
-                @update:model-value="() => handleSelection(item.id, item.tipo)"
+                :model-value="
+                  selectedStore.estaSeleccionado(
+                    item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
+                  )
+                "
+                @update:model-value="
+                  () =>
+                    handleSelection(
+                      item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
+                      item.tipo,
+                    )
+                "
               />
 
               <Spinner v-if="loadingFavoritoId === item.id" />
