@@ -131,8 +131,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Download Files */
-        get: operations["download_files_api_files__id_archivo__get"];
+        /** Download File */
+        get: operations["download_file_api_files__id_archivo__get"];
         put?: never;
         post?: never;
         /** Add File To Trash */
@@ -1439,7 +1439,7 @@ export interface operations {
             };
         };
     };
-    download_files_api_files__id_archivo__get: {
+    download_file_api_files__id_archivo__get: {
         parameters: {
             query?: never;
             header?: never;
