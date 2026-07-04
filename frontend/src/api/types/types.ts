@@ -49,6 +49,8 @@ export type GetItemsTrashResponse = components['schemas']['PaginatedItemResponse
 export type GetItemsFolderTrashResponse = components['schemas']['PaginatedItemResponse']
 export type GetReceivedItemsResponse = components['schemas']['PaginatedSharedItemResponse']
 export type GetSentItemsResponse = components['schemas']['PaginatedSharedItemResponse']
+export type FileItem = components['schemas']['FileItem']
+export type FolderItem = components['schemas']['FolderItem']
 
 //MULTIPLE
 export type ItemMultipleRequest = components['schemas']['ItemMultipleRequest'][]

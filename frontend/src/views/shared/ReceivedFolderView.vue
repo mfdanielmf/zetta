@@ -39,7 +39,7 @@ import {
 import { downloadFolderService } from '@/services/folder.services'
 import { useFolderStore } from '@/stores/folder.store'
 import getIconExtension from '@/utils/iconMap'
-import { Download, Ellipsis, Folder, SearchIcon } from 'lucide-vue-next'
+import { Download, Ellipsis, Folder, SearchIcon, Star } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSelectedStore } from '@/stores/selected.store'
@@ -50,6 +50,8 @@ import Spinner from '@/components/ui/spinner/Spinner.vue'
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import type { FileItem, FolderItem, ItemMultipleRequest } from '@/api/types/types'
+import { useToggleFavoriteMultiple } from '@/queries/useMultipleQuery'
 
 const route = useRoute()
 const router = useRouter()
@@ -76,6 +78,7 @@ const todosSeleccionados = computed(() => {
   )
 })
 
+const loadingFavoritoId = ref<string | null>(null)
 const pagina = ref<number>(1)
 const limite = config.LIMITE_FETCH
 const busqueda = ref<string>('')
@@ -96,6 +99,7 @@ const { data: dataItems, isLoading: loadingItems } = useGetFolderItems(
   limite,
   busquedaDebounced,
 )
+const { mutateAsync: mutateToggleFavorito } = useToggleFavoriteMultiple()
 
 async function descargarArchivo(id: string, nombre: string) {
   await downloadFileService(id, nombre)
@@ -142,6 +146,24 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
     selectedStore.seleccionarTodos(arr)
   } else {
     selectedStore.reset()
+  }
+}
+
+async function añadirFavorito(item: FileItem | FolderItem) {
+  const data: ItemMultipleRequest = [
+    {
+      id: item.id,
+      tipo: item.tipo === 'file' ? 'archivo' : 'carpeta',
+    },
+  ]
+
+  try {
+    loadingFavoritoId.value = item.id
+
+    await mutateToggleFavorito(data)
+  } catch {
+  } finally {
+    loadingFavoritoId.value = null
   }
 }
 </script>
@@ -211,11 +233,21 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
           <TableCell class="cursor-default" @click.stop>
-            <Checkbox
-              class="border-neutral-400"
-              :model-value="selectedStore.estaSeleccionado(item.id)"
-              @update:model-value="() => handleSelection(item.id, item.tipo)"
-            />
+            <div class="flex items-center gap-4">
+              <Checkbox
+                class="border-neutral-400"
+                :model-value="selectedStore.estaSeleccionado(item.id)"
+                @update:model-value="() => handleSelection(item.id, item.tipo)"
+              />
+
+              <Spinner v-if="loadingFavoritoId === item.id" />
+              <Star
+                v-else
+                @click.stop="añadirFavorito(item)"
+                :size="20"
+                :fill="item.favorito === true ? 'black' : 'transparent'"
+              />
+            </div>
           </TableCell>
           <TableCell class="font-medium">
             <div class="flex items-center gap-2">
