@@ -1,18 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
 from app.models.user import User
-from app.models.exceptions import CorreoYaUsadoException, NombreYaUsadoException, UsuarioNoEncontradoException, ContraseñaIncorrectaException, UsuarioNoAutenticadoException
+from app.models.exceptions import CorreoYaUsadoException, NombreYaUsadoException, UsuarioNoEncontradoException, ContraseñaIncorrectaException
 from app.schemas.user_schemas import UserCreate, UserReturn
-from app.schemas.auth_schemas import RegisterResponse, LoginRequest, LoginResponse, MeResponse, LogoutResponse
+from app.schemas.auth_schemas import RegisterResponse, LoginRequest, LoginResponse, MeResponse
 from app.services.user_services import crear_usuario
-from app.services.auth_services import login_usuario, obtener_usuario_jwt
+from app.services.auth_services import login_usuario
 from app.core.limiter import limiter, AUTH_RATE_LIMIT
 
-from app.config import config
 
 auth_router = APIRouter()
 
