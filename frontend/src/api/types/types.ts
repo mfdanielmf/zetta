@@ -39,6 +39,8 @@ export type ShareFileResponse = components['schemas']['ShareFileResponse']
 export type ShareFolderRequest = components['schemas']['ShareFolderRequest']
 export type ShareFolderResponse = components['schemas']['ShareFolderResponse']
 export type GetReceivedFoldersResponse = components['schemas']['CarpetaCompartidaBase'][]
+export type SharedFolderItem = components['schemas']['SharedFolderItem']
+export type SharedFileItem = components['schemas']['SharedFileItem']
 
 //ITEMS
 export type GetItemsResponse = components['schemas']['PaginatedItemResponse']
@@ -56,3 +58,5 @@ export type ShareMultipleItemsResponse = components['schemas']['MultipleItemResp
 
 //FAVORITE
 export type GetFavoriteItemsResponse = components['schemas']['PaginatedFavoriteItemReponse']
+export type FavoriteFolder = components['schemas']['FavoriteFolderBase']
+export type FavoriteFile = components['schemas']['FavoriteFileBase']

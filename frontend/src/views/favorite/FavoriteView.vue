@@ -57,7 +57,7 @@ import { downloadMultipleService } from '@/services/multiple.services'
 import { useDownloadStore } from '@/stores/download.store'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { useDebounceFn } from '@vueuse/core'
-import type { ItemMultipleRequest } from '@/api/types/types'
+import type { FavoriteFile, FavoriteFolder, ItemMultipleRequest } from '@/api/types/types'
 import { useGetFavoriteItems } from '@/queries/useFavoritesQuery'
 import esPropietario from '@/utils/esPropietario'
 
@@ -168,22 +168,22 @@ async function crearCarpeta(nombre: string) {
   if (successCreate) crearAbierto.value = false
 }
 
-async function mandarArchivoPapelera(idArchivo: string) {
+async function mandarItemPapelera(item: FavoriteFile | FavoriteFolder) {
   try {
-    await mutateArchivoPapelera(idArchivo)
+    if (item.tipo === 'file') {
+      await mutateArchivoPapelera(item.archivo.id)
+    } else {
+      await mutateCarpetaPapelera(item.carpeta.id)
+    }
   } catch {}
 }
 
-async function mandarCarpetaPapelera(idCarpeta: string) {
-  try {
-    await mutateCarpetaPapelera(idCarpeta)
-  } catch {}
-}
+function handleNavigationDetallesCarpeta(item: FavoriteFile | FavoriteFolder) {
+  if (item.tipo === 'file') return
 
-function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
-  folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
+  folderStore.setCarpetaActiva(item.carpeta.id, item.carpeta.nombre_original)
 
-  router.push({ name: 'carpetaFavorita', params: { id: idCarpeta } })
+  router.push({ name: 'carpetaFavorita', params: { id: item.carpeta.id } })
 }
 
 async function compartirCarpeta(correo: string) {
@@ -226,8 +226,24 @@ function abrirCompartirArchivo(idArchivo: string) {
   idArchivoSeleccionado.value = idArchivo
 }
 
+function abrirCompartir(item: FavoriteFile | FavoriteFolder) {
+  if (item.tipo === 'file') {
+    abrirCompartirArchivo(item.archivo.id)
+  } else {
+    abrirCompartirCarpeta(item.carpeta.id)
+  }
+}
+
 async function descargarCarpeta(id: string, nombre: string) {
   await downloadFolderService(id, nombre)
+}
+
+async function descargarElemento(item: FavoriteFile | FavoriteFolder) {
+  if (item.tipo === 'file') {
+    await descargarArchivo(item.archivo.id, item.archivo.nombre_original)
+  } else {
+    await descargarCarpeta(item.carpeta.id, item.carpeta.nombre_original)
+  }
 }
 
 function handleSelection(id: string, tipo: 'file' | 'folder') {
@@ -296,11 +312,19 @@ async function descargarSeleccion() {
   }
 }
 
-async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
+async function añadirFavorito(item: FavoriteFile | FavoriteFolder) {
+  let idItem = null
+
+  if (item.tipo === 'file') {
+    idItem = item.archivo.id
+  } else {
+    idItem = item.carpeta.id
+  }
+
   const data: ItemMultipleRequest = [
     {
       id: idItem,
-      tipo: tipo === 'file' ? 'archivo' : 'carpeta',
+      tipo: item.tipo === 'file' ? 'archivo' : 'carpeta',
     },
   ]
 
@@ -416,11 +440,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
         <TableRow
           v-for="item in dataItems?.items"
           :key="item.id"
-          @click="
-            item.tipo === 'folder'
-              ? handleNavigationDetallesCarpeta(item.carpeta.id, item.carpeta.nombre_original)
-              : null
-          "
+          @click="item.tipo === 'folder' ? handleNavigationDetallesCarpeta(item) : null"
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
           <TableCell class="cursor-default" @click.stop>
@@ -442,17 +462,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
               />
 
               <Spinner v-if="loadingFavoritoId === item.id" />
-              <Star
-                v-else
-                @click.stop="
-                  añadirFavorito(
-                    item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
-                    item.tipo,
-                  )
-                "
-                :size="20"
-                fill="black"
-              />
+              <Star v-else @click.stop="añadirFavorito(item)" :size="20" fill="black" />
             </div>
           </TableCell>
 
@@ -484,14 +494,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  class="hover:cursor-pointer"
-                  @click="
-                    item.tipo === 'folder'
-                      ? descargarCarpeta(item.carpeta.id, item.carpeta.nombre_original)
-                      : descargarArchivo(item.archivo.id, item.archivo.nombre_original)
-                  "
-                >
+                <DropdownMenuItem class="hover:cursor-pointer" @click="descargarElemento(item)">
                   <Download />
                   Descargar
                 </DropdownMenuItem>
@@ -504,11 +507,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
                     )
                   "
                   class="hover:cursor-pointer"
-                  @click="
-                    item.tipo === 'folder'
-                      ? abrirCompartirCarpeta(item.carpeta.id)
-                      : abrirCompartirArchivo(item.archivo.id)
-                  "
+                  @click="abrirCompartir(item)"
                 >
                   <Share2 />
                   Compartir
@@ -522,11 +521,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
                     )
                   "
                   class="hover:cursor-pointer"
-                  @click="
-                    item.tipo === 'folder'
-                      ? mandarCarpetaPapelera(item.carpeta.id)
-                      : mandarArchivoPapelera(item.archivo.id)
-                  "
+                  @click="mandarItemPapelera(item)"
                 >
                   <Trash2 />
                   Eliminar

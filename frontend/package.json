@@ -1,5 +1,5 @@
 {
-  "name": "vue-project",
+  "name": "zetta",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -14,7 +14,7 @@
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix --cache",
     "format": "prettier --write --experimental-cli src/",
-    "typegen": "npx openapi-typescript http://localhost:8080/openapi.json -o ./src/api/types/backend.types.ts"
+    "typegen": "bunx --bun openapi-typescript http://localhost:8080/openapi.json -o ./src/api/types/backend.types.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
