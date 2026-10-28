@@ -1,11 +1,19 @@
 from pydantic import EmailStr
-from werkzeug.security import check_password_hash, generate_password_hash
-from app.models.user import User
-from app.models.exceptions import CorreoYaUsadoException, NombreYaUsadoException, UsuarioNoEncontradoException
-from app.schemas.user_schemas import UserCreate
-from app.repositories.user_repo import insert_user_db, get_user_by_email, get_user_by_name
-
 from sqlalchemy.orm import Session
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from app.models.exceptions import (
+    CorreoYaUsadoException,
+    NombreYaUsadoException,
+    UsuarioNoEncontradoException,
+)
+from app.models.user import User
+from app.repositories.user_repo import (
+    get_user_by_email,
+    get_user_by_name,
+    insert_user_db,
+)
+from app.schemas.user_schemas import UserCreate
 
 
 def obtener_usuario_nombre(nombre: str, db: Session) -> User:

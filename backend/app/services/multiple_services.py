@@ -1,12 +1,13 @@
 import os
 import shutil
-from datetime import datetime, timezone
 import tempfile
 import zipfile
+from datetime import UTC, datetime
 
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
+from app.models import exceptions as ex
 from app.models.archivo_compartido import ArchivoCompartido
 from app.models.archivo_favorito import ArchivoFavorito
 from app.models.carpeta_compartida import CarpetaCompartida
@@ -14,16 +15,28 @@ from app.models.carpeta_favorita import CarpetaFavorita
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.models import exceptions as ex
-from app.services import file_services, folder_services, user_services, shared_file_services, shared_folder_services
-from app.repositories import file_repo, folder_repo, multiple_repo, shared_file_repo, shared_folder_repo, favorite_repo
+from app.repositories import (
+    favorite_repo,
+    file_repo,
+    folder_repo,
+    multiple_repo,
+    shared_file_repo,
+    shared_folder_repo,
+)
 from app.schemas import multiple_schemas
+from app.services import (
+    file_services,
+    folder_services,
+    shared_file_services,
+    shared_folder_services,
+    user_services,
+)
 
 
 def añadir_multiples_items_papelera(items: list[multiple_schemas.ItemMultipleRequest], usuario: User, db: Session):
     errores = []
 
-    fecha_actual = datetime.now(timezone.utc)
+    fecha_actual = datetime.now(UTC)
 
     for item in items:
         nombre_item = "desconocido"
@@ -251,13 +264,12 @@ def compartir_multiples_items(req: multiple_schemas.ShareMultipleItemsRequest, u
     return errores
 
 
-def descargar_multiples_items(items: list[multiple_schemas.ItemMultipleRequest], usuario: User, db: Session):
+def descargar_multiples_items(items: list[multiple_schemas.ItemMultipleRequest], usuario: User, db: Session) -> str:
     """
     ArchivoNoEncontradoException, CarpetaNoEncontradaException
     """
-    archivo_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
-    zip_path: str = archivo_temp.name
-    archivo_temp.close()
+    fd, zip_path = tempfile.mkstemp(suffix=".zip")
+    os.close(fd)
 
     try:
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
@@ -278,12 +290,13 @@ def descargar_multiples_items(items: list[multiple_schemas.ItemMultipleRequest],
                     folder_services.añadir_carpeta_a_zip(
                         zipf=zipf, carpeta=carpeta, path_base="")
 
-        return zip_path
     except Exception:
         if os.path.exists(zip_path):
             os.remove(zip_path)
 
-            raise
+        raise
+
+    return zip_path
 
 
 def cancelar_multiples_compartidos(req: list[multiple_schemas.ItemMultipleRequest], usuario: User, db: Session):

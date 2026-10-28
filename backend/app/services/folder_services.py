@@ -1,11 +1,10 @@
 import os
-import tempfile
-import zipfile
-import io
 import shutil
+import tempfile
 import uuid
+import zipfile
+from datetime import UTC, datetime
 from pathlib import Path
-from datetime import datetime, timezone
 
 from fastapi import UploadFile
 from sqlalchemy import or_
@@ -16,7 +15,7 @@ from app.models import exceptions as ex
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories import shared_folder_repo, folder_repo, file_repo
+from app.repositories import file_repo, folder_repo, shared_folder_repo
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -120,7 +119,7 @@ async def guardar_archivo_carpeta(id_carpeta: str, file_upload: UploadFile, db: 
 
     extension: str = nombre_original.split(".").pop()
 
-    file_path = Path(carpeta.path) / f"{str(id_file)}.{extension}"
+    file_path = Path(carpeta.path) / f"{id_file!s}.{extension}"
     file_path.parent.mkdir(parents=True, exist_ok=True)
 
     tamaño: int = 0
@@ -192,7 +191,7 @@ def añadir_carpeta_papelera(id_carpeta: uuid.UUID, usuario: User, db: Session) 
     carpeta: Folder = obtener_carpeta_usuario_id(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
-    fecha_actual = datetime.now(timezone.utc)
+    fecha_actual = datetime.now(UTC)
     path_padre: str = carpeta.path
 
     carpeta.fecha_eliminacion = fecha_actual
@@ -350,16 +349,15 @@ def obtener_carpeta_usuario_permisos_no_papelera(id_carpeta: str, usuario: User,
         f"No se ha encontrado la carpeta con id {id_carpeta}")
 
 
-def descargar_carpeta(id_carpeta: uuid.UUID, usuario: User, db: Session) -> tuple[io.BytesIO, Folder]:
+def descargar_carpeta(id_carpeta: uuid.UUID, usuario: User, db: Session) -> tuple[str, Folder]:
     """
     CarpetaNoEncontradaException
     """
     carpeta: Folder = obtener_carpeta_usuario_permisos_no_papelera(
         id_carpeta=id_carpeta, usuario=usuario, db=db)
 
-    archivo_temp = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
-    zip_path: str = archivo_temp.name
-    archivo_temp.close()
+    fd, zip_path = tempfile.mkstemp(suffix=".zip")
+    os.close(fd)
 
     try:
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:

@@ -1,15 +1,20 @@
 import io
 import uuid
+from unittest.mock import AsyncMock, patch
 
 from fastapi.testclient import TestClient
+
 from app.main import app
+from app.middleware.auth_middleware import get_current_user
+from app.models.exceptions import (
+    CarpetaNoEncontradaException,
+    NombreYaUsadoException,
+    TamañoExcedidoException,
+)
 from app.models.file import File
 from app.models.user import User
-from app.models.exceptions import CarpetaNoEncontradaException, TamañoExcedidoException, NombreYaUsadoException
-from app.middleware.auth_middleware import get_current_user
 from app.schemas.folder_schemas import UploadFileFolderResponse
 from tests.util import override_get_current_user
-from unittest.mock import patch, AsyncMock
 
 client = TestClient(app=app)
 
@@ -153,7 +158,7 @@ def test_subir_varios_archivos_carpeta():
         id=id_archivo2,
         nombre_original="test2.txt",
         tamaño_bytes="100",
-        path=f"uploads/test2.txt",
+        path="uploads/test2.txt",
         fecha_creacion="2026-01-22T01:44:31.825198",
         id_usuario=usuario.id,
         id_carpeta=id_carpeta,

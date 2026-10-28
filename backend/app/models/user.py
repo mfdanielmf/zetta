@@ -1,8 +1,9 @@
 import uuid
-from app.database.db import Base
+
 from sqlalchemy import UUID, Column, DateTime, String, func
 from sqlalchemy.orm import relationship
 
+from app.database.db import Base
 from app.models.archivo_compartido import ArchivoCompartido
 from app.models.carpeta_compartida import CarpetaCompartida
 

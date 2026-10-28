@@ -1,15 +1,19 @@
 
-from datetime import datetime, timedelta, timezone
 import uuid
-from sqlalchemy.orm import Session
+from datetime import UTC, datetime, timedelta
+
 from jose import JWTError, jwt
+from sqlalchemy.orm import Session
 
 from app.config import config
-
+from app.models.exceptions import (
+    ContraseñaIncorrectaException,
+    UsuarioNoAutenticadoException,
+    UsuarioNoEncontradoException,
+)
 from app.models.user import User
-from app.services.user_services import comprobar_hash_contraseña, obtener_usuario_nombre
 from app.schemas.auth_schemas import LoginRequest, TokenData
-from app.models.exceptions import UsuarioNoEncontradoException, ContraseñaIncorrectaException, UsuarioNoAutenticadoException
+from app.services.user_services import comprobar_hash_contraseña, obtener_usuario_nombre
 
 
 def login_usuario(usuario_req: LoginRequest, db: Session) -> tuple[str, User]:
@@ -36,7 +40,7 @@ def generar_access_token(data: TokenData):
     to_encode = data.model_dump()
     to_encode["id"] = str(to_encode["id"])
 
-    expire = datetime.now(timezone.utc) + \
+    expire = datetime.now(UTC) + \
         timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     to_encode.update({"exp": expire})

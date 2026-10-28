@@ -1,19 +1,18 @@
-from datetime import datetime, timezone
 import os
-from pathlib import Path
 import uuid
+from datetime import UTC, datetime
+from pathlib import Path
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
+
+from app.config import config
 from app.models import exceptions as ex
 from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
-from app.repositories import shared_file_repo
-from app.repositories import file_repo
+from app.repositories import file_repo, shared_file_repo
 from app.services import folder_services
-
-from app.config import config
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -76,7 +75,7 @@ async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -
     ruta_usuario = UPLOAD_DIR / str(usuario.id)
     ruta_usuario.mkdir(parents=True, exist_ok=True)
 
-    file_path = ruta_usuario / f"{str(id_archivo)}.{extension}"
+    file_path = ruta_usuario / f"{id_archivo!s}.{extension}"
 
     tamaño: int = 0
 
@@ -128,7 +127,7 @@ def añadir_archivo_papelera(id_archivo: uuid.UUID, usuario: User, db: Session) 
         raise ex.ArchivoPapeleraException()
 
     archivo: File = obtener_archivo_id(id=id_archivo, db=db, usuario=usuario)
-    archivo.fecha_eliminacion = datetime.now(timezone.utc)
+    archivo.fecha_eliminacion = datetime.now(UTC)
 
     return file_repo.update_file(archivo=archivo, db=db)
 

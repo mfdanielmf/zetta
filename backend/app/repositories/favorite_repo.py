@@ -1,10 +1,10 @@
 from sqlalchemy import UUID
 from sqlalchemy.orm import Session
 
+from app.models.archivo_favorito import ArchivoFavorito
+from app.models.carpeta_favorita import CarpetaFavorita
 from app.models.file import File
 from app.models.folder import Folder
-from app.models.carpeta_favorita import CarpetaFavorita
-from app.models.archivo_favorito import ArchivoFavorito
 
 
 def get_favorite_folders(id_usuario: UUID, db: Session, busqueda: str | None = None) -> list[CarpetaFavorita]:

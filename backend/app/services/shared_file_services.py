@@ -2,15 +2,14 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from app.models.archivo_compartido import ArchivoCompartido
 from app.models import exceptions as ex
+from app.models.archivo_compartido import ArchivoCompartido
 from app.models.file import File
 from app.models.user import User
+from app.repositories import shared_file_repo
 from app.schemas import shared_file_schemas as sfs
 from app.schemas.file_schemas import FileBase
-from app.services import user_services
-from app.services import file_services
-from app.repositories import shared_file_repo
+from app.services import file_services, user_services
 
 
 def compartir_archivo(req: sfs.ShareFileRequest, usuario: User, db: Session) -> ArchivoCompartido:

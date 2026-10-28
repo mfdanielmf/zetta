@@ -5,14 +5,13 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from starlette.background import BackgroundTask
 
-from app.core.limiter import DEFAULT_RATE_LIMIT, limiter, FILE_RATE_LIMIT
+from app.core.limiter import DEFAULT_RATE_LIMIT, FILE_RATE_LIMIT, limiter
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
-from app.models.user import User
 from app.models import exceptions as ex
+from app.models.user import User
 from app.schemas import multiple_schemas
 from app.services import multiple_services
-
 
 multiple_router = APIRouter()
 

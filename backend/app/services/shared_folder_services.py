@@ -2,8 +2,8 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from app.models.carpeta_compartida import CarpetaCompartida
 from app.models import exceptions as ex
+from app.models.carpeta_compartida import CarpetaCompartida
 from app.models.folder import Folder
 from app.models.user import User
 from app.repositories import shared_folder_repo

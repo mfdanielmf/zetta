@@ -1,17 +1,18 @@
-from datetime import datetime, timedelta, timezone
 import os
 import shutil
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.orm import Session
+
 from app.config import config
 from app.models.exceptions import EliminarDiscoException
 from app.models.file import File
 from app.models.folder import Folder
-from app.repositories import trash_repo, file_repo, folder_repo
+from app.repositories import file_repo, folder_repo, trash_repo
 
 
 def _get_limit_papelera() -> datetime:
-    return datetime.now(timezone.utc) - timedelta(days=config.DIAS_PAPELERA)
+    return datetime.now(UTC) - timedelta(days=config.DIAS_PAPELERA)
 
 
 def eliminar_data_papelera(db: Session):

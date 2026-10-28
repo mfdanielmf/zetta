@@ -1,4 +1,4 @@
-from typing import Literal, Union
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -30,21 +30,21 @@ class SharedFolderItem(CarpetaCompartidaBase):
 
 
 class PaginatedItemResponse(BaseModel):
-    items: list[Union[FolderItem, FileItem]]
+    items: list[FolderItem | FileItem]
     total: int
     pagina: int
     limite: int
 
 
 class PaginatedSharedItemResponse(BaseModel):
-    items: list[Union[SharedFolderItem, SharedFileItem]]
+    items: list[SharedFolderItem | SharedFileItem]
     total: int
     pagina: int
     limite: int
 
 
 class PaginatedFavoriteItemReponse(BaseModel):
-    items: list[Union[FavoriteFolderBase, FavoriteFileBase]]
+    items: list[FavoriteFolderBase | FavoriteFileBase]
     total: int
     pagina: int
     limite: int

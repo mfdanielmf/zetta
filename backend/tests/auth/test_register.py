@@ -1,11 +1,11 @@
 import uuid
-from fastapi.testclient import TestClient
-from app.main import app
 from unittest.mock import patch
 
-from app.models.user import User
-from app.models.exceptions import NombreYaUsadoException, CorreoYaUsadoException
+from fastapi.testclient import TestClient
 
+from app.main import app
+from app.models.exceptions import CorreoYaUsadoException, NombreYaUsadoException
+from app.models.user import User
 
 client = TestClient(app)
 

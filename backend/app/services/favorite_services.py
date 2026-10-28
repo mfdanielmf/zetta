@@ -1,4 +1,3 @@
-from typing import Union
 
 from sqlalchemy.orm import Session
 
@@ -8,7 +7,7 @@ from app.models.user import User
 from app.repositories import favorite_repo
 
 
-def obtener_items_favoritos(db: Session, usuario: User, pagina: int, limite: int, busqueda: str | None) -> tuple[int, list[Union[CarpetaFavorita, ArchivoFavorito]]]:
+def obtener_items_favoritos(db: Session, usuario: User, pagina: int, limite: int, busqueda: str | None) -> tuple[int, list[CarpetaFavorita | ArchivoFavorito]]:
     offset: int = (pagina - 1) * limite
 
     carpetas: list[CarpetaFavorita] = favorite_repo.get_favorite_folders(
@@ -16,7 +15,7 @@ def obtener_items_favoritos(db: Session, usuario: User, pagina: int, limite: int
     archivos: list[ArchivoFavorito] = favorite_repo.get_favorite_files(
         id_usuario=usuario.id, db=db, busqueda=busqueda)
 
-    items: list[Union[CarpetaFavorita, ArchivoFavorito]] = carpetas + archivos
+    items: list[CarpetaFavorita | ArchivoFavorito] = carpetas + archivos
 
     total: int = len(items)
 

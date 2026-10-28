@@ -1,10 +1,13 @@
 # Middleware para inyectar en las rutas
 from fastapi import Depends, HTTPException, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from app.database.db import get_db
-from app.models.exceptions import UsuarioNoAutenticadoException, UsuarioNoEncontradoException
+from app.models.exceptions import (
+    UsuarioNoAutenticadoException,
+    UsuarioNoEncontradoException,
+)
 from app.models.user import User
 from app.services.auth_services import obtener_usuario_jwt
 

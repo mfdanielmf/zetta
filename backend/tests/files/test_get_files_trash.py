@@ -1,10 +1,12 @@
-from unittest.mock import patch
 import uuid
-from app.main import app
+from unittest.mock import patch
+
 from fastapi.testclient import TestClient
+
+from app.main import app
+from app.middleware.auth_middleware import get_current_user
 from app.models.file import File
 from app.models.user import User
-from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
 
 client = TestClient(app)

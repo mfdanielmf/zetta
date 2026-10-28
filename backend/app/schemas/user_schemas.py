@@ -1,6 +1,14 @@
-from datetime import datetime
 import uuid
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, ValidationInfo, field_validator
+from datetime import datetime
+
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    ValidationInfo,
+    field_validator,
+)
 
 
 class UserCreate(BaseModel):
