@@ -1,12 +1,13 @@
-from unittest.mock import patch
 import uuid
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
+
 from app.main import app
+from app.middleware.auth_middleware import get_current_user
 from app.models.exceptions import CarpetaNoEncontradaException
 from app.models.folder import Folder
 from app.models.user import User
-from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
 
 client = TestClient(app=app)
@@ -60,6 +61,6 @@ def test_restaurar_carpeta_id_no_encontrada():
     json_response = response.json()
 
     assert json_response[
-        "detail"] == f"No se ha encontrado la carpeta"
+        "detail"] == "No se ha encontrado la carpeta"
 
     app.dependency_overrides.clear()

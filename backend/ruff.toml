@@ -1,0 +1,16 @@
+exclude = [
+    "alembic/",
+    "tests/"
+]
+
+[lint]
+ignore= [
+    # Blind exceptions
+    "BLE001",
+    # Crear exception propia
+    "TRY002",
+    # If anidados
+    "SIM102",
+    # Detección depends
+    "B008"
+]

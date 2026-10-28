@@ -1,13 +1,19 @@
 import io
 import uuid
-from fastapi.testclient import TestClient
-from app.main import app
 from unittest.mock import AsyncMock, patch
-from app.models.exceptions import NombreYaUsadoException, IdYaUsadaException, TamañoExcedidoException
+
+from fastapi.testclient import TestClient
+
+from app.main import app
+from app.middleware.auth_middleware import get_current_user
+from app.models.exceptions import (
+    IdYaUsadaException,
+    NombreYaUsadoException,
+    TamañoExcedidoException,
+)
 from app.models.file import File
 from app.models.user import User
 from app.schemas.file_schemas import FileResponse
-from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
 
 client = TestClient(app)
@@ -165,7 +171,7 @@ def test_subir_archivo_tamaño_excedido():
 
     with patch("app.routes.file_routes.file_services.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
         mock_guardar.side_effect = TamañoExcedidoException(
-            f"Has excedido el tamaño máximo de subida")
+            "Has excedido el tamaño máximo de subida")
 
         response = client.post(
             "/api/files", files=[("file_upload", ("test.txt", io.BytesIO(b"Test"), "text/plain"))]

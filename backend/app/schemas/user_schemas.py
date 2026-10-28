@@ -1,6 +1,14 @@
-from datetime import datetime
 import uuid
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, ValidationInfo, field_validator
+from datetime import datetime
+
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    ValidationInfo,
+    field_validator,
+)
 
 
 class UserCreate(BaseModel):
@@ -13,7 +21,7 @@ class UserCreate(BaseModel):
     @classmethod
     def comprobar_contraseñas_coinciden(cls, value: str, info: ValidationInfo) -> str:
         if value != info.data["contraseña"]:
-            raise ValueError('Las contraseñas no coinciden')
+            raise ValueError("Las contraseñas no coinciden")
         return value
 
 

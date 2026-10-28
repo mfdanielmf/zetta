@@ -1,14 +1,20 @@
 import uuid
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
+
 from app.main import app
+from app.middleware.auth_middleware import get_current_user
 from app.models.carpeta_compartida import CarpetaCompartida
-from app.models.exceptions import CarpetaNoEncontradaException, PropietarioException, YaCompartidoException, UsuarioNoEncontradoException
+from app.models.exceptions import (
+    CarpetaNoEncontradaException,
+    PropietarioException,
+    UsuarioNoEncontradoException,
+    YaCompartidoException,
+)
 from app.models.folder import Folder
 from app.models.user import User
-from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
-from unittest.mock import patch
 
 client = TestClient(app=app)
 

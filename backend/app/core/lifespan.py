@@ -1,11 +1,13 @@
 from contextlib import asynccontextmanager
+
+from apscheduler.triggers.interval import IntervalTrigger
 from fastapi import FastAPI
 
-from app.core.scheduler import scheduler
 from app.core.logging_config import logger
-from app.services.trash_services import eliminar_data_papelera
+from app.core.scheduler import scheduler
 from app.database.db import SessionLocal
-from apscheduler.triggers.interval import IntervalTrigger
+from app.services.trash_services import eliminar_data_papelera
+
 
 def limpiar_papelera():
     db = SessionLocal()
@@ -19,14 +21,21 @@ def limpiar_papelera():
     finally:
         db.close()
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Inicializando ZETTA")
 
     limpiar_papelera()
 
-    scheduler.add_job(limpiar_papelera, IntervalTrigger(
-        hours=12), id="job_limpieza_papelera", replace_existing=True, max_instances=1, coalesce=True)
+    scheduler.add_job(
+        limpiar_papelera,
+        IntervalTrigger(hours=12),
+        id="job_limpieza_papelera",
+        replace_existing=True,
+        max_instances=1,
+        coalesce=True,
+    )
 
     scheduler.start()
     logger.info("Scheduler iniciado. Tareas programadas activas")

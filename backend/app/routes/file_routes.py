@@ -1,28 +1,33 @@
 import os
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, Request
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse as FileResp
 from sqlalchemy.orm import Session
-from app.database.db import get_db
 
-from app.middleware.pagination_middleware import get_pagination
-from app.models.user import User
-from app.models import exceptions as ex
-from app.schemas import file_schemas
+from app.core.limiter import FILE_RATE_LIMIT, UPLOAD_RATE_LIMIT, limiter
+from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
+from app.middleware.pagination_middleware import get_pagination
+from app.models import exceptions as ex
+from app.models.user import User
+from app.schemas import file_schemas
 from app.services import file_services
-from app.core.limiter import limiter, UPLOAD_RATE_LIMIT, FILE_RATE_LIMIT
 
 file_router = APIRouter()
 
 
 @file_router.get("", response_model=file_schemas.PaginatedFileResponse)
-def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current_user), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_files(
+    db: Session = Depends(get_db),
+    usuario: User = Depends(get_current_user),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+):
     pagina, limite = paginacion
 
     total, archivos = file_services.obtener_archivos_usuario_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite
+    )
 
     return {
         "items": [
@@ -41,17 +46,24 @@ def get_files(db: Session = Depends(get_db), usuario: User = Depends(get_current
         ],
         "total": total,
         "pagina": pagina,
-        "limite": limite
+        "limite": limite,
     }
 
 
 @file_router.post("", response_model=file_schemas.FileResponse)
 @limiter.limit(UPLOAD_RATE_LIMIT)
-async def upload_file(request: Request, file_upload: list[UploadFile] = File(...), db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+async def upload_file(
+    request: Request,
+    file_upload: list[UploadFile] = File(...),
+    db: Session = Depends(get_db),
+    usuario: User = Depends(get_current_user),
+):
     try:
         archivos: list[File] = []
         for file in file_upload:
-            archivo_db: File = await file_services.guardar_archivo(file_upload=file, db=db, usuario=usuario)
+            archivo_db: File = await file_services.guardar_archivo(
+                file_upload=file, db=db, usuario=usuario
+            )
             archivos.append(archivo_db)
 
         return {
@@ -67,8 +79,9 @@ async def upload_file(request: Request, file_upload: list[UploadFile] = File(...
                     nombre_usuario=archivo.usuario.nombre,
                     id_carpeta=archivo.id_carpeta,
                     fecha_eliminacion=archivo.fecha_eliminacion,
-                ) for archivo in archivos
-            ]
+                )
+                for archivo in archivos
+            ],
         }
     except ex.TamañoExcedidoException as e1:
         raise HTTPException(413, str(e1))
@@ -79,11 +92,16 @@ async def upload_file(request: Request, file_upload: list[UploadFile] = File(...
 
 
 @file_router.get("/trash", response_model=file_schemas.PaginatedFileResponse)
-def get_files_trash(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_files_trash(
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+):
     pagina, limite = paginacion
 
     total, archivos = file_services.obtener_archivos_papelera_raiz_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite
+    )
 
     return {
         "items": [
@@ -102,48 +120,68 @@ def get_files_trash(usuario: User = Depends(get_current_user), db: Session = Dep
         ],
         "total": total,
         "pagina": pagina,
-        "limite": limite
+        "limite": limite,
     }
 
 
-@file_router.delete("/trash/{id_archivo}", response_model=file_schemas.DeleteFilePermanentResponse)
+@file_router.delete(
+    "/trash/{id_archivo}", response_model=file_schemas.DeleteFilePermanentResponse
+)
 @limiter.limit(FILE_RATE_LIMIT)
-def delete_file_permanent(request: Request, id_archivo: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def delete_file_permanent(
+    request: Request,
+    id_archivo: UUID,
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     try:
         file_services.eliminar_archivo_permanente(
-            id_archivo=id_archivo, db=db, usuario=usuario)
+            id_archivo=id_archivo, db=db, usuario=usuario
+        )
 
-        return {
-            "msg": "Archivo eliminado correctamente"
-        }
+        return {"msg": "Archivo eliminado correctamente"}
     except ex.ArchivoNoEncontradoException:
-        raise HTTPException(
-            404, detail="No se ha encontrado el archivo en la papelera")
+        raise HTTPException(404, detail="No se ha encontrado el archivo en la papelera")
     except ex.EliminarDiscoException as e2:
         raise HTTPException(500, detail=str(e2))
 
 
 @file_router.get("/{id_archivo}", response_class=FileResp)
-def download_file(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+def download_file(
+    id_archivo: UUID,
+    db: Session = Depends(get_db),
+    usuario: User = Depends(get_current_user),
+):
     try:
         archivo: File = file_services.obtener_archivo_permisos(
-            id_archivo=id_archivo, usuario=usuario, db=db)
+            id_archivo=id_archivo, usuario=usuario, db=db
+        )
 
         if not os.path.exists(archivo.path):
             raise HTTPException(
-                404, detail="No se ha encontrado el archivo en el sistema de almacenamiento")
+                404,
+                detail="No se ha encontrado el archivo en el sistema de almacenamiento",
+            )
 
         return FileResp(path=archivo.path, filename=archivo.nombre_original)
     except ex.ArchivoNoEncontradoException:
         raise HTTPException(
-            404, detail=f"No se ha encontrado el archivo con id {id_archivo}")
+            404, detail=f"No se ha encontrado el archivo con id {id_archivo}"
+        )
 
 
-@file_router.put("/{id_archivo}/restaurar", response_model=file_schemas.RestoreFileResponse)
-def restore_file_from_trash(id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+@file_router.put(
+    "/{id_archivo}/restaurar", response_model=file_schemas.RestoreFileResponse
+)
+def restore_file_from_trash(
+    id_archivo: UUID,
+    db: Session = Depends(get_db),
+    usuario: User = Depends(get_current_user),
+):
     try:
         archivo: File = file_services.restaurar_archivo_papelera(
-            id_archivo=id_archivo, db=db, usuario=usuario)
+            id_archivo=id_archivo, db=db, usuario=usuario
+        )
 
         return {
             "msg": "Archivo restaurado correctamente",
@@ -157,20 +195,28 @@ def restore_file_from_trash(id_archivo: UUID, db: Session = Depends(get_db), usu
                 nombre_usuario=archivo.usuario.nombre,
                 id_carpeta=archivo.id_carpeta,
                 fecha_eliminacion=archivo.fecha_eliminacion,
-            )
+            ),
         }
 
     except ex.ArchivoNoEncontradoException:
         raise HTTPException(
-            404, detail=f"No se ha encontrado el archivo con ID {id_archivo} en la papelera")
+            404,
+            detail=f"No se ha encontrado el archivo con ID {id_archivo} en la papelera",
+        )
 
 
 @file_router.delete("/{id_archivo}", response_model=file_schemas.AddFileTrashResponse)
 @limiter.limit(FILE_RATE_LIMIT)
-def add_file_to_trash(request: Request, id_archivo: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+def add_file_to_trash(
+    request: Request,
+    id_archivo: UUID,
+    db: Session = Depends(get_db),
+    usuario: User = Depends(get_current_user),
+):
     try:
         archivo: File = file_services.añadir_archivo_papelera(
-            id_archivo=id_archivo, db=db, usuario=usuario)
+            id_archivo=id_archivo, db=db, usuario=usuario
+        )
 
         return {
             "msg": "Archivo enviado a la papelera con éxito",
@@ -183,13 +229,15 @@ def add_file_to_trash(request: Request, id_archivo: UUID, db: Session = Depends(
                 id_usuario=archivo.id_usuario,
                 nombre_usuario=archivo.usuario.nombre,
                 id_carpeta=archivo.id_carpeta,
-                fecha_eliminacion=archivo.fecha_eliminacion
-            )
+                fecha_eliminacion=archivo.fecha_eliminacion,
+            ),
         }
 
     except ex.ArchivoNoEncontradoException:
         raise HTTPException(
-            404, detail=f"No se ha encontrado el archivo con ID {id_archivo}")
+            404, detail=f"No se ha encontrado el archivo con ID {id_archivo}"
+        )
     except ex.ArchivoPapeleraException:
         raise HTTPException(
-            409, detail="El archivo seleccionado ya está en la papelera")
+            409, detail="El archivo seleccionado ya está en la papelera"
+        )
