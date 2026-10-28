@@ -284,7 +284,7 @@ ARCHIVOS_COMPARTIDOS
 
 - **Docker y Docker Compose** para levantar el backend
 - **Python 3.12** como entorno de ejecución
-- **Node.js 20+** para proceso de compilación del frontend
+- **Node.js 22.23.4+, 24.22.2+ o 26.13.0+ (LTS recomendada: 26)** para proceso de compilación del frontend
 - **Git** para control de versiones
 
 ## Instalación y Configuración
@@ -292,7 +292,7 @@ ARCHIVOS_COMPARTIDOS
 ### Requisitos Previos
 
 - Python 3.12+
-- Node.js 20+ (versión LTS recomendada)
+- Node.js 22.23.4+, 24.22.2+ o 26.13.0+ (LTS recomendada: 26)
 - Base de datos PostgreSQL 12+
 - Docker y Docker Compose
 - Git
@@ -333,7 +333,7 @@ El contenedor de la API carga las dependencias definidas en `Dockerfile.dev` y e
 2. **Instalar dependencias:**
 
    ```bash
-   npm install
+   bun install
    ```
 
 ## Configuración de Variables de Entorno
@@ -384,12 +384,12 @@ El backend queda disponible en `http://localhost:8080` y la documentación de Op
 
 ### Frontend
 
-El frontend se ejecuta localmente con npm:
+El frontend se ejecuta localmente con Bun:
 
 ```bash
 cd frontend
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 El frontend estará disponible en `http://localhost:5173`.
