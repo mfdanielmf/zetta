@@ -1,6 +1,5 @@
-from app.database.db import Base
+from app.database.db import Base, engine
 from logging.config import fileConfig
-from app.config import config as configuracion
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -19,7 +18,10 @@ from app.models.carpeta_favorita import CarpetaFavorita
 # access to the values within the .ini file in use.
 config = context.config
 
-config.set_main_option("sqlalchemy.url", configuracion.DATABASE_URL)
+config.set_main_option(
+    "sqlalchemy.url",
+    engine.url.render_as_string(hide_password=False).replace("%", "%%"),
+)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
