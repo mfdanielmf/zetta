@@ -31,45 +31,91 @@ def get_file_by_id(id_archivo: uuid.UUID, db: Session) -> File | None:
 
 
 def get_file_by_id_and_user(id: uuid.UUID, usuario: User, db: Session) -> File | None:
-    return db.query(File).filter(File.id == id, File.id_usuario == usuario.id, File.fecha_eliminacion == None).first()
+    return (
+        db.query(File)
+        .filter(
+            File.id == id, File.id_usuario == usuario.id, File.fecha_eliminacion == None
+        )
+        .first()
+    )
 
 
 def get_files_user(usuario: User, db: Session) -> list[File]:
     return db.query(File).filter_by(id_usuario=usuario.id).all()
 
 
-def get_file_original_name(nombre_original: str, usuario: User, db: Session) -> File | None:
-    return db.query(File).filter_by(nombre_original=nombre_original, id_usuario=usuario.id).first()
+def get_file_original_name(
+    nombre_original: str, usuario: User, db: Session
+) -> File | None:
+    return (
+        db.query(File)
+        .filter_by(nombre_original=nombre_original, id_usuario=usuario.id)
+        .first()
+    )
 
 
-def get_file_by_name_in_folder(nombre_original: str, usuario: User, db: Session, id_carpeta: uuid.UUID | None = None) -> File | None:
-    return db.query(File).filter_by(nombre_original=nombre_original, id_carpeta=id_carpeta, id_usuario=usuario.id).first()
+def get_file_by_name_in_folder(
+    nombre_original: str,
+    usuario: User,
+    db: Session,
+    id_carpeta: uuid.UUID | None = None,
+) -> File | None:
+    return (
+        db.query(File)
+        .filter_by(
+            nombre_original=nombre_original,
+            id_carpeta=id_carpeta,
+            id_usuario=usuario.id,
+        )
+        .first()
+    )
 
 
-def get_all_files_in_folder(id_carpeta: uuid.UUID, db: Session, usuario: User) -> list[File]:
+def get_all_files_in_folder(
+    id_carpeta: uuid.UUID, db: Session, usuario: User
+) -> list[File]:
     return db.query(File).filter_by(id_carpeta=id_carpeta, id_usuario=usuario.id).all()
 
 
-def get_file_trash(id_archivo: uuid.UUID, id_usuario: uuid.UUID, db: Session) -> File | None:
-    return db.query(File).filter(File.id == id_archivo, File.id_usuario == id_usuario, File.fecha_eliminacion != None).first()
+def get_file_trash(
+    id_archivo: uuid.UUID, id_usuario: uuid.UUID, db: Session
+) -> File | None:
+    return (
+        db.query(File)
+        .filter(
+            File.id == id_archivo,
+            File.id_usuario == id_usuario,
+            File.fecha_eliminacion != None,
+        )
+        .first()
+    )
 
 
 def get_all_files_trash_raiz(id_usuario: uuid.UUID, db: Session) -> list[File]:
-   # Obtener archivos que están eliminados y están en la raíz o los que están eliminados pero su carpeta no lo está
-    return db.query(File).outerjoin(
-        Folder, File.id_carpeta == Folder.id
-    ).filter(
-        File.id_usuario == id_usuario,
-        File.fecha_eliminacion != None,
-        or_(
-            File.id_carpeta == None,
-            Folder.fecha_eliminacion == None
+    # Obtener archivos que están eliminados y están en la raíz o los que están eliminados pero su carpeta no lo está
+    return (
+        db.query(File)
+        .outerjoin(Folder, File.id_carpeta == Folder.id)
+        .filter(
+            File.id_usuario == id_usuario,
+            File.fecha_eliminacion != None,
+            or_(File.id_carpeta == None, Folder.fecha_eliminacion == None),
         )
-    ).order_by(File.fecha_eliminacion.desc()).all()
+        .order_by(File.fecha_eliminacion.desc())
+        .all()
+    )
 
 
 def get_files_raiz(id_usuario: uuid.UUID, db: Session) -> list[File]:
-    return db.query(File).filter(File.id_usuario == id_usuario, File.id_carpeta == None, File.fecha_eliminacion == None).all()
+    return (
+        db.query(File)
+        .filter(
+            File.id_usuario == id_usuario,
+            File.id_carpeta == None,
+            File.fecha_eliminacion == None,
+        )
+        .all()
+    )
 
 
 def delete_file(archivo: File, db: Session):
@@ -77,40 +123,50 @@ def delete_file(archivo: File, db: Session):
     db.commit()
 
 
-def get_files_raiz_paginados(id_usuario: uuid.UUID, db: Session, offset: int, limit: int) -> tuple[int, list[File]]:
-    query = db.query(File).filter(File.id_usuario == id_usuario,
-                                  File.id_carpeta == None, File.fecha_eliminacion == None)
+def get_files_raiz_paginados(
+    id_usuario: uuid.UUID, db: Session, offset: int, limit: int
+) -> tuple[int, list[File]]:
+    query = db.query(File).filter(
+        File.id_usuario == id_usuario,
+        File.id_carpeta == None,
+        File.fecha_eliminacion == None,
+    )
 
     total: int = query.count()
 
-    archivos: list[File] = query.order_by(
-        File.fecha_creacion.desc()).offset(offset).limit(limit).all()
+    archivos: list[File] = (
+        query.order_by(File.fecha_creacion.desc()).offset(offset).limit(limit).all()
+    )
 
     return total, archivos
 
 
-def get_all_files_trash_raiz_paginados(id_usuario: uuid.UUID, db: Session, offset: int, limit: int) -> tuple[int, list[File]]:
+def get_all_files_trash_raiz_paginados(
+    id_usuario: uuid.UUID, db: Session, offset: int, limit: int
+) -> tuple[int, list[File]]:
     # Obtener  archivos que están eliminados y están en la raíz o los que están eliminados pero su carpeta no lo está
-    query = db.query(File).outerjoin(
-        Folder, File.id_carpeta == Folder.id
-    ).filter(
-        File.id_usuario == id_usuario,
-        File.fecha_eliminacion != None,
-        or_(
-            File.id_carpeta == None,
-            Folder.fecha_eliminacion == None
+    query = (
+        db.query(File)
+        .outerjoin(Folder, File.id_carpeta == Folder.id)
+        .filter(
+            File.id_usuario == id_usuario,
+            File.fecha_eliminacion != None,
+            or_(File.id_carpeta == None, Folder.fecha_eliminacion == None),
         )
     )
 
     total: int = query.count()
 
-    archivos: list[File] = query.order_by(
-        File.fecha_eliminacion.desc()).offset(offset).limit(limit).all()
+    archivos: list[File] = (
+        query.order_by(File.fecha_eliminacion.desc()).offset(offset).limit(limit).all()
+    )
 
     return total, archivos
 
 
-def get_all_files_in_folder_paginados(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, offset: int, limit: int) -> tuple[int, list[File]]:
+def get_all_files_in_folder_paginados(
+    id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, offset: int, limit: int
+) -> tuple[int, list[File]]:
     query = (
         db.query(File)
         .outerjoin(ArchivoCompartido, ArchivoCompartido.id_archivo == File.id)
@@ -121,35 +177,42 @@ def get_all_files_in_folder_paginados(id_carpeta: uuid.UUID, db: Session, id_usu
                 ArchivoCompartido.id_receptor == id_usuario,
                 File.id_carpeta.in_(
                     db.query(CarpetaCompartida.id_carpeta).filter(
-                        CarpetaCompartida.id_receptor == id_usuario)
-                )
-            )
+                        CarpetaCompartida.id_receptor == id_usuario
+                    )
+                ),
+            ),
         )
     )
 
     total: int = query.count()
 
-    archivos: list[File] = query.order_by(
-        File.fecha_creacion.desc()).offset(offset).limit(limit).all()
+    archivos: list[File] = (
+        query.order_by(File.fecha_creacion.desc()).offset(offset).limit(limit).all()
+    )
 
     return total, archivos
 
 
-def get_files_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[tuple[File, bool]]:
+def get_files_raiz_sorted(
+    id_usuario: uuid.UUID, db: Session, busqueda: str | None = None
+) -> list[tuple[File, bool]]:
     # Obtener archivos que no están eliminados pero su carpeta sí
-    exists_favorito = db.query(ArchivoFavorito.id).filter(
-        ArchivoFavorito.id_archivo == File.id,
-        ArchivoFavorito.id_usuario == id_usuario
-    ).exists()
+    exists_favorito = (
+        db.query(ArchivoFavorito.id)
+        .filter(
+            ArchivoFavorito.id_archivo == File.id,
+            ArchivoFavorito.id_usuario == id_usuario,
+        )
+        .exists()
+    )
 
-    query = db.query(File, exists_favorito.label("favorito")).outerjoin(
-        Folder
-    ).filter(
-        File.id_usuario == id_usuario,
-        File.fecha_eliminacion == None,
-        or_(
-            File.id_carpeta == None,
-            Folder.fecha_eliminacion != None
+    query = (
+        db.query(File, exists_favorito.label("favorito"))
+        .outerjoin(Folder)
+        .filter(
+            File.id_usuario == id_usuario,
+            File.fecha_eliminacion == None,
+            or_(File.id_carpeta == None, Folder.fecha_eliminacion != None),
         )
     )
 
@@ -160,11 +223,17 @@ def get_files_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | No
 
 
 # O propietario o usuario con permisos (acordarme de cambiarlo en algún momento en el resto de queries antiguas)
-def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, busqueda: str | None) -> list[tuple[File, bool]]:
-    exists_favorito = db.query(ArchivoFavorito.id).filter(
-        ArchivoFavorito.id_archivo == File.id,
-        ArchivoFavorito.id_usuario == id_usuario
-    ).exists()
+def get_all_files_in_folder_sorted(
+    id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, busqueda: str | None
+) -> list[tuple[File, bool]]:
+    exists_favorito = (
+        db.query(ArchivoFavorito.id)
+        .filter(
+            ArchivoFavorito.id_archivo == File.id,
+            ArchivoFavorito.id_usuario == id_usuario,
+        )
+        .exists()
+    )
 
     query = (
         db.query(File, exists_favorito.label("favorito"))
@@ -177,9 +246,10 @@ def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuari
                 ArchivoCompartido.id_receptor == id_usuario,
                 File.id_carpeta.in_(
                     db.query(CarpetaCompartida.id_carpeta).filter(
-                        CarpetaCompartida.id_receptor == id_usuario)
-                )
-            )
+                        CarpetaCompartida.id_receptor == id_usuario
+                    )
+                ),
+            ),
         )
     )
 
@@ -189,16 +259,17 @@ def get_all_files_in_folder_sorted(id_carpeta: uuid.UUID, db: Session, id_usuari
     return query.order_by(File.fecha_creacion.desc()).all()
 
 
-def get_all_files_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda: str | None = None) -> list[File]:
+def get_all_files_trash_raiz_sorted(
+    id_usuario: uuid.UUID, db: Session, busqueda: str | None = None
+) -> list[File]:
     # Obtener  archivos que están eliminados y están en la raíz o los que están eliminados pero su carpeta no lo está
-    query = db.query(File).outerjoin(
-        Folder, File.id_carpeta == Folder.id
-    ).filter(
-        File.id_usuario == id_usuario,
-        File.fecha_eliminacion != None,
-        or_(
-            File.id_carpeta == None,
-            Folder.fecha_eliminacion == None
+    query = (
+        db.query(File)
+        .outerjoin(Folder, File.id_carpeta == Folder.id)
+        .filter(
+            File.id_usuario == id_usuario,
+            File.fecha_eliminacion != None,
+            or_(File.id_carpeta == None, Folder.fecha_eliminacion == None),
         )
     )
 
@@ -208,7 +279,9 @@ def get_all_files_trash_raiz_sorted(id_usuario: uuid.UUID, db: Session, busqueda
     return query.order_by(File.fecha_eliminacion.desc()).all()
 
 
-def get_all_files_in_folder_trash_sorted(id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, busqueda: str | None) -> list[File]:
+def get_all_files_in_folder_trash_sorted(
+    id_carpeta: uuid.UUID, db: Session, id_usuario: uuid.UUID, busqueda: str | None
+) -> list[File]:
     query = (
         db.query(File)
         .outerjoin(ArchivoCompartido, ArchivoCompartido.id_archivo == File.id)
@@ -220,9 +293,10 @@ def get_all_files_in_folder_trash_sorted(id_carpeta: uuid.UUID, db: Session, id_
                 ArchivoCompartido.id_receptor == id_usuario,
                 File.id_carpeta.in_(
                     db.query(CarpetaCompartida.id_carpeta).filter(
-                        CarpetaCompartida.id_receptor == id_usuario)
-                )
-            )
+                        CarpetaCompartida.id_receptor == id_usuario
+                    )
+                ),
+            ),
         )
     )
 

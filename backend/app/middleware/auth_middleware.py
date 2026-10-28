@@ -20,10 +20,7 @@ class BearerCustom(HTTPBearer):
         credentials = await super().__call__(request)
 
         if not credentials:
-            raise HTTPException(
-                status_code=401,
-                detail="No se proporcionó token"
-            )
+            raise HTTPException(status_code=401, detail="No se proporcionó token")
 
         return credentials
 
@@ -31,7 +28,10 @@ class BearerCustom(HTTPBearer):
 security = BearerCustom()
 
 
-def get_current_user(db: Session = Depends(get_db), credentials: HTTPAuthorizationCredentials = Depends(security)) -> User:
+def get_current_user(
+    db: Session = Depends(get_db),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> User:
     """
     HTTPException
     """
@@ -42,5 +42,4 @@ def get_current_user(db: Session = Depends(get_db), credentials: HTTPAuthorizati
     except UsuarioNoEncontradoException:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     except UsuarioNoAutenticadoException:
-        raise HTTPException(
-            status_code=401, detail="Token incorrecto o expirado")
+        raise HTTPException(status_code=401, detail="Token incorrecto o expirado")

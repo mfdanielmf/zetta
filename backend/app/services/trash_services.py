@@ -24,7 +24,8 @@ def eliminar_data_papelera(db: Session):
     try:
         # Borrar carpetas disco
         carpetas_eliminar: list[Folder] = trash_repo.get_folders_trash_delete(
-            db=db, limite_papelera=limite_papelera)
+            db=db, limite_papelera=limite_papelera
+        )
 
         for carpeta in carpetas_eliminar:
             path: str = carpeta.path
@@ -34,7 +35,8 @@ def eliminar_data_papelera(db: Session):
 
         # Borrar archivos disco
         archivos_eliminar: list[File] = trash_repo.get_files_trash_delete(
-            db=db, limite_papelera=limite_papelera)
+            db=db, limite_papelera=limite_papelera
+        )
 
         for archivo in archivos_eliminar:
             path: str = archivo.path

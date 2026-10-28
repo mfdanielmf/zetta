@@ -16,20 +16,22 @@ class Folder(Base):
     fecha_creacion = Column(DateTime, default=func.now())
     fecha_eliminacion = Column(DateTime, nullable=True)
 
-    id_usuario = Column(UUID(as_uuid=True), ForeignKey(
-        "usuarios.id"), nullable=False)
-    id_carpeta = Column(UUID(as_uuid=True), ForeignKey(
-        "carpetas.id", ondelete="CASCADE"), nullable=True)
+    id_usuario = Column(UUID(as_uuid=True), ForeignKey("usuarios.id"), nullable=False)
+    id_carpeta = Column(
+        UUID(as_uuid=True), ForeignKey("carpetas.id", ondelete="CASCADE"), nullable=True
+    )
 
-    carpeta = relationship("Folder",
-                           remote_side=[id], back_populates="carpetas")
-    usuario = relationship(
-        "User", back_populates="carpetas", passive_deletes=True)
+    carpeta = relationship("Folder", remote_side=[id], back_populates="carpetas")
+    usuario = relationship("User", back_populates="carpetas", passive_deletes=True)
     archivos = relationship(
-        "File", back_populates="carpeta", cascade="all, delete-orphan")
+        "File", back_populates="carpeta", cascade="all, delete-orphan"
+    )
     carpetas = relationship(
-        "Folder", back_populates="carpeta", cascade="all, delete-orphan")
+        "Folder", back_populates="carpeta", cascade="all, delete-orphan"
+    )
     compartida_con = relationship(
-        "CarpetaCompartida", back_populates="carpeta", passive_deletes=True)
+        "CarpetaCompartida", back_populates="carpeta", passive_deletes=True
+    )
     favoritos = relationship(
-        "CarpetaFavorita", back_populates="carpeta", passive_deletes=True)
+        "CarpetaFavorita", back_populates="carpeta", passive_deletes=True
+    )

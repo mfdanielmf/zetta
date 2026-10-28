@@ -32,7 +32,7 @@ def register(request: Request, usuario: UserCreate, db: Session = Depends(get_db
 
         return {
             "msg": "Usuario creado con exito",
-            "usuario": UserReturn.model_validate(usuario_db)
+            "usuario": UserReturn.model_validate(usuario_db),
         }
     except CorreoYaUsadoException as e1:
         raise HTTPException(status_code=400, detail=str(e1))
@@ -49,7 +49,7 @@ def login(request: Request, usuario_req: LoginRequest, db: Session = Depends(get
         return {
             "msg": "Sesión iniciada correctamente",
             "usuario": UserReturn.model_validate(usuario).model_dump(mode="json"),
-            "token": token
+            "token": token,
         }
     except UsuarioNoEncontradoException as e1:
         raise HTTPException(status_code=404, detail=str(e1))
@@ -59,6 +59,4 @@ def login(request: Request, usuario_req: LoginRequest, db: Session = Depends(get
 
 @auth_router.get("/me", response_model=MeResponse)
 def me(usuario: User = Depends(get_current_user)):
-    return {
-        "usuario": UserReturn.model_validate(usuario)
-    }
+    return {"usuario": UserReturn.model_validate(usuario)}

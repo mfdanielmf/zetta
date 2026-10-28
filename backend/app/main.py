@@ -21,7 +21,7 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url=None if config.ENVIRONMENT == "prod" else "/docs",
     redoc_url=None if config.ENVIRONMENT == "prod" else "/redoc",
-    openapi_url=None if config.ENVIRONMENT == "prod" else "/openapi.json"
+    openapi_url=None if config.ENVIRONMENT == "prod" else "/openapi.json",
 )
 
 app.state.limiter = limiter
@@ -32,8 +32,10 @@ async def rate_limit_handler(request, exc):
     return JSONResponse(
         status_code=429,
         content={
-            "detail": "Has hecho demasiadas solicitudes. Inténtalo de nuevo más tarde."}
+            "detail": "Has hecho demasiadas solicitudes. Inténtalo de nuevo más tarde."
+        },
     )
+
 
 logger.info(f"Inicializando app. CONFIG: {config.ENVIRONMENT}")
 logger.debug(f"CORS permitido: {config.ALLOWED_ORIGINS}")
@@ -43,7 +45,7 @@ app.add_middleware(
     allow_origins=config.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 # RUTAS
@@ -55,5 +57,4 @@ app.include_router(shared_router, prefix="/api/shared", tags=["Shared"])
 
 # v2
 app.include_router(item_router, prefix="/api/v2/items", tags=["Items"])
-app.include_router(
-    multiple_router, prefix="/api/v2/multiple", tags=["Multiple"])
+app.include_router(multiple_router, prefix="/api/v2/multiple", tags=["Multiple"])

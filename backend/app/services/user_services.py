@@ -25,7 +25,8 @@ def obtener_usuario_nombre(nombre: str, db: Session) -> User:
 
     if usuario is None:
         raise UsuarioNoEncontradoException(
-            f"No se ha encontrado el usuario con nombre {nombre}")
+            f"No se ha encontrado el usuario con nombre {nombre}"
+        )
 
     return usuario
 
@@ -37,16 +38,19 @@ def crear_usuario(usuario: UserCreate, db: Session) -> User:
 
     if get_user_by_name(nombre=usuario.nombre, db=db) is not None:
         raise NombreYaUsadoException(
-            f"Ya se ha encontrado un usuario con nombre {usuario.nombre}")
+            f"Ya se ha encontrado un usuario con nombre {usuario.nombre}"
+        )
 
     if get_user_by_email(correo=usuario.correo, db=db) is not None:
         raise CorreoYaUsadoException(
-            f"Ya se ha encontrado un usuario con el correo {usuario.correo}")
+            f"Ya se ha encontrado un usuario con el correo {usuario.correo}"
+        )
 
     hash: str = generate_password_hash(password=usuario.contraseña)
 
-    usuario_model: User = User(nombre=usuario.nombre,
-                               correo=usuario.correo, contraseña=hash)
+    usuario_model: User = User(
+        nombre=usuario.nombre, correo=usuario.correo, contraseña=hash
+    )
 
     usuario_db: User = insert_user_db(usuario=usuario_model, db=db)
 
@@ -61,7 +65,8 @@ def obtener_usuario_correo(correo: EmailStr, db: Session) -> User:
 
     if usuario is None:
         raise UsuarioNoEncontradoException(
-            f"No se ha encontrado el usuario con correo {correo}")
+            f"No se ha encontrado el usuario con correo {correo}"
+        )
 
     return usuario
 

@@ -17,19 +17,35 @@ class User(Base):
     contraseña = Column(String, nullable=False)
     fecha_creacion = Column(DateTime, default=func.now())
 
-    archivos = relationship(
-        "File", back_populates="usuario", passive_deletes=True)
-    carpetas = relationship(
-        "Folder", back_populates="usuario", passive_deletes=True)
+    archivos = relationship("File", back_populates="usuario", passive_deletes=True)
+    carpetas = relationship("Folder", back_populates="usuario", passive_deletes=True)
     carpetas_compartidas = relationship(
-        "CarpetaCompartida", back_populates="propietario", foreign_keys=[CarpetaCompartida.id_propietario], passive_deletes=True)
+        "CarpetaCompartida",
+        back_populates="propietario",
+        foreign_keys=[CarpetaCompartida.id_propietario],
+        passive_deletes=True,
+    )
     carpetas_recibidas = relationship(
-        "CarpetaCompartida", back_populates="receptor", foreign_keys=[CarpetaCompartida.id_receptor], passive_deletes=True)
+        "CarpetaCompartida",
+        back_populates="receptor",
+        foreign_keys=[CarpetaCompartida.id_receptor],
+        passive_deletes=True,
+    )
     archivos_compartidos = relationship(
-        "ArchivoCompartido", back_populates="propietario", foreign_keys=[ArchivoCompartido.id_propietario], passive_deletes=True)
+        "ArchivoCompartido",
+        back_populates="propietario",
+        foreign_keys=[ArchivoCompartido.id_propietario],
+        passive_deletes=True,
+    )
     archivos_recibidos = relationship(
-        "ArchivoCompartido", back_populates="receptor", foreign_keys=[ArchivoCompartido.id_receptor], passive_deletes=True)
+        "ArchivoCompartido",
+        back_populates="receptor",
+        foreign_keys=[ArchivoCompartido.id_receptor],
+        passive_deletes=True,
+    )
     carpetas_favoritas = relationship(
-        "CarpetaFavorita", back_populates="usuario", passive_deletes=True)
+        "CarpetaFavorita", back_populates="usuario", passive_deletes=True
+    )
     archivos_favoritos = relationship(
-        "ArchivoFavorito", back_populates="usuario", passive_deletes=True)
+        "ArchivoFavorito", back_populates="usuario", passive_deletes=True
+    )

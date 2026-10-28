@@ -14,6 +14,7 @@ class ShareMultipleItemsRequest(BaseModel):
     correo_usuario: EmailStr
     items: list[ItemMultipleRequest]
 
+
 class ErrorItemMultiple(BaseModel):
     id_item: UUID
     nombre_item: str

@@ -24,15 +24,14 @@ class File(Base):
     fecha_creacion = Column(DateTime, default=func.now())
     fecha_eliminacion = Column(DateTime, nullable=True)
 
-    id_usuario = Column(UUID(as_uuid=True), ForeignKey(
-        "usuarios.id"), nullable=False)
-    id_carpeta = Column(UUID(as_uuid=True), ForeignKey(
-        "carpetas.id"), nullable=True)
+    id_usuario = Column(UUID(as_uuid=True), ForeignKey("usuarios.id"), nullable=False)
+    id_carpeta = Column(UUID(as_uuid=True), ForeignKey("carpetas.id"), nullable=True)
 
-    usuario = relationship(
-        "User", back_populates="archivos", passive_deletes=True)
-    carpeta = relationship(
-        "Folder", back_populates="archivos", passive_deletes=True)
+    usuario = relationship("User", back_populates="archivos", passive_deletes=True)
+    carpeta = relationship("Folder", back_populates="archivos", passive_deletes=True)
     compartido_con = relationship(
-        "ArchivoCompartido", back_populates="archivo", passive_deletes=True)
-    favoritos = relationship("ArchivoFavorito", back_populates="archivo", passive_deletes=True)
+        "ArchivoCompartido", back_populates="archivo", passive_deletes=True
+    )
+    favoritos = relationship(
+        "ArchivoFavorito", back_populates="archivo", passive_deletes=True
+    )

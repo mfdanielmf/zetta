@@ -24,12 +24,13 @@ def get_items(
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
-    busqueda: str | None = Depends(get_filters)
+    busqueda: str | None = Depends(get_filters),
 ):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_raiz_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda
+    )
 
     items_serializados: list[item_schemas.FolderItem | item_schemas.FileItem] = []
 
@@ -48,7 +49,7 @@ def get_items(
                     nombre_usuario=entidad.usuario.nombre,
                     id_carpeta=entidad.id_carpeta,
                     fecha_eliminacion=entidad.fecha_eliminacion,
-                    favorito=favorito
+                    favorito=favorito,
                 )
             )
         else:
@@ -62,7 +63,7 @@ def get_items(
                     nombre_usuario=entidad.usuario.nombre,
                     id_carpeta=entidad.id_carpeta,
                     fecha_eliminacion=entidad.fecha_eliminacion,
-                    favorito=favorito
+                    favorito=favorito,
                 )
             )
 
@@ -70,23 +71,31 @@ def get_items(
         "items": items_serializados,
         "total": total,
         "pagina": pagina,
-        "limite": limite
+        "limite": limite,
     }
 
 
-@item_router.get("/{id_carpeta}/items", response_model=item_schemas.PaginatedItemResponse)
+@item_router.get(
+    "/{id_carpeta}/items", response_model=item_schemas.PaginatedItemResponse
+)
 def get_items_folder(
     id_carpeta: UUID,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
-    busqueda: str | None = Depends(get_filters)
+    busqueda: str | None = Depends(get_filters),
 ):
     pagina, limite = paginacion
 
     try:
-        total, items = item_services.obtener_items_carpeta_paginados(id_carpeta=id_carpeta,
-                                                                     usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
+        total, items = item_services.obtener_items_carpeta_paginados(
+            id_carpeta=id_carpeta,
+            usuario=usuario,
+            db=db,
+            pagina=pagina,
+            limite=limite,
+            busqueda=busqueda,
+        )
 
         items_serializados: list[file_schemas.FileBase | file_schemas.File] = []
 
@@ -105,7 +114,7 @@ def get_items_folder(
                         nombre_usuario=entidad.usuario.nombre,
                         id_carpeta=entidad.id_carpeta,
                         fecha_eliminacion=entidad.fecha_eliminacion,
-                        favorito=favorito
+                        favorito=favorito,
                     )
                 )
             else:
@@ -119,7 +128,7 @@ def get_items_folder(
                         nombre_usuario=entidad.usuario.nombre,
                         id_carpeta=entidad.id_carpeta,
                         fecha_eliminacion=entidad.fecha_eliminacion,
-                        favorito=favorito
+                        favorito=favorito,
                     )
                 )
 
@@ -127,7 +136,7 @@ def get_items_folder(
             "items": items_serializados,
             "total": total,
             "pagina": pagina,
-            "limite": limite
+            "limite": limite,
         }
 
     except ex.CarpetaNoEncontradaException as e1:
@@ -139,12 +148,13 @@ def get_items_trash(
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
-    busqueda: str | None = Depends(get_filters)
+    busqueda: str | None = Depends(get_filters),
 ):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_papelera_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda
+    )
 
     items_serializados: list[file_schemas.FileBase | file_schemas.File] = []
 
@@ -181,23 +191,31 @@ def get_items_trash(
         "items": items_serializados,
         "total": total,
         "pagina": pagina,
-        "limite": limite
+        "limite": limite,
     }
 
 
-@item_router.get("/trash/{id_carpeta}/items", response_model=item_schemas.PaginatedItemResponse)
+@item_router.get(
+    "/trash/{id_carpeta}/items", response_model=item_schemas.PaginatedItemResponse
+)
 def get_items_folder_in_trash(
     id_carpeta: UUID,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
-    busqueda: str | None = Depends(get_filters)
+    busqueda: str | None = Depends(get_filters),
 ):
     pagina, limite = paginacion
 
     try:
-        total, items = item_services.obtener_items_carpeta_papelera_paginados(id_carpeta=id_carpeta,
-                                                                              usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
+        total, items = item_services.obtener_items_carpeta_papelera_paginados(
+            id_carpeta=id_carpeta,
+            usuario=usuario,
+            db=db,
+            pagina=pagina,
+            limite=limite,
+            busqueda=busqueda,
+        )
 
         items_serializados: list[file_schemas.FileBase | file_schemas.File] = []
 
@@ -234,25 +252,30 @@ def get_items_folder_in_trash(
             "items": items_serializados,
             "total": total,
             "pagina": pagina,
-            "limite": limite
+            "limite": limite,
         }
 
     except ex.CarpetaNoEncontradaException:
         raise HTTPException(
-            404, detail=f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera")
+            404,
+            detail=f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera",
+        )
 
 
-@item_router.get("/shared/sent", response_model=item_schemas.PaginatedSharedItemResponse)
+@item_router.get(
+    "/shared/sent", response_model=item_schemas.PaginatedSharedItemResponse
+)
 def get_sent_items(
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
-    busqueda: str | None = Depends(get_filters)
+    busqueda: str | None = Depends(get_filters),
 ):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_compartidos_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda
+    )
 
     items_serializados: list[file_schemas.FileBase | file_schemas.File] = []
 
@@ -277,9 +300,9 @@ def get_sent_items(
                         id_usuario=archivo.id_usuario,
                         nombre_usuario=archivo.usuario.nombre,
                         id_carpeta=archivo.id_carpeta,
-                        fecha_eliminacion=archivo.fecha_eliminacion
+                        fecha_eliminacion=archivo.fecha_eliminacion,
                     ),
-                    favorito=favorito
+                    favorito=favorito,
                 )
             )
         else:
@@ -301,7 +324,7 @@ def get_sent_items(
                         id_carpeta=carpeta.id_carpeta,
                         fecha_eliminacion=carpeta.fecha_eliminacion,
                     ),
-                    favorito=favorito
+                    favorito=favorito,
                 )
             )
 
@@ -309,21 +332,24 @@ def get_sent_items(
         "items": items_serializados,
         "total": total,
         "pagina": pagina,
-        "limite": limite
+        "limite": limite,
     }
 
 
-@item_router.get("/shared/received", response_model=item_schemas.PaginatedSharedItemResponse)
+@item_router.get(
+    "/shared/received", response_model=item_schemas.PaginatedSharedItemResponse
+)
 def get_received_items(
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
-    busqueda: str | None = Depends(get_filters)
+    busqueda: str | None = Depends(get_filters),
 ):
     pagina, limite = paginacion
 
     total, items = item_services.obtener_items_recibidos_paginados(
-        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda)
+        usuario=usuario, db=db, pagina=pagina, limite=limite, busqueda=busqueda
+    )
 
     items_serializados: list[file_schemas.FileBase | file_schemas.File] = []
 
@@ -350,7 +376,7 @@ def get_received_items(
                         id_carpeta=archivo.id_carpeta,
                         fecha_eliminacion=archivo.fecha_eliminacion,
                     ),
-                    favorito=favorito
+                    favorito=favorito,
                 )
             )
         else:
@@ -372,7 +398,7 @@ def get_received_items(
                         id_carpeta=carpeta.id_carpeta,
                         fecha_eliminacion=carpeta.fecha_eliminacion,
                     ),
-                    favorito=favorito
+                    favorito=favorito,
                 )
             )
 
@@ -380,7 +406,7 @@ def get_received_items(
         "items": items_serializados,
         "total": total,
         "pagina": pagina,
-        "limite": limite
+        "limite": limite,
     }
 
 
@@ -389,12 +415,13 @@ def get_favorite_items(
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
-    busqueda: str | None = Depends(get_filters)
+    busqueda: str | None = Depends(get_filters),
 ):
     pagina, limite = paginacion
 
     total, items = favorite_services.obtener_items_favoritos(
-        db=db, usuario=usuario, pagina=pagina, limite=limite, busqueda=busqueda)
+        db=db, usuario=usuario, pagina=pagina, limite=limite, busqueda=busqueda
+    )
 
     items_serializados: list[file_schemas.FileBase | file_schemas.File] = []
 
@@ -417,7 +444,7 @@ def get_favorite_items(
                         nombre_usuario=archivo.usuario.nombre,
                         id_carpeta=archivo.id_carpeta,
                         fecha_eliminacion=archivo.fecha_eliminacion,
-                    )
+                    ),
                 )
             )
         else:
@@ -437,7 +464,7 @@ def get_favorite_items(
                         nombre_usuario=carpeta.usuario.nombre,
                         id_carpeta=carpeta.id_carpeta,
                         fecha_eliminacion=carpeta.fecha_eliminacion,
-                    )
+                    ),
                 )
             )
 
@@ -445,5 +472,5 @@ def get_favorite_items(
         "items": items_serializados,
         "total": total,
         "pagina": pagina,
-        "limite": limite
+        "limite": limite,
     }

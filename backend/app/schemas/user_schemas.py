@@ -21,7 +21,7 @@ class UserCreate(BaseModel):
     @classmethod
     def comprobar_contraseñas_coinciden(cls, value: str, info: ValidationInfo) -> str:
         if value != info.data["contraseña"]:
-            raise ValueError('Las contraseñas no coinciden')
+            raise ValueError("Las contraseñas no coinciden")
         return value
 
 

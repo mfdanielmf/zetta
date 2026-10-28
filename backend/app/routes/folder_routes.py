@@ -23,11 +23,16 @@ folder_router = APIRouter()
 
 
 @folder_router.get("", response_model=folder_schemas.PaginatedFolderResponse)
-def get_folders(db: Session = Depends(get_db), usuario: User = Depends(get_current_user), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_folders(
+    db: Session = Depends(get_db),
+    usuario: User = Depends(get_current_user),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+):
     pagina, limite = paginacion
 
     total, carpetas = folder_services.obtener_carpetas_usuario_raiz_paginadas(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite
+    )
 
     return {
         "items": [
@@ -45,16 +50,22 @@ def get_folders(db: Session = Depends(get_db), usuario: User = Depends(get_curre
         ],
         "total": total,
         "pagina": pagina,
-        "limite": limite
+        "limite": limite,
     }
 
 
 @folder_router.post("", response_model=folder_schemas.FolderResponse)
 @limiter.limit(FILE_RATE_LIMIT)
-def create_folder(request: Request, req: folder_schemas.FolderRequest, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+def create_folder(
+    request: Request,
+    req: folder_schemas.FolderRequest,
+    db: Session = Depends(get_db),
+    usuario: User = Depends(get_current_user),
+):
     try:
         carpeta: Folder = folder_services.crear_carpeta(
-            nombre=req.nombre_carpeta, usuario=usuario, db=db)
+            nombre=req.nombre_carpeta, usuario=usuario, db=db
+        )
 
         return {
             "msg": "Carpeta creada correctamente",
@@ -66,7 +77,7 @@ def create_folder(request: Request, req: folder_schemas.FolderRequest, db: Sessi
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
                 fecha_eliminacion=carpeta.fecha_eliminacion,
-            )
+            ),
         }
     except ex.IdYaUsadaException as e:
         raise HTTPException(409, str(e))
@@ -75,11 +86,16 @@ def create_folder(request: Request, req: folder_schemas.FolderRequest, db: Sessi
 
 
 @folder_router.get("/trash", response_model=folder_schemas.PaginatedFolderResponse)
-def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+def get_folders_trash(
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+):
     pagina, limite = paginacion
 
     total, carpetas = folder_services.obtener_carpetas_papelera_raiz_paginadas(
-        usuario=usuario, db=db, pagina=pagina, limite=limite)
+        usuario=usuario, db=db, pagina=pagina, limite=limite
+    )
 
     return {
         "items": [
@@ -97,34 +113,47 @@ def get_folders_trash(usuario: User = Depends(get_current_user), db: Session = D
         ],
         "total": total,
         "pagina": pagina,
-        "limite": limite
+        "limite": limite,
     }
 
 
-@folder_router.delete("/trash/{id_carpeta}", response_model=folder_schemas.DeleteFolderPermanentResponse)
+@folder_router.delete(
+    "/trash/{id_carpeta}", response_model=folder_schemas.DeleteFolderPermanentResponse
+)
 @limiter.limit(FILE_RATE_LIMIT)
-def delete_folder_permanent(request: Request, id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def delete_folder_permanent(
+    request: Request,
+    id_carpeta: UUID,
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     try:
         folder_services.eliminar_carpeta_permanente(
-            id_carpeta=id_carpeta, db=db, usuario=usuario)
+            id_carpeta=id_carpeta, db=db, usuario=usuario
+        )
 
-        return {
-            "msg": "Carpeta eliminada correctamente"
-        }
+        return {"msg": "Carpeta eliminada correctamente"}
     except ex.CarpetaNoEncontradaException:
-        raise HTTPException(
-            404, detail="No se ha encontrado la carpeta en la papelera")
+        raise HTTPException(404, detail="No se ha encontrado la carpeta en la papelera")
     except ex.EliminarDiscoException as e2:
         raise HTTPException(500, detail=str(e2))
 
 
-@folder_router.get("/trash/{id_carpeta}/files", response_model=file_schemas.PaginatedFileResponse)
-def get_files_of_folder_on_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+@folder_router.get(
+    "/trash/{id_carpeta}/files", response_model=file_schemas.PaginatedFileResponse
+)
+def get_files_of_folder_on_trash(
+    id_carpeta: UUID,
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+):
     pagina, limite = paginacion
 
     try:
         total, archivos = file_services.obtener_archivos_carpeta_papelera_paginados(
-            id_carpeta=id_carpeta, usuario=usuario, db=db, pagina=pagina, limite=limite)
+            id_carpeta=id_carpeta, usuario=usuario, db=db, pagina=pagina, limite=limite
+        )
 
         return {
             "items": [
@@ -143,21 +172,30 @@ def get_files_of_folder_on_trash(id_carpeta: UUID, usuario: User = Depends(get_c
             ],
             "total": total,
             "pagina": pagina,
-            "limite": limite
+            "limite": limite,
         }
 
     except ex.CarpetaNoEncontradaException:
         raise HTTPException(
-            404, f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera")
+            404, f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera"
+        )
 
 
-@folder_router.get("/trash/{id_carpeta}/folders", response_model=folder_schemas.PaginatedFolderResponse)
-def get_folders_inside_folder_on_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+@folder_router.get(
+    "/trash/{id_carpeta}/folders", response_model=folder_schemas.PaginatedFolderResponse
+)
+def get_folders_inside_folder_on_trash(
+    id_carpeta: UUID,
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+):
     pagina, limite = paginacion
 
     try:
         total, carpetas = folder_services.obtener_carpetas_carpeta_papelera_paginadas(
-            id_carpeta=id_carpeta, usuario=usuario, db=db, pagina=pagina, limite=limite)
+            id_carpeta=id_carpeta, usuario=usuario, db=db, pagina=pagina, limite=limite
+        )
 
         return {
             "items": [
@@ -175,25 +213,32 @@ def get_folders_inside_folder_on_trash(id_carpeta: UUID, usuario: User = Depends
             ],
             "total": total,
             "pagina": pagina,
-            "limite": limite
+            "limite": limite,
         }
 
     except ex.CarpetaNoEncontradaException:
         raise HTTPException(
-            404, detail=f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera")
+            404,
+            detail=f"No se ha encontrado la carpeta con id {id_carpeta} en la papelera",
+        )
 
 
 @folder_router.get("/{id_carpeta}", response_class=FileResponse)
-def download_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def download_folder(
+    id_carpeta: UUID,
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     try:
         zip_path, carpeta = folder_services.descargar_carpeta(
-            id_carpeta=id_carpeta, usuario=usuario, db=db)
+            id_carpeta=id_carpeta, usuario=usuario, db=db
+        )
 
         return FileResponse(
             path=zip_path,
             media_type="application/zip",
             filename=f"{carpeta.nombre_original}.zip",
-            background=BackgroundTask(lambda: os.remove(zip_path))
+            background=BackgroundTask(lambda: os.remove(zip_path)),
         )
     except ex.CarpetaNoEncontradaException as e1:
         raise HTTPException(404, detail=str(e1))
@@ -201,12 +246,20 @@ def download_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user),
         raise HTTPException(500, detail="Error interno al generar el ZIP")
 
 
-@folder_router.delete("/{id_carpeta}", response_model=folder_schemas.AddFolderTrashResponse)
+@folder_router.delete(
+    "/{id_carpeta}", response_model=folder_schemas.AddFolderTrashResponse
+)
 @limiter.limit(FILE_RATE_LIMIT)
-def add_folder_to_trash(request: Request, id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def add_folder_to_trash(
+    request: Request,
+    id_carpeta: UUID,
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     try:
         carpeta: Folder = folder_services.añadir_carpeta_papelera(
-            id_carpeta=id_carpeta, usuario=usuario, db=db)
+            id_carpeta=id_carpeta, usuario=usuario, db=db
+        )
 
         return {
             "msg": "Carpeta enviada a la papelera con éxito",
@@ -218,21 +271,30 @@ def add_folder_to_trash(request: Request, id_carpeta: UUID, usuario: User = Depe
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
                 fecha_eliminacion=carpeta.fecha_eliminacion,
-            )
+            ),
         }
     except ex.CarpetaPapeleraException:
         raise HTTPException(
-            409, detail="La carpeta seleccionada ya está en la papelera")
+            409, detail="La carpeta seleccionada ya está en la papelera"
+        )
     except ex.CarpetaNoEncontradaException:
         raise HTTPException(
-            404, detail=f"No se ha encontrado la carpeta con ID {id_carpeta}")
+            404, detail=f"No se ha encontrado la carpeta con ID {id_carpeta}"
+        )
 
 
-@folder_router.put("/{id_carpeta}/restaurar", response_model=folder_schemas.RestoreFolderResponse)
-def restore_folder_from_trash(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@folder_router.put(
+    "/{id_carpeta}/restaurar", response_model=folder_schemas.RestoreFolderResponse
+)
+def restore_folder_from_trash(
+    id_carpeta: UUID,
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     try:
         carpeta: Folder = folder_services.restaurar_carpeta_papelera(
-            id_carpeta=id_carpeta, usuario=usuario, db=db)
+            id_carpeta=id_carpeta, usuario=usuario, db=db
+        )
 
         return {
             "msg": "Carpeta restaurada correctamente",
@@ -244,19 +306,27 @@ def restore_folder_from_trash(id_carpeta: UUID, usuario: User = Depends(get_curr
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
                 fecha_eliminacion=carpeta.fecha_eliminacion,
-            )
+            ),
         }
     except ex.CarpetaNoEncontradaException as e1:
         raise HTTPException(404, str(e1))
 
 
-@folder_router.get("/{id_carpeta}/files", response_model=file_schemas.PaginatedFileResponse)
-def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario: User = Depends(get_current_user), paginacion: tuple[int, int] = Depends(get_pagination)):
+@folder_router.get(
+    "/{id_carpeta}/files", response_model=file_schemas.PaginatedFileResponse
+)
+def get_files_of_folder(
+    id_carpeta: UUID,
+    db: Session = Depends(get_db),
+    usuario: User = Depends(get_current_user),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+):
     pagina, limite = paginacion
 
     try:
         total, archivos = file_services.obtener_archivos_carpeta_paginados(
-            id_carpeta=id_carpeta, db=db, usuario=usuario, pagina=pagina, limite=limite)
+            id_carpeta=id_carpeta, db=db, usuario=usuario, pagina=pagina, limite=limite
+        )
 
         return {
             "items": [
@@ -275,19 +345,27 @@ def get_files_of_folder(id_carpeta: UUID, db: Session = Depends(get_db), usuario
             ],
             "total": total,
             "pagina": pagina,
-            "limite": limite
+            "limite": limite,
         }
     except ex.CarpetaNoEncontradaException:
-        raise HTTPException(
-            404, f"No se ha encontrado la carpeta con id {id_carpeta}")
+        raise HTTPException(404, f"No se ha encontrado la carpeta con id {id_carpeta}")
 
 
-@folder_router.post("/{id_carpeta}/files", response_model=folder_schemas.UploadFileFolderResponse)
-async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] = FileFA(...), db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+@folder_router.post(
+    "/{id_carpeta}/files", response_model=folder_schemas.UploadFileFolderResponse
+)
+async def upload_file_to_folder(
+    id_carpeta: UUID,
+    file_upload: list[UploadFile] = FileFA(...),
+    db: Session = Depends(get_db),
+    usuario: User = Depends(get_current_user),
+):
     try:
         archivos: list[File] = []
         for file in file_upload:
-            archivo_db: File = await folder_services.guardar_archivo_carpeta(id_carpeta=id_carpeta, file_upload=file, db=db, usuario=usuario)
+            archivo_db: File = await folder_services.guardar_archivo_carpeta(
+                id_carpeta=id_carpeta, file_upload=file, db=db, usuario=usuario
+            )
             archivos.append(archivo_db)
 
         return {
@@ -305,7 +383,7 @@ async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] 
                     fecha_eliminacion=archivo_guardado.fecha_eliminacion,
                 )
                 for archivo_guardado in archivos
-            ]
+            ],
         }
     except ex.TamañoExcedidoException as e1:
         raise HTTPException(413, str(e1))
@@ -315,13 +393,25 @@ async def upload_file_to_folder(id_carpeta: UUID, file_upload: list[UploadFile] 
         raise HTTPException(409, str(e3))
 
 
-@folder_router.get("/{id_carpeta}/folders", response_model=folder_schemas.PaginatedFolderResponse)
-def get_folders_of_folder(id_carpeta: UUID, usuario: User = Depends(get_current_user), db: Session = Depends(get_db), paginacion: tuple[int, int] = Depends(get_pagination)):
+@folder_router.get(
+    "/{id_carpeta}/folders", response_model=folder_schemas.PaginatedFolderResponse
+)
+def get_folders_of_folder(
+    id_carpeta: UUID,
+    usuario: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    paginacion: tuple[int, int] = Depends(get_pagination),
+):
     pagina, limite = paginacion
 
     try:
         total, carpetas = folder_services.obtener_carpetas_dentro_carpeta_paginadas(
-            id_carpeta_padre=id_carpeta, usuario=usuario, db=db, pagina=pagina, limite=limite)
+            id_carpeta_padre=id_carpeta,
+            usuario=usuario,
+            db=db,
+            pagina=pagina,
+            limite=limite,
+        )
 
         return {
             "items": [
@@ -339,18 +429,28 @@ def get_folders_of_folder(id_carpeta: UUID, usuario: User = Depends(get_current_
             ],
             "total": total,
             "pagina": pagina,
-            "limite": limite
+            "limite": limite,
         }
     except ex.CarpetaNoEncontradaException:
-        raise HTTPException(
-            404, f"No se ha encontrado la carpeta con id {id_carpeta}")
+        raise HTTPException(404, f"No se ha encontrado la carpeta con id {id_carpeta}")
 
 
-@folder_router.post("/{id_carpeta}/folders", response_model=folder_schemas.FolderResponse)
-def create_folder_in_folder(id_carpeta: UUID, req: folder_schemas.FolderRequest, db: Session = Depends(get_db), usuario: User = Depends(get_current_user)):
+@folder_router.post(
+    "/{id_carpeta}/folders", response_model=folder_schemas.FolderResponse
+)
+def create_folder_in_folder(
+    id_carpeta: UUID,
+    req: folder_schemas.FolderRequest,
+    db: Session = Depends(get_db),
+    usuario: User = Depends(get_current_user),
+):
     try:
         carpeta: Folder = folder_services.crear_carpeta_anidada(
-            id_carpeta_padre=id_carpeta, nombre=req.nombre_carpeta, usuario=usuario, db=db)
+            id_carpeta_padre=id_carpeta,
+            nombre=req.nombre_carpeta,
+            usuario=usuario,
+            db=db,
+        )
 
         return {
             "msg": "Carpeta creada correctamente",
@@ -363,7 +463,7 @@ def create_folder_in_folder(id_carpeta: UUID, req: folder_schemas.FolderRequest,
                 nombre_usuario=carpeta.usuario.nombre,
                 id_carpeta=id_carpeta,
                 fecha_eliminacion=carpeta.fecha_eliminacion,
-            )
+            ),
         }
     except ex.IdYaUsadaException as e:
         raise HTTPException(409, str(e))
