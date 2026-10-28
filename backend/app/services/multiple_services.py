@@ -31,6 +31,7 @@ from app.services import (
     shared_folder_services,
     user_services,
 )
+from app.utils.path_security import sanear_nombre_archivo_zip
 
 
 def añadir_multiples_items_papelera(
@@ -285,7 +286,12 @@ def descargar_multiples_items(
                     )
 
                     if os.path.exists(archivo.path):
-                        zipf.write(archivo.path, arcname=archivo.nombre_original)
+                        zipf.write(
+                            archivo.path,
+                            arcname=sanear_nombre_archivo_zip(
+                                archivo.nombre_original
+                            ),
+                        )
 
                 else:
                     carpeta: Folder = folder_services.obtener_carpeta_usuario_permisos(
