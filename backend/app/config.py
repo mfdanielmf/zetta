@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
-from pydantic import Field, computed_field
+
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # "dev" / "prod" en el env para detectar que config usar
@@ -49,17 +50,6 @@ class Config(BaseSettings):
 
     # CORS
     ALLOWED_ORIGINS: list[str] = Field(default=["http://localhost:5173"])
-
-    @computed_field
-    @property
-    def DATABASE_URL(self) -> str:
-        return (
-            f"postgresql://{self.POSTGRES_USER}:"
-            f"{self.POSTGRES_PASSWORD}@"
-            f"{self.POSTGRES_HOST}:"
-            f"{self.POSTGRES_PORT}/"
-            f"{self.POSTGRES_DB}"
-        )
 
     model_config = SettingsConfigDict(
         env_file=str(ENV_FILE),

@@ -269,16 +269,16 @@ ARCHIVOS_COMPARTIDOS
 
 | Tecnología      | Versión | Propósito                                  |
 | --------------- | ------- | ------------------------------------------ |
-| FastAPI         | 0.128.0 | Framework web                              |
-| SQLAlchemy      | 2.0.45  | ORM y kit de herramientas de base de datos |
+| FastAPI         | 0.162.0 | Framework web                              |
+| SQLAlchemy      | 2.1.6   | ORM y kit de herramientas de base de datos |
 | PostgreSQL      | Última  | Base de datos relacional                   |
 | python-jose     | 3.5.0   | Implementación JWT                         |
-| Uvicorn         | 0.40.0  | Servidor ASGI                              |
-| APScheduler     | 3.11.2  | Programación de tareas                     |
-| SlowAPI         | 0.1.9   | Limitación de velocidad                    |
-| Alembic         | 1.18.1  | Migraciones de base de datos               |
-| Pydantic        | 2.12.5  | Validación de datos                        |
-| psycopg2-binary | 2.9.11  | Adaptador PostgreSQL                       |
+| Uvicorn         | 0.54.0  | Servidor ASGI                              |
+| APScheduler     | 3.11.3  | Programación de tareas                     |
+| SlowAPI         | 0.1.10  | Limitación de velocidad                    |
+| Alembic         | 1.20.1  | Migraciones de base de datos               |
+| Pydantic        | 2.14.1  | Validación de datos                        |
+| psycopg         | 3.3.6   | Adaptador PostgreSQL (psycopg 3)           |
 
 ### DevOps y Herramientas
 
