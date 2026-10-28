@@ -1,7 +1,7 @@
 import uuid
 from datetime import UTC, datetime, timedelta
 
-from jose import JWTError, jwt
+import jwt
 from sqlalchemy.orm import Session
 
 from app.config import config
@@ -66,7 +66,7 @@ def obtener_usuario_jwt(token: str, db: Session) -> User:
             raise UsuarioNoEncontradoException()
 
         token_data = TokenData(id=id, nombre=nombre_usuario, correo=correo)
-    except JWTError:
+    except jwt.InvalidTokenError:
         raise UsuarioNoAutenticadoException()
 
     user: User = obtener_usuario_nombre(nombre=token_data.nombre, db=db)
