@@ -5,7 +5,12 @@ from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse as FileResp
 from sqlalchemy.orm import Session
 
-from app.core.limiter import FILE_RATE_LIMIT, UPLOAD_RATE_LIMIT, limiter
+from app.core.limiter import (
+    DEFAULT_RATE_LIMIT,
+    FILE_RATE_LIMIT,
+    UPLOAD_RATE_LIMIT,
+    limiter,
+)
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
 from app.middleware.pagination_middleware import get_pagination
@@ -18,7 +23,9 @@ file_router = APIRouter()
 
 
 @file_router.get("", response_model=file_schemas.PaginatedFileResponse)
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_files(
+    request: Request,
     db: Session = Depends(get_db),
     usuario: User = Depends(get_current_user),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -92,7 +99,9 @@ async def upload_file(
 
 
 @file_router.get("/trash", response_model=file_schemas.PaginatedFileResponse)
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_files_trash(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -147,7 +156,9 @@ def delete_file_permanent(
 
 
 @file_router.get("/{id_archivo}", response_class=FileResp)
+@limiter.limit(FILE_RATE_LIMIT)
 def download_file(
+    request: Request,
     id_archivo: UUID,
     db: Session = Depends(get_db),
     usuario: User = Depends(get_current_user),
@@ -173,7 +184,9 @@ def download_file(
 @file_router.put(
     "/{id_archivo}/restaurar", response_model=file_schemas.RestoreFileResponse
 )
+@limiter.limit(FILE_RATE_LIMIT)
 def restore_file_from_trash(
+    request: Request,
     id_archivo: UUID,
     db: Session = Depends(get_db),
     usuario: User = Depends(get_current_user),

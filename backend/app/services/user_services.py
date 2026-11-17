@@ -17,7 +17,6 @@ from app.repositories.user_repo import (
 )
 from app.schemas.user_schemas import UserCreate
 
-
 _hasher = PasswordHasher()
 
 

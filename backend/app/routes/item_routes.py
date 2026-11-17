@@ -1,8 +1,9 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
+from app.core.limiter import DEFAULT_RATE_LIMIT, limiter
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
 from app.middleware.filters_middleware import get_filters
@@ -20,7 +21,9 @@ item_router = APIRouter()
 
 
 @item_router.get("", response_model=item_schemas.PaginatedItemResponse)
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_items(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -78,7 +81,9 @@ def get_items(
 @item_router.get(
     "/{id_carpeta}/items", response_model=item_schemas.PaginatedItemResponse
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_items_folder(
+    request: Request,
     id_carpeta: UUID,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -144,7 +149,9 @@ def get_items_folder(
 
 
 @item_router.get("/trash", response_model=item_schemas.PaginatedItemResponse)
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_items_trash(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -198,7 +205,9 @@ def get_items_trash(
 @item_router.get(
     "/trash/{id_carpeta}/items", response_model=item_schemas.PaginatedItemResponse
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_items_folder_in_trash(
+    request: Request,
     id_carpeta: UUID,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -265,7 +274,9 @@ def get_items_folder_in_trash(
 @item_router.get(
     "/shared/sent", response_model=item_schemas.PaginatedSharedItemResponse
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_sent_items(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -339,7 +350,9 @@ def get_sent_items(
 @item_router.get(
     "/shared/received", response_model=item_schemas.PaginatedSharedItemResponse
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_received_items(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -411,7 +424,9 @@ def get_received_items(
 
 
 @item_router.get("/favorite", response_model=item_schemas.PaginatedFavoriteItemReponse)
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_favorite_items(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),

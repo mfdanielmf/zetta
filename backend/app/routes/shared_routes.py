@@ -23,7 +23,9 @@ shared_router = APIRouter()
 @shared_router.get(
     "/sent/files", response_model=shared_file_schemas.PaginatedSharedFileResponse
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_shared_files_by_user(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -91,7 +93,9 @@ def share_file_with_user(
 @shared_router.get(
     "/sent/folders", response_model=shared_folder_schemas.PaginatedSharedFolderResponse
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_sent_folders_by_user(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -160,7 +164,9 @@ def share_folder_with_user(
 @shared_router.get(
     "/received/files", response_model=shared_file_schemas.PaginatedSharedFileResponse
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_received_files_with_user(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -185,7 +191,9 @@ def get_received_files_with_user(
     "/received/folders",
     response_model=shared_folder_schemas.PaginatedSharedFolderResponse,
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_received_folders_by_user(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
