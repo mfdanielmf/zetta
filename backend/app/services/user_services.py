@@ -1,6 +1,7 @@
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
-from werkzeug.security import check_password_hash, generate_password_hash
 
 from app.models.exceptions import (
     CorreoYaUsadoException,
@@ -15,6 +16,22 @@ from app.repositories.user_repo import (
     insert_user_db,
 )
 from app.schemas.user_schemas import UserCreate
+
+
+_hasher = PasswordHasher()
+
+
+def generar_hash_contraseña(contraseña: str) -> str:
+    return _hasher.hash(contraseña)
+
+
+def comprobar_hash_contraseña(usuario: User, contraseña: str) -> bool:
+    try:
+        _hasher.verify(hash=usuario.contraseña, password=contraseña)
+    except VerifyMismatchError:
+        return False
+
+    return True
 
 
 def obtener_usuario_nombre(nombre: str, db: Session) -> User:
@@ -45,10 +62,10 @@ def crear_usuario(usuario: UserCreate, db: Session) -> User:
             f"Ya se ha encontrado un usuario con el correo {usuario.correo}"
         )
 
-    hash: str = generate_password_hash(password=usuario.contraseña)
+    hash_contraseña: str = generar_hash_contraseña(usuario.contraseña)
 
     usuario_model: User = User(
-        nombre=usuario.nombre, correo=usuario.correo, contraseña=hash
+        nombre=usuario.nombre, correo=usuario.correo, contraseña=hash_contraseña
     )
 
     usuario_db: User = insert_user_db(usuario=usuario_model, db=db)
@@ -78,7 +95,3 @@ def obtener_usuario_correo(correo: EmailStr, db: Session) -> User:
         raise UsuarioNoEncontradoException("Usuario no encontrado")
 
     return usuario
-
-
-def comprobar_hash_contraseña(usuario: User, contraseña: str) -> bool:
-    return check_password_hash(pwhash=usuario.contraseña, password=contraseña)
