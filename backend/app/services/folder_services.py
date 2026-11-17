@@ -17,6 +17,7 @@ from app.models.folder import Folder
 from app.models.user import User
 from app.repositories import file_repo, folder_repo, shared_folder_repo
 from app.utils.path_security import sanear_nombre_archivo_zip
+from app.utils.upload_validation import validar_archivo
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -125,8 +126,11 @@ async def guardar_archivo_carpeta(
     id_carpeta: str, file_upload: UploadFile, db: Session, usuario: User
 ) -> File:
     """
-    TamañoExcedidoException, CarpetaNoEncontradaException, NombreYaUsadoException
+    TamañoExcedidoException, CarpetaNoEncontradaException, NombreYaUsadoException,
+    TipoArchivoNoPermitidoException
     """
+    validar_archivo(file_upload)
+
     carpeta: Folder = obtener_carpeta_usuario_id(
         id_carpeta=id_carpeta, usuario=usuario, db=db
     )

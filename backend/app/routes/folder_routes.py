@@ -408,10 +408,12 @@ async def upload_file_to_folder(
         }
     except ex.TamañoExcedidoException as e1:
         raise HTTPException(413, str(e1))
-    except ex.CarpetaNoEncontradaException as e2:
-        raise HTTPException(404, str(e2))
-    except ex.NombreYaUsadoException as e3:
-        raise HTTPException(409, str(e3))
+    except ex.TipoArchivoNoPermitidoException as e2:
+        raise HTTPException(415, str(e2))
+    except ex.CarpetaNoEncontradaException as e3:
+        raise HTTPException(404, str(e3))
+    except ex.NombreYaUsadoException as e4:
+        raise HTTPException(409, str(e4))
 
 
 @folder_router.get(

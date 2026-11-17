@@ -10,6 +10,7 @@ from app.models.exceptions import (
     IdYaUsadaException,
     NombreYaUsadoException,
     TamañoExcedidoException,
+    TipoArchivoNoPermitidoException,
 )
 from app.models.file import File
 from app.models.user import User
@@ -180,5 +181,22 @@ def test_subir_archivo_tamaño_excedido():
     assert response.status_code == 413
     assert response.json()[
         "detail"] == "Has excedido el tamaño máximo de subida"
+
+    app.dependency_overrides.clear()
+
+
+def test_subir_archivo_tipo_no_permitido():
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+    with patch("app.routes.file_routes.file_services.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
+        mock_guardar.side_effect = TipoArchivoNoPermitidoException(
+            "Extensión '.exe' no permitida")
+
+        response = client.post(
+            "/api/files", files=[("file_upload", ("malware.exe", io.BytesIO(b"MZ"), "application/x-msdownload"))]
+        )
+
+    assert response.status_code == 415
+    assert response.json()["detail"] == "Extensión '.exe' no permitida"
 
     app.dependency_overrides.clear()

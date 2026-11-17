@@ -92,10 +92,12 @@ async def upload_file(
         }
     except ex.TamañoExcedidoException as e1:
         raise HTTPException(413, str(e1))
-    except ex.IdYaUsadaException as e2:
-        raise HTTPException(409, str(e2))
-    except ex.NombreYaUsadoException as e3:
+    except ex.TipoArchivoNoPermitidoException as e2:
+        raise HTTPException(415, str(e2))
+    except ex.IdYaUsadaException as e3:
         raise HTTPException(409, str(e3))
+    except ex.NombreYaUsadoException as e4:
+        raise HTTPException(409, str(e4))
 
 
 @file_router.get("/trash", response_model=file_schemas.PaginatedFileResponse)

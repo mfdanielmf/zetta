@@ -39,6 +39,61 @@ class Config(BaseSettings):
     # SUBIDAS
     UPLOAD_DIR: str = "/tmp/uploads"
     TAMANO_LIMITE: int = 1000 * 1024 * 1024  # 1GB
+    ALLOWED_EXTENSIONS: list[str] = Field(
+        default=[
+            # Imágenes
+            "jpg",
+            "jpeg",
+            "png",
+            "gif",
+            "webp",
+            "svg",
+            "ico",
+            # Documentos
+            "pdf",
+            "doc",
+            "docx",
+            "xls",
+            "xlsx",
+            "ppt",
+            "pptx",
+            "txt",
+            "md",
+            "csv",
+            "rtf",
+            "odt",
+            "ods",
+            "odp",
+            # Comprimidos
+            "zip",
+            "rar",
+            "7z",
+            "tar",
+            "gz",
+            # Multimedia
+            "mp3",
+            "wav",
+            "ogg",
+            "mp4",
+            "webm",
+            "mov",
+            "avi",
+            # Código y datos
+            "py",
+            "js",
+            "html",
+            "htm",
+            "css",
+            "json",
+            "xml",
+            "yaml",
+            "yml",
+            "sql",
+            "log",
+            # Genéricos
+            "bin",
+        ]
+    )
 
     # PAPELERA
     DIAS_PAPELERA: int = 30
