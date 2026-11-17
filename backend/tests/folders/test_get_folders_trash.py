@@ -58,7 +58,6 @@ def test_get_papelera_1_carpeta():
     assert item["nombre_original"] == carpeta.nombre_original
     assert item["nombre_usuario"] == usuario.nombre
     assert item["fecha_eliminacion"] == carpeta.fecha_eliminacion
-    assert item["path"] == carpeta.path
 
     app.dependency_overrides.clear()
 
@@ -106,7 +105,6 @@ def test_get_papelera_varias_carpetas():
 
         assert item["id"] == str(carpeta.id)
         assert item["nombre_original"] == carpeta.nombre_original
-        assert item["path"] == carpeta.path
         assert item["id_usuario"] == str(carpeta.id_usuario)
         assert item["nombre_usuario"] == usuario.nombre
         assert item["fecha_eliminacion"] == carpeta.fecha_eliminacion

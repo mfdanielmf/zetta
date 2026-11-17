@@ -5,7 +5,12 @@ from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse as FileResp
 from sqlalchemy.orm import Session
 
-from app.core.limiter import FILE_RATE_LIMIT, UPLOAD_RATE_LIMIT, limiter
+from app.core.limiter import (
+    DEFAULT_RATE_LIMIT,
+    FILE_RATE_LIMIT,
+    UPLOAD_RATE_LIMIT,
+    limiter,
+)
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
 from app.middleware.pagination_middleware import get_pagination
@@ -18,7 +23,9 @@ file_router = APIRouter()
 
 
 @file_router.get("", response_model=file_schemas.PaginatedFileResponse)
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_files(
+    request: Request,
     db: Session = Depends(get_db),
     usuario: User = Depends(get_current_user),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -34,7 +41,6 @@ def get_files(
             file_schemas.FileBase(
                 id=archivo_db.id,
                 nombre_original=archivo_db.nombre_original,
-                path=archivo_db.path,
                 tamaño_bytes=archivo_db.tamaño_bytes,
                 fecha_creacion=archivo_db.fecha_creacion,
                 id_usuario=archivo_db.id_usuario,
@@ -72,7 +78,6 @@ async def upload_file(
                 file_schemas.FileBase(
                     id=archivo.id,
                     nombre_original=archivo.nombre_original,
-                    path=archivo.path,
                     tamaño_bytes=archivo.tamaño_bytes,
                     fecha_creacion=archivo.fecha_creacion,
                     id_usuario=archivo.id_usuario,
@@ -85,14 +90,18 @@ async def upload_file(
         }
     except ex.TamañoExcedidoException as e1:
         raise HTTPException(413, str(e1))
-    except ex.IdYaUsadaException as e2:
-        raise HTTPException(409, str(e2))
-    except ex.NombreYaUsadoException as e3:
+    except ex.TipoArchivoNoPermitidoException as e2:
+        raise HTTPException(415, str(e2))
+    except ex.IdYaUsadaException as e3:
         raise HTTPException(409, str(e3))
+    except ex.NombreYaUsadoException as e4:
+        raise HTTPException(409, str(e4))
 
 
 @file_router.get("/trash", response_model=file_schemas.PaginatedFileResponse)
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_files_trash(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -108,7 +117,6 @@ def get_files_trash(
             file_schemas.FileBase(
                 id=archivo_db.id,
                 nombre_original=archivo_db.nombre_original,
-                path=archivo_db.path,
                 tamaño_bytes=archivo_db.tamaño_bytes,
                 fecha_creacion=archivo_db.fecha_creacion,
                 id_usuario=archivo_db.id_usuario,
@@ -147,7 +155,9 @@ def delete_file_permanent(
 
 
 @file_router.get("/{id_archivo}", response_class=FileResp)
+@limiter.limit(FILE_RATE_LIMIT)
 def download_file(
+    request: Request,
     id_archivo: UUID,
     db: Session = Depends(get_db),
     usuario: User = Depends(get_current_user),
@@ -173,7 +183,9 @@ def download_file(
 @file_router.put(
     "/{id_archivo}/restaurar", response_model=file_schemas.RestoreFileResponse
 )
+@limiter.limit(FILE_RATE_LIMIT)
 def restore_file_from_trash(
+    request: Request,
     id_archivo: UUID,
     db: Session = Depends(get_db),
     usuario: User = Depends(get_current_user),
@@ -188,7 +200,6 @@ def restore_file_from_trash(
             "archivo": file_schemas.FileBase(
                 id=archivo.id,
                 nombre_original=archivo.nombre_original,
-                path=archivo.path,
                 tamaño_bytes=archivo.tamaño_bytes,
                 fecha_creacion=archivo.fecha_creacion,
                 id_usuario=archivo.id_usuario,
@@ -223,7 +234,6 @@ def add_file_to_trash(
             "archivo": file_schemas.FileBase(
                 id=archivo.id,
                 nombre_original=archivo.nombre_original,
-                path=archivo.path,
                 tamaño_bytes=archivo.tamaño_bytes,
                 fecha_creacion=archivo.fecha_creacion,
                 id_usuario=archivo.id_usuario,

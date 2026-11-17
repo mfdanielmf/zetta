@@ -41,7 +41,9 @@ def add_multiple_items_to_trash(
 @multiple_router.put(
     "/items/restaurar", response_model=multiple_schemas.MultipleItemResponse
 )
+@limiter.limit(FILE_RATE_LIMIT)
 def restore_items_from_trash(
+    request: Request,
     req: list[multiple_schemas.ItemMultipleRequest],
     db: Session = Depends(get_db),
     usuario: User = Depends(get_current_user),
@@ -110,8 +112,8 @@ def share_multiple_items_with_user(
             "msg": "Proceso de compartido completado",
             "items_totales": len(req.items),
         }
-    except ex.UsuarioNoEncontradoException as e1:
-        raise HTTPException(404, detail=str(e1))
+    except ex.UsuarioNoEncontradoException:
+        raise HTTPException(404, detail="Usuario no encontrado")
     except ex.PropietarioException as e2:
         raise HTTPException(400, detail=str(e2))
 
@@ -139,14 +141,16 @@ def cancel_multiple_shared_items(
             }
 
         return {"msg": "Proceso de cancelación completado", "items_totales": len(req)}
-    except ex.UsuarioNoEncontradoException as e1:
-        raise HTTPException(404, detail=str(e1))
+    except ex.UsuarioNoEncontradoException:
+        raise HTTPException(404, detail="Usuario no encontrado")
     except ex.PropietarioException as e2:
         raise HTTPException(400, detail=str(e2))
 
 
 @multiple_router.post("/items", response_class=FileResponse)
+@limiter.limit(FILE_RATE_LIMIT)
 def download_multiple_items_zip(
+    request: Request,
     req: list[multiple_schemas.ItemMultipleRequest],
     db: Session = Depends(get_db),
     usuario: User = Depends(get_current_user),

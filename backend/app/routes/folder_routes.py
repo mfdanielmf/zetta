@@ -7,7 +7,12 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from starlette.background import BackgroundTask
 
-from app.core.limiter import FILE_RATE_LIMIT, limiter
+from app.core.limiter import (
+    DEFAULT_RATE_LIMIT,
+    FILE_RATE_LIMIT,
+    UPLOAD_RATE_LIMIT,
+    limiter,
+)
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
 from app.middleware.pagination_middleware import get_pagination
@@ -23,7 +28,9 @@ folder_router = APIRouter()
 
 
 @folder_router.get("", response_model=folder_schemas.PaginatedFolderResponse)
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_folders(
+    request: Request,
     db: Session = Depends(get_db),
     usuario: User = Depends(get_current_user),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -39,7 +46,6 @@ def get_folders(
             folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -72,7 +78,6 @@ def create_folder(
             "carpeta": folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -86,7 +91,9 @@ def create_folder(
 
 
 @folder_router.get("/trash", response_model=folder_schemas.PaginatedFolderResponse)
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_folders_trash(
+    request: Request,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     paginacion: tuple[int, int] = Depends(get_pagination),
@@ -102,7 +109,6 @@ def get_folders_trash(
             folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -142,7 +148,9 @@ def delete_folder_permanent(
 @folder_router.get(
     "/trash/{id_carpeta}/files", response_model=file_schemas.PaginatedFileResponse
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_files_of_folder_on_trash(
+    request: Request,
     id_carpeta: UUID,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -160,7 +168,6 @@ def get_files_of_folder_on_trash(
                 file_schemas.FileBase(
                     id=archivo_db.id,
                     nombre_original=archivo_db.nombre_original,
-                    path=archivo_db.path,
                     tamaño_bytes=archivo_db.tamaño_bytes,
                     fecha_creacion=archivo_db.fecha_creacion,
                     id_usuario=archivo_db.id_usuario,
@@ -184,7 +191,9 @@ def get_files_of_folder_on_trash(
 @folder_router.get(
     "/trash/{id_carpeta}/folders", response_model=folder_schemas.PaginatedFolderResponse
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_folders_inside_folder_on_trash(
+    request: Request,
     id_carpeta: UUID,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -202,7 +211,6 @@ def get_folders_inside_folder_on_trash(
                 folder_schemas.FolderBase(
                     id=carpeta.id,
                     nombre_original=carpeta.nombre_original,
-                    path=carpeta.path,
                     fecha_creacion=carpeta.fecha_creacion,
                     id_usuario=carpeta.id_usuario,
                     nombre_usuario=carpeta.usuario.nombre,
@@ -224,7 +232,9 @@ def get_folders_inside_folder_on_trash(
 
 
 @folder_router.get("/{id_carpeta}", response_class=FileResponse)
+@limiter.limit(FILE_RATE_LIMIT)
 def download_folder(
+    request: Request,
     id_carpeta: UUID,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -266,7 +276,6 @@ def add_folder_to_trash(
             "carpeta": folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -286,7 +295,9 @@ def add_folder_to_trash(
 @folder_router.put(
     "/{id_carpeta}/restaurar", response_model=folder_schemas.RestoreFolderResponse
 )
+@limiter.limit(FILE_RATE_LIMIT)
 def restore_folder_from_trash(
+    request: Request,
     id_carpeta: UUID,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -301,7 +312,6 @@ def restore_folder_from_trash(
             "carpeta": folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -315,7 +325,9 @@ def restore_folder_from_trash(
 @folder_router.get(
     "/{id_carpeta}/files", response_model=file_schemas.PaginatedFileResponse
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_files_of_folder(
+    request: Request,
     id_carpeta: UUID,
     db: Session = Depends(get_db),
     usuario: User = Depends(get_current_user),
@@ -333,7 +345,6 @@ def get_files_of_folder(
                 file_schemas.FileBase(
                     id=archivo_db.id,
                     nombre_original=archivo_db.nombre_original,
-                    path=archivo_db.path,
                     tamaño_bytes=archivo_db.tamaño_bytes,
                     fecha_creacion=archivo_db.fecha_creacion,
                     id_usuario=archivo_db.id_usuario,
@@ -354,7 +365,9 @@ def get_files_of_folder(
 @folder_router.post(
     "/{id_carpeta}/files", response_model=folder_schemas.UploadFileFolderResponse
 )
+@limiter.limit(UPLOAD_RATE_LIMIT)
 async def upload_file_to_folder(
+    request: Request,
     id_carpeta: UUID,
     file_upload: list[UploadFile] = FileFA(...),
     db: Session = Depends(get_db),
@@ -374,7 +387,6 @@ async def upload_file_to_folder(
                 FileBase(
                     id=archivo_guardado.id,
                     nombre_original=archivo_guardado.nombre_original,
-                    path=archivo_guardado.path,
                     tamaño_bytes=archivo_guardado.tamaño_bytes,
                     fecha_creacion=archivo_guardado.fecha_creacion,
                     id_usuario=archivo_guardado.id_usuario,
@@ -387,16 +399,20 @@ async def upload_file_to_folder(
         }
     except ex.TamañoExcedidoException as e1:
         raise HTTPException(413, str(e1))
-    except ex.CarpetaNoEncontradaException as e2:
-        raise HTTPException(404, str(e2))
-    except ex.NombreYaUsadoException as e3:
-        raise HTTPException(409, str(e3))
+    except ex.TipoArchivoNoPermitidoException as e2:
+        raise HTTPException(415, str(e2))
+    except ex.CarpetaNoEncontradaException as e3:
+        raise HTTPException(404, str(e3))
+    except ex.NombreYaUsadoException as e4:
+        raise HTTPException(409, str(e4))
 
 
 @folder_router.get(
     "/{id_carpeta}/folders", response_model=folder_schemas.PaginatedFolderResponse
 )
+@limiter.limit(DEFAULT_RATE_LIMIT)
 def get_folders_of_folder(
+    request: Request,
     id_carpeta: UUID,
     usuario: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -418,7 +434,6 @@ def get_folders_of_folder(
                 folder_schemas.FolderBase(
                     id=carpeta.id,
                     nombre_original=carpeta.nombre_original,
-                    path=carpeta.path,
                     fecha_creacion=carpeta.fecha_creacion,
                     id_usuario=carpeta.id_usuario,
                     nombre_usuario=carpeta.usuario.nombre,
@@ -438,7 +453,9 @@ def get_folders_of_folder(
 @folder_router.post(
     "/{id_carpeta}/folders", response_model=folder_schemas.FolderResponse
 )
+@limiter.limit(FILE_RATE_LIMIT)
 def create_folder_in_folder(
+    request: Request,
     id_carpeta: UUID,
     req: folder_schemas.FolderRequest,
     db: Session = Depends(get_db),
@@ -457,7 +474,6 @@ def create_folder_in_folder(
             "carpeta": folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,

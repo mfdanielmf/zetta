@@ -19,7 +19,12 @@ def test_insertar_usuario():
     }
 
     mock_usuario = User(
-        id=uuid.UUID("12345678-1234-5678-1234-567812345678"), nombre=data["nombre"], correo=data["correo"], contraseña=data["contraseña"], fecha_creacion="2026-01-21T01:44:31.825198")
+        id=uuid.UUID("12345678-1234-5678-1234-567812345678"), 
+        nombre=data["nombre"], 
+        correo=data["correo"], 
+        contraseña=data["contraseña"], 
+        fecha_creacion="2026-01-21T01:44:31.825198"
+    )
 
     with patch("app.routes.auth_routes.crear_usuario") as mock_crear_usuario:
         mock_crear_usuario.return_value = mock_usuario
@@ -52,7 +57,7 @@ def test_insertar_usuario_nombre_usado():
 
     assert response.status_code == 400
     assert response.json() == {
-        "detail": f"Ya se ha encontrado un usuario con nombre {data['nombre']}"}
+        "detail": "El nombre de usuario o el correo ya están en uso"}
 
 
 def test_insertar_usuario_correo_usado():
@@ -70,4 +75,4 @@ def test_insertar_usuario_correo_usado():
 
     assert response.status_code == 400
     assert response.json() == {
-        "detail": f"Ya se ha encontrado un usuario con el correo {data['correo']}"}
+        "detail": "El nombre de usuario o el correo ya están en uso"}

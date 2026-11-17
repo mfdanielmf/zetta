@@ -14,8 +14,8 @@ from pydantic import (
 class UserCreate(BaseModel):
     nombre: str = Field(min_length=4, max_length=20)
     correo: EmailStr = Field(max_length=120)
-    contraseña: str = Field(min_length=6)
-    contraseña_repetir: str = Field(min_length=6)
+    contraseña: str = Field(min_length=6, max_length=128)
+    contraseña_repetir: str = Field(min_length=6, max_length=128)
 
     @field_validator("contraseña_repetir", mode="after")
     @classmethod

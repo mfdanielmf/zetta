@@ -112,7 +112,6 @@ def test_get_archivos_multiples_papelera():
 
         assert item["id"] == str(archivo.id)
         assert item["nombre_original"] == archivo.nombre_original
-        assert item["path"] == archivo.path
         assert item["id_usuario"] == str(archivo.id_usuario)
         assert item["nombre_usuario"] == usuario.nombre
         assert item["fecha_eliminacion"] == str(archivo.fecha_eliminacion)

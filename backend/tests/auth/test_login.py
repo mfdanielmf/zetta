@@ -19,12 +19,11 @@ def test_login_usuario_no_existente():
 
     with patch("app.routes.auth_routes.login_usuario") as mock_login:
         mock_login.side_effect = UsuarioNoEncontradoException(
-            f"No se ha encontrado el usuario con nombre {data['nombre']}")
+            "Usuario no encontrado")
         response = client.post("/auth/login", json=data)
 
-    assert response.status_code == 404
-    assert response.json() == {
-        "detail": f"No se ha encontrado el usuario con nombre {data['nombre']}"}
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Credenciales incorrectas"}
 
 
 def test_login_contraseña_incorrecta():
@@ -38,6 +37,5 @@ def test_login_contraseña_incorrecta():
             "La contraseña es incorrecta")
         response = client.post("/auth/login", json=data)
 
-    assert response.status_code == 400
-    assert response.json() == {
-        "detail": "La contraseña es incorrecta"}
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Credenciales incorrectas"}

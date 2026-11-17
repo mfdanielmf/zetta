@@ -16,6 +16,8 @@ from app.models.file import File
 from app.models.folder import Folder
 from app.models.user import User
 from app.repositories import file_repo, folder_repo, shared_folder_repo
+from app.utils.path_security import sanear_nombre_archivo_zip
+from app.utils.upload_validation import validar_archivo
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -124,8 +126,11 @@ async def guardar_archivo_carpeta(
     id_carpeta: str, file_upload: UploadFile, db: Session, usuario: User
 ) -> File:
     """
-    TamañoExcedidoException, CarpetaNoEncontradaException, NombreYaUsadoException
+    TamañoExcedidoException, CarpetaNoEncontradaException, NombreYaUsadoException,
+    TipoArchivoNoPermitidoException
     """
+    validar_archivo(file_upload)
+
     carpeta: Folder = obtener_carpeta_usuario_id(
         id_carpeta=id_carpeta, usuario=usuario, db=db
     )
@@ -431,7 +436,8 @@ def descargar_carpeta(
 def añadir_carpeta_a_zip(
     zipf: zipfile.ZipFile, carpeta: Folder, path_base: str
 ) -> None:
-    path_actual: str = f"{path_base}{carpeta.nombre_original}/"
+    nombre_seguro = sanear_nombre_archivo_zip(carpeta.nombre_original)
+    path_actual: str = f"{path_base}{nombre_seguro}/"
 
     # Crear carpeta aunque esté vacía
     zipf.writestr(path_actual, "")
@@ -440,8 +446,11 @@ def añadir_carpeta_a_zip(
     for archivo in carpeta.archivos:
         if archivo.fecha_eliminacion is None:
             if os.path.exists(archivo.path):
+                nombre_archivo_seguro = sanear_nombre_archivo_zip(
+                    archivo.nombre_original
+                )
                 zipf.write(
-                    archivo.path, arcname=f"{path_actual}{archivo.nombre_original}"
+                    archivo.path, arcname=f"{path_actual}{nombre_archivo_seguro}"
                 )
 
     # Añadimos las carpetas anidadas

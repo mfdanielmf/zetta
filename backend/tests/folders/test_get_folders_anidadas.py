@@ -142,7 +142,6 @@ def test_get_anidadas_con_varias_carpetas():
 
         assert item["id"] == str(carpeta.id)
         assert item["nombre_original"] == carpeta.nombre_original
-        assert item["path"] == carpeta.path
         assert item["id_usuario"] == str(carpeta.id_usuario)
         assert item["nombre_usuario"] == usuario.nombre
         assert item["id_carpeta"] == str(carpeta.id_carpeta)

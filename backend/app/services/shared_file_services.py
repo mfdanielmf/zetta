@@ -62,7 +62,6 @@ def obtener_archivos_compartidos(
         archivo_base: FileBase = FileBase(
             id=a.archivo.id,
             nombre_original=a.archivo.nombre_original,
-            path=a.archivo.path,
             tamaño_bytes=a.archivo.tamaño_bytes,
             fecha_creacion=a.archivo.fecha_creacion,
             id_usuario=a.archivo.id_usuario,
@@ -97,7 +96,6 @@ def obtener_archivos_recibidos(
         archivo_base: FileBase = FileBase(
             id=a.archivo.id,
             nombre_original=a.archivo.nombre_original,
-            path=a.archivo.path,
             tamaño_bytes=a.archivo.tamaño_bytes,
             fecha_creacion=a.archivo.fecha_creacion,
             id_usuario=a.archivo.id_usuario,
@@ -134,7 +132,6 @@ def obtener_archivos_compartidos_paginados(
         archivo_base: FileBase = FileBase(
             id=a.archivo.id,
             nombre_original=a.archivo.nombre_original,
-            path=a.archivo.path,
             tamaño_bytes=a.archivo.tamaño_bytes,
             fecha_creacion=a.archivo.fecha_creacion,
             id_usuario=a.archivo.id_usuario,
@@ -171,7 +168,6 @@ def obtener_archivos_recibidos_paginados(
         archivo_base: FileBase = FileBase(
             id=a.archivo.id,
             nombre_original=a.archivo.nombre_original,
-            path=a.archivo.path,
             tamaño_bytes=a.archivo.tamaño_bytes,
             fecha_creacion=a.archivo.fecha_creacion,
             id_usuario=a.archivo.id_usuario,

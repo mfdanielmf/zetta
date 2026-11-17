@@ -13,6 +13,7 @@ from app.models.folder import Folder
 from app.models.user import User
 from app.repositories import file_repo, shared_file_repo
 from app.services import folder_services
+from app.utils.upload_validation import validar_archivo
 
 UPLOAD_DIR = Path(config.UPLOAD_DIR)
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -57,8 +58,11 @@ def obtener_archivos_papelera_raiz(usuario: User, db: Session) -> list[File]:
 
 async def guardar_archivo(file_upload: UploadFile, db: Session, usuario: User) -> File:
     """
-    TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException
+    TamañoExcedidoException, IdYaUsadaException, NombreYaUsadoException,
+    TipoArchivoNoPermitidoException
     """
+    validar_archivo(file_upload)
+
     nombre_original: str = file_upload.filename
 
     # Si hay un archivo con el mismo nombre en la raiz (no tiene id_carpeta), salimos

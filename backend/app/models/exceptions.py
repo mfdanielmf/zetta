@@ -21,6 +21,10 @@ class TamañoExcedidoException(Exception):
     pass
 
 
+class TipoArchivoNoPermitidoException(Exception):
+    pass
+
+
 class ArchivoNoEncontradoException(Exception):
     pass
 

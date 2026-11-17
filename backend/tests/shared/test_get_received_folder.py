@@ -70,7 +70,6 @@ def test_carpetas_compartidos_por_mi_success():
 
     assert item["carpeta"]["id"] == str(carpeta_falsa.id)
     assert item["carpeta"]["nombre_original"] == carpeta_falsa.nombre_original
-    assert item["carpeta"]["path"] == carpeta_falsa.path
     assert item["carpeta"]["id_usuario"] == str(usuario.id)
 
     app.dependency_overrides.clear()

@@ -10,6 +10,7 @@ from app.models.exceptions import (
     CarpetaNoEncontradaException,
     NombreYaUsadoException,
     TamañoExcedidoException,
+    TipoArchivoNoPermitidoException,
 )
 from app.models.file import File
 from app.models.user import User
@@ -182,9 +183,26 @@ def test_subir_varios_archivos_carpeta():
     for i, archivo in enumerate(archivos_falsos):
         assert archivo_response.archivos[i].id == archivo.id
         assert archivo_response.archivos[i].nombre_original == archivo.nombre_original
-        assert archivo_response.archivos[i].path == archivo.path
         assert archivo_response.archivos[i].id_usuario == archivo.id_usuario
         assert archivo_response.archivos[i].nombre_usuario == usuario.nombre
         assert archivo_response.archivos[i].id_carpeta == archivo.id_carpeta
+
+    app.dependency_overrides.clear()
+
+
+def test_subir_archivo_carpeta_tipo_no_permitido():
+    app.dependency_overrides[get_current_user] = override_get_current_user
+    id_carpeta: uuid.UUID = uuid.uuid4()
+
+    with patch("app.routes.folder_routes.folder_services.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
+        mock_guardar.side_effect = TipoArchivoNoPermitidoException(
+            "Extensión '.exe' no permitida")
+
+        response = client.post(f"/api/folders/{id_carpeta}/files", files={
+            "file_upload": ("malware.exe", io.BytesIO(b"MZ"), "application/x-msdownload")
+        })
+
+    assert response.status_code == 415
+    assert response.json()["detail"] == "Extensión '.exe' no permitida"
 
     app.dependency_overrides.clear()

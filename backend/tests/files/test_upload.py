@@ -10,6 +10,7 @@ from app.models.exceptions import (
     IdYaUsadaException,
     NombreYaUsadoException,
     TamañoExcedidoException,
+    TipoArchivoNoPermitidoException,
 )
 from app.models.file import File
 from app.models.user import User
@@ -47,7 +48,6 @@ def test_subir_archivo():
     assert response.status_code == 200
     assert archivo_response.archivos[0].id == archivo_falso.id
     assert archivo_response.archivos[0].nombre_original == archivo_falso.nombre_original
-    assert archivo_response.archivos[0].path == archivo_falso.path
     assert archivo_response.archivos[0].id_usuario == archivo_falso.id_usuario
     assert archivo_response.archivos[0].nombre_usuario == usuario_falso.nombre
 
@@ -106,7 +106,6 @@ def test_subir_varios_archivos():
     for i, archivo in enumerate(archivos_falsos):
         assert archivo_response.archivos[i].id == archivo.id
         assert archivo_response.archivos[i].nombre_original == archivo.nombre_original
-        assert archivo_response.archivos[i].path == archivo.path
         assert archivo_response.archivos[i].id_usuario == archivo.id_usuario
         assert archivo_response.archivos[i].nombre_usuario == usuario_falso.nombre
 
@@ -180,5 +179,22 @@ def test_subir_archivo_tamaño_excedido():
     assert response.status_code == 413
     assert response.json()[
         "detail"] == "Has excedido el tamaño máximo de subida"
+
+    app.dependency_overrides.clear()
+
+
+def test_subir_archivo_tipo_no_permitido():
+    app.dependency_overrides[get_current_user] = override_get_current_user
+
+    with patch("app.routes.file_routes.file_services.guardar_archivo", new_callable=AsyncMock) as mock_guardar:
+        mock_guardar.side_effect = TipoArchivoNoPermitidoException(
+            "Extensión '.exe' no permitida")
+
+        response = client.post(
+            "/api/files", files=[("file_upload", ("malware.exe", io.BytesIO(b"MZ"), "application/x-msdownload"))]
+        )
+
+    assert response.status_code == 415
+    assert response.json()["detail"] == "Extensión '.exe' no permitida"
 
     app.dependency_overrides.clear()
