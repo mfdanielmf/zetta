@@ -110,8 +110,8 @@ def share_multiple_items_with_user(
             "msg": "Proceso de compartido completado",
             "items_totales": len(req.items),
         }
-    except ex.UsuarioNoEncontradoException as e1:
-        raise HTTPException(404, detail=str(e1))
+    except ex.UsuarioNoEncontradoException:
+        raise HTTPException(404, detail="Usuario no encontrado")
     except ex.PropietarioException as e2:
         raise HTTPException(400, detail=str(e2))
 
@@ -139,8 +139,8 @@ def cancel_multiple_shared_items(
             }
 
         return {"msg": "Proceso de cancelación completado", "items_totales": len(req)}
-    except ex.UsuarioNoEncontradoException as e1:
-        raise HTTPException(404, detail=str(e1))
+    except ex.UsuarioNoEncontradoException:
+        raise HTTPException(404, detail="Usuario no encontrado")
     except ex.PropietarioException as e2:
         raise HTTPException(400, detail=str(e2))
 

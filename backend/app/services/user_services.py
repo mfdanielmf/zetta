@@ -24,9 +24,7 @@ def obtener_usuario_nombre(nombre: str, db: Session) -> User:
     usuario: User | None = get_user_by_name(nombre=nombre, db=db)
 
     if usuario is None:
-        raise UsuarioNoEncontradoException(
-            f"No se ha encontrado el usuario con nombre {nombre}"
-        )
+        raise UsuarioNoEncontradoException("Usuario no encontrado")
 
     return usuario
 
@@ -64,9 +62,7 @@ def obtener_usuario_correo(correo: EmailStr, db: Session) -> User:
     usuario: User | None = get_user_by_email(correo=correo, db=db)
 
     if usuario is None:
-        raise UsuarioNoEncontradoException(
-            f"No se ha encontrado el usuario con correo {correo}"
-        )
+        raise UsuarioNoEncontradoException("Usuario no encontrado")
 
     return usuario
 

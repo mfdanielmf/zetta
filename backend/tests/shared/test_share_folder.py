@@ -137,16 +137,18 @@ def test_compartir_carpeta_receptor_no_encontrado():
     app.dependency_overrides[get_current_user] = lambda: usuario
 
     id_test: uuid.UUID = uuid.uuid4()
+    correo = "victima@example.com"
 
     with patch("app.routes.shared_routes.shared_folder_services.compartir_carpeta") as mock_compartir:
         mock_compartir.side_effect = UsuarioNoEncontradoException(
-            "Usuario no encontrado")
+            f"No se ha encontrado el usuario con correo {correo}")
 
         response = client.post(
-            "/api/shared/sent/folders", json={"id_carpeta": str(id_test), "correo_usuario": usuario.correo}
+            "/api/shared/sent/folders", json={"id_carpeta": str(id_test), "correo_usuario": correo}
         )
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Usuario no encontrado"
+    assert correo not in response.text
 
     app.dependency_overrides.clear()

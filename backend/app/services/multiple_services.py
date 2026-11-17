@@ -288,9 +288,7 @@ def descargar_multiples_items(
                     if os.path.exists(archivo.path):
                         zipf.write(
                             archivo.path,
-                            arcname=sanear_nombre_archivo_zip(
-                                archivo.nombre_original
-                            ),
+                            arcname=sanear_nombre_archivo_zip(archivo.nombre_original),
                         )
 
                 else:

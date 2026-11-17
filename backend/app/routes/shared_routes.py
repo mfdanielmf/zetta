@@ -78,8 +78,8 @@ def share_file_with_user(
             },
         }
 
-    except ex.UsuarioNoEncontradoException as e1:
-        raise HTTPException(404, detail=str(e1))
+    except ex.UsuarioNoEncontradoException:
+        raise HTTPException(404, detail="Usuario no encontrado")
     except ex.ArchivoNoEncontradoException as e2:
         raise HTTPException(404, detail=str(e2))
     except ex.PropietarioException as e3:
@@ -147,8 +147,8 @@ def share_folder_with_user(
             },
         }
 
-    except ex.UsuarioNoEncontradoException as e1:
-        raise HTTPException(404, detail=str(e1))
+    except ex.UsuarioNoEncontradoException:
+        raise HTTPException(404, detail="Usuario no encontrado")
     except ex.CarpetaNoEncontradaException as e2:
         raise HTTPException(404, detail=str(e2))
     except ex.PropietarioException as e3:

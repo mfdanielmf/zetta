@@ -34,10 +34,11 @@ def register(request: Request, usuario: UserCreate, db: Session = Depends(get_db
             "msg": "Usuario creado con exito",
             "usuario": UserReturn.model_validate(usuario_db),
         }
-    except CorreoYaUsadoException as e1:
-        raise HTTPException(status_code=400, detail=str(e1))
-    except NombreYaUsadoException as e2:
-        raise HTTPException(status_code=400, detail=str(e2))
+    except (CorreoYaUsadoException, NombreYaUsadoException):
+        raise HTTPException(
+            status_code=400,
+            detail="El nombre de usuario o el correo ya están en uso",
+        )
 
 
 @auth_router.post("/login", response_model=LoginResponse)
@@ -51,10 +52,8 @@ def login(request: Request, usuario_req: LoginRequest, db: Session = Depends(get
             "usuario": UserReturn.model_validate(usuario).model_dump(mode="json"),
             "token": token,
         }
-    except UsuarioNoEncontradoException as e1:
-        raise HTTPException(status_code=404, detail=str(e1))
-    except ContraseñaIncorrectaException as e2:
-        raise HTTPException(status_code=400, detail=str(e2))
+    except (UsuarioNoEncontradoException, ContraseñaIncorrectaException):
+        raise HTTPException(status_code=401, detail="Credenciales incorrectas")
 
 
 @auth_router.get("/me", response_model=MeResponse)
