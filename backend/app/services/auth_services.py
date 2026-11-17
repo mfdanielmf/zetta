@@ -1,4 +1,3 @@
-import uuid
 from datetime import UTC, datetime, timedelta
 
 import jwt
@@ -12,7 +11,11 @@ from app.models.exceptions import (
 )
 from app.models.user import User
 from app.schemas.auth_schemas import LoginRequest, TokenData
-from app.services.user_services import comprobar_hash_contraseña, obtener_usuario_nombre
+from app.services.user_services import (
+    comprobar_hash_contraseña,
+    obtener_usuario_id,
+    obtener_usuario_nombre,
+)
 
 
 def login_usuario(usuario_req: LoginRequest, db: Session) -> tuple[str, User]:
@@ -58,17 +61,17 @@ def obtener_usuario_jwt(token: str, db: Session) -> User:
         payload = jwt.decode(
             token, config.JWT_SECRET_KEY, algorithms=[config.ALGORITHM]
         )
-        id: uuid.UUID = payload.get("id")
-        nombre_usuario: str = payload.get("nombre")
-        correo: str = payload.get("correo")
+        id_usuario: str | None = payload.get("id")
 
-        if nombre_usuario is None:
+        if id_usuario is None:
             raise UsuarioNoEncontradoException()
 
-        token_data = TokenData(id=id, nombre=nombre_usuario, correo=correo)
     except jwt.InvalidTokenError:
         raise UsuarioNoAutenticadoException()
 
-    user: User = obtener_usuario_nombre(nombre=token_data.nombre, db=db)
+    try:
+        user: User = obtener_usuario_id(id=id_usuario, db=db)
+    except UsuarioNoEncontradoException:
+        raise UsuarioNoAutenticadoException()
 
     return user
