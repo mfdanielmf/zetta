@@ -48,7 +48,6 @@ def test_subir_archivo():
     assert response.status_code == 200
     assert archivo_response.archivos[0].id == archivo_falso.id
     assert archivo_response.archivos[0].nombre_original == archivo_falso.nombre_original
-    assert archivo_response.archivos[0].path == archivo_falso.path
     assert archivo_response.archivos[0].id_usuario == archivo_falso.id_usuario
     assert archivo_response.archivos[0].nombre_usuario == usuario_falso.nombre
 
@@ -107,7 +106,6 @@ def test_subir_varios_archivos():
     for i, archivo in enumerate(archivos_falsos):
         assert archivo_response.archivos[i].id == archivo.id
         assert archivo_response.archivos[i].nombre_original == archivo.nombre_original
-        assert archivo_response.archivos[i].path == archivo.path
         assert archivo_response.archivos[i].id_usuario == archivo.id_usuario
         assert archivo_response.archivos[i].nombre_usuario == usuario_falso.nombre
 

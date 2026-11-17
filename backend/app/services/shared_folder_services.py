@@ -60,7 +60,6 @@ def obtener_carpetas_compartidas(
         carpeta_base: FolderBase = FolderBase(
             id=c.carpeta.id,
             nombre_original=c.carpeta.nombre_original,
-            path=c.carpeta.path,
             fecha_creacion=c.carpeta.fecha_creacion,
             id_usuario=c.carpeta.id_usuario,
             nombre_usuario=c.carpeta.usuario.nombre,
@@ -94,7 +93,6 @@ def obtener_carpetas_recibidas(
         carpeta_base: FolderBase = FolderBase(
             id=c.carpeta.id,
             nombre_original=c.carpeta.nombre_original,
-            path=c.carpeta.path,
             fecha_creacion=c.carpeta.fecha_creacion,
             id_usuario=c.carpeta.id_usuario,
             nombre_usuario=c.carpeta.usuario.nombre,
@@ -132,7 +130,6 @@ def obtener_carpetas_compartidas_paginadas(
         carpeta_base: FolderBase = FolderBase(
             id=c.carpeta.id,
             nombre_original=c.carpeta.nombre_original,
-            path=c.carpeta.path,
             fecha_creacion=c.carpeta.fecha_creacion,
             id_usuario=c.carpeta.id_usuario,
             nombre_usuario=c.carpeta.usuario.nombre,
@@ -170,7 +167,6 @@ def obtener_carpetas_recibidas_paginadas(
         carpeta_base: FolderBase = FolderBase(
             id=c.carpeta.id,
             nombre_original=c.carpeta.nombre_original,
-            path=c.carpeta.path,
             fecha_creacion=c.carpeta.fecha_creacion,
             id_usuario=c.carpeta.id_usuario,
             nombre_usuario=c.carpeta.usuario.nombre,

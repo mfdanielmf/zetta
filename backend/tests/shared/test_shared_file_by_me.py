@@ -69,7 +69,6 @@ def test_archivos_compartidos_por_mi_success():
     assert item["receptor"]["correo"] == usuario_falso2.correo
     assert item["archivo"]["id"] == str(archivo_falso.id)
     assert item["archivo"]["nombre_original"] == archivo_falso.nombre_original
-    assert item["archivo"]["path"] == archivo_falso.path
     assert item["archivo"]["tamaño_bytes"] == archivo_falso.tamaño_bytes
     assert item["archivo"]["id_usuario"] == str(usuario.id)
 

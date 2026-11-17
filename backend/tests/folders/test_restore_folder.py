@@ -39,7 +39,6 @@ def test_restaurar_carpeta():
     assert json_response["msg"] == "Carpeta restaurada correctamente"
     assert carpeta_response["id"] == str(carpeta.id)
     assert carpeta_response["nombre_original"] == carpeta.nombre_original
-    assert carpeta_response["path"] == carpeta.path
     assert carpeta_response["id_usuario"] == str(carpeta.id_usuario)
     assert carpeta_response["fecha_eliminacion"] == None
 

@@ -66,7 +66,6 @@ def test_compartir_archivo_success():
     assert resp_json["receptor"]["correo"] == usuario_falso2.correo
     assert resp_json["archivo"]["id"] == str(archivo_falso.id)
     assert resp_json["archivo"]["nombre_original"] == archivo_falso.nombre_original
-    assert resp_json["archivo"]["path"] == archivo_falso.path
     assert resp_json["archivo"]["tamaño_bytes"] == archivo_falso.tamaño_bytes
     assert resp_json["archivo"]["id_usuario"] == str(usuario.id)
 

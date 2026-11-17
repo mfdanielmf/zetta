@@ -41,7 +41,6 @@ def get_files(
             file_schemas.FileBase(
                 id=archivo_db.id,
                 nombre_original=archivo_db.nombre_original,
-                path=archivo_db.path,
                 tamaño_bytes=archivo_db.tamaño_bytes,
                 fecha_creacion=archivo_db.fecha_creacion,
                 id_usuario=archivo_db.id_usuario,
@@ -79,7 +78,6 @@ async def upload_file(
                 file_schemas.FileBase(
                     id=archivo.id,
                     nombre_original=archivo.nombre_original,
-                    path=archivo.path,
                     tamaño_bytes=archivo.tamaño_bytes,
                     fecha_creacion=archivo.fecha_creacion,
                     id_usuario=archivo.id_usuario,
@@ -119,7 +117,6 @@ def get_files_trash(
             file_schemas.FileBase(
                 id=archivo_db.id,
                 nombre_original=archivo_db.nombre_original,
-                path=archivo_db.path,
                 tamaño_bytes=archivo_db.tamaño_bytes,
                 fecha_creacion=archivo_db.fecha_creacion,
                 id_usuario=archivo_db.id_usuario,
@@ -203,7 +200,6 @@ def restore_file_from_trash(
             "archivo": file_schemas.FileBase(
                 id=archivo.id,
                 nombre_original=archivo.nombre_original,
-                path=archivo.path,
                 tamaño_bytes=archivo.tamaño_bytes,
                 fecha_creacion=archivo.fecha_creacion,
                 id_usuario=archivo.id_usuario,
@@ -238,7 +234,6 @@ def add_file_to_trash(
             "archivo": file_schemas.FileBase(
                 id=archivo.id,
                 nombre_original=archivo.nombre_original,
-                path=archivo.path,
                 tamaño_bytes=archivo.tamaño_bytes,
                 fecha_creacion=archivo.fecha_creacion,
                 id_usuario=archivo.id_usuario,

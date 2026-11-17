@@ -70,7 +70,6 @@ def test_archivos_recibidos_success():
 
     assert item["archivo"]["id"] == str(archivo_falso.id)
     assert item["archivo"]["nombre_original"] == archivo_falso.nombre_original
-    assert item["archivo"]["path"] == archivo_falso.path
     assert item["archivo"]["tamaño_bytes"] == archivo_falso.tamaño_bytes
     assert item["archivo"]["id_usuario"] == str(usuario.id)
 

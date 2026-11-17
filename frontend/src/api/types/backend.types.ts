@@ -341,8 +341,8 @@ export interface paths {
       path?: never
       cookie?: never
     }
-    /** Get Shared Folders By User */
-    get: operations['get_shared_folders_by_user_api_shared_sent_folders_get']
+    /** Get Sent Folders By User */
+    get: operations['get_sent_folders_by_user_api_shared_sent_folders_get']
     put?: never
     /** Share Folder With User */
     post: operations['share_folder_with_user_api_shared_sent_folders_post']
@@ -359,8 +359,8 @@ export interface paths {
       path?: never
       cookie?: never
     }
-    /** Get Shared Files With User */
-    get: operations['get_shared_files_with_user_api_shared_received_files_get']
+    /** Get Received Files With User */
+    get: operations['get_received_files_with_user_api_shared_received_files_get']
     put?: never
     post?: never
     delete?: never
@@ -376,8 +376,8 @@ export interface paths {
       path?: never
       cookie?: never
     }
-    /** Get Shared Folders By User */
-    get: operations['get_shared_folders_by_user_api_shared_received_folders_get']
+    /** Get Received Folders By User */
+    get: operations['get_received_folders_by_user_api_shared_received_folders_get']
     put?: never
     post?: never
     delete?: never
@@ -752,8 +752,6 @@ export interface components {
       id: string
       /** Nombre Original */
       nombre_original: string
-      /** Path */
-      path: string
       /**
        * Fecha Creacion
        * Format: date-time
@@ -782,8 +780,6 @@ export interface components {
       id: string
       /** Nombre Original */
       nombre_original: string
-      /** Path */
-      path: string
       /**
        * Fecha Creacion
        * Format: date-time
@@ -830,8 +826,6 @@ export interface components {
       id: string
       /** Nombre Original */
       nombre_original: string
-      /** Path */
-      path: string
       /**
        * Fecha Creacion
        * Format: date-time
@@ -858,8 +852,6 @@ export interface components {
       id: string
       /** Nombre Original */
       nombre_original: string
-      /** Path */
-      path: string
       /**
        * Fecha Creacion
        * Format: date-time
@@ -2027,7 +2019,7 @@ export interface operations {
       }
     }
   }
-  get_shared_folders_by_user_api_shared_sent_folders_get: {
+  get_sent_folders_by_user_api_shared_sent_folders_get: {
     parameters: {
       query?: {
         pagina?: number
@@ -2092,7 +2084,7 @@ export interface operations {
       }
     }
   }
-  get_shared_files_with_user_api_shared_received_files_get: {
+  get_received_files_with_user_api_shared_received_files_get: {
     parameters: {
       query?: {
         pagina?: number
@@ -2124,7 +2116,7 @@ export interface operations {
       }
     }
   }
-  get_shared_folders_by_user_api_shared_received_folders_get: {
+  get_received_folders_by_user_api_shared_received_folders_get: {
     parameters: {
       query?: {
         pagina?: number

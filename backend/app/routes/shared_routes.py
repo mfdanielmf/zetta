@@ -69,7 +69,6 @@ def share_file_with_user(
                 "archivo": file_schemas.FileBase(
                     id=archivo_compartido.archivo.id,
                     nombre_original=archivo_compartido.archivo.nombre_original,
-                    path=archivo_compartido.archivo.path,
                     tamaño_bytes=archivo_compartido.archivo.tamaño_bytes,
                     fecha_creacion=archivo_compartido.archivo.fecha_creacion,
                     id_usuario=archivo_compartido.archivo.id_usuario,
@@ -141,7 +140,6 @@ def share_folder_with_user(
                 "carpeta": folder_schemas.FolderBase(
                     id=carpeta_compartida.carpeta.id,
                     nombre_original=carpeta_compartida.carpeta.nombre_original,
-                    path=carpeta_compartida.carpeta.path,
                     fecha_creacion=carpeta_compartida.carpeta.fecha_creacion,
                     id_usuario=carpeta_compartida.carpeta.id_usuario,
                     nombre_usuario=carpeta_compartida.carpeta.usuario.nombre,

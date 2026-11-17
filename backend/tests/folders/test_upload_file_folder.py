@@ -183,7 +183,6 @@ def test_subir_varios_archivos_carpeta():
     for i, archivo in enumerate(archivos_falsos):
         assert archivo_response.archivos[i].id == archivo.id
         assert archivo_response.archivos[i].nombre_original == archivo.nombre_original
-        assert archivo_response.archivos[i].path == archivo.path
         assert archivo_response.archivos[i].id_usuario == archivo.id_usuario
         assert archivo_response.archivos[i].nombre_usuario == usuario.nombre
         assert archivo_response.archivos[i].id_carpeta == archivo.id_carpeta

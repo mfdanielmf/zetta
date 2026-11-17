@@ -67,7 +67,6 @@ def test_crear_compartir_carpeta_success():
     assert resp_json["receptor"]["correo"] == usuario_falso2.correo
     assert resp_json["carpeta"]["id"] == str(carpeta_falsa.id)
     assert resp_json["carpeta"]["nombre_original"] == carpeta_falsa.nombre_original
-    assert resp_json["carpeta"]["path"] == carpeta_falsa.path
     assert resp_json["carpeta"]["id_usuario"] == str(usuario.id)
 
     app.dependency_overrides.clear()

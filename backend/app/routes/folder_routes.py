@@ -46,7 +46,6 @@ def get_folders(
             folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -79,7 +78,6 @@ def create_folder(
             "carpeta": folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -111,7 +109,6 @@ def get_folders_trash(
             folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -171,7 +168,6 @@ def get_files_of_folder_on_trash(
                 file_schemas.FileBase(
                     id=archivo_db.id,
                     nombre_original=archivo_db.nombre_original,
-                    path=archivo_db.path,
                     tamaño_bytes=archivo_db.tamaño_bytes,
                     fecha_creacion=archivo_db.fecha_creacion,
                     id_usuario=archivo_db.id_usuario,
@@ -215,7 +211,6 @@ def get_folders_inside_folder_on_trash(
                 folder_schemas.FolderBase(
                     id=carpeta.id,
                     nombre_original=carpeta.nombre_original,
-                    path=carpeta.path,
                     fecha_creacion=carpeta.fecha_creacion,
                     id_usuario=carpeta.id_usuario,
                     nombre_usuario=carpeta.usuario.nombre,
@@ -281,7 +276,6 @@ def add_folder_to_trash(
             "carpeta": folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -318,7 +312,6 @@ def restore_folder_from_trash(
             "carpeta": folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,
@@ -352,7 +345,6 @@ def get_files_of_folder(
                 file_schemas.FileBase(
                     id=archivo_db.id,
                     nombre_original=archivo_db.nombre_original,
-                    path=archivo_db.path,
                     tamaño_bytes=archivo_db.tamaño_bytes,
                     fecha_creacion=archivo_db.fecha_creacion,
                     id_usuario=archivo_db.id_usuario,
@@ -395,7 +387,6 @@ async def upload_file_to_folder(
                 FileBase(
                     id=archivo_guardado.id,
                     nombre_original=archivo_guardado.nombre_original,
-                    path=archivo_guardado.path,
                     tamaño_bytes=archivo_guardado.tamaño_bytes,
                     fecha_creacion=archivo_guardado.fecha_creacion,
                     id_usuario=archivo_guardado.id_usuario,
@@ -443,7 +434,6 @@ def get_folders_of_folder(
                 folder_schemas.FolderBase(
                     id=carpeta.id,
                     nombre_original=carpeta.nombre_original,
-                    path=carpeta.path,
                     fecha_creacion=carpeta.fecha_creacion,
                     id_usuario=carpeta.id_usuario,
                     nombre_usuario=carpeta.usuario.nombre,
@@ -484,7 +474,6 @@ def create_folder_in_folder(
             "carpeta": folder_schemas.FolderBase(
                 id=carpeta.id,
                 nombre_original=carpeta.nombre_original,
-                path=carpeta.path,
                 fecha_creacion=carpeta.fecha_creacion,
                 id_usuario=carpeta.id_usuario,
                 nombre_usuario=carpeta.usuario.nombre,

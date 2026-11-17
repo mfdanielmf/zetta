@@ -43,7 +43,6 @@ def test_crear_carpeta_success():
     assert resp_json["msg"] == "Carpeta creada correctamente"
     assert resp_json["carpeta"]["id"] == str(id_hija)
     assert resp_json["carpeta"]["nombre_original"] == nombre_carpeta
-    assert resp_json["carpeta"]["path"] == f"{config.UPLOAD_DIR}/{usuario.id}/{id_padre}/{id_hija}"
     assert resp_json["carpeta"]["fecha_creacion"] == "2026-01-21T01:44:31.825198"
     assert resp_json["carpeta"]["id_usuario"] == str(usuario.id)
     assert resp_json["carpeta"]["nombre_usuario"] == usuario.nombre
