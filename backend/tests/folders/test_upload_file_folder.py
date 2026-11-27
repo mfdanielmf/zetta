@@ -1,15 +1,21 @@
 import io
 import uuid
+from unittest.mock import AsyncMock, patch
 
 from fastapi.testclient import TestClient
+
 from app.main import app
+from app.middleware.auth_middleware import get_current_user
+from app.models.exceptions import (
+    CarpetaNoEncontradaException,
+    NombreYaUsadoException,
+    TamañoExcedidoException,
+    TipoArchivoNoPermitidoException,
+)
 from app.models.file import File
 from app.models.user import User
-from app.models.exceptions import CarpetaNoEncontradaException, TamañoExcedidoException, NombreYaUsadoException
-from app.middleware.auth_middleware import get_current_user
 from app.schemas.folder_schemas import UploadFileFolderResponse
 from tests.util import override_get_current_user
-from unittest.mock import patch, AsyncMock
 
 client = TestClient(app=app)
 
@@ -153,7 +159,7 @@ def test_subir_varios_archivos_carpeta():
         id=id_archivo2,
         nombre_original="test2.txt",
         tamaño_bytes="100",
-        path=f"uploads/test2.txt",
+        path="uploads/test2.txt",
         fecha_creacion="2026-01-22T01:44:31.825198",
         id_usuario=usuario.id,
         id_carpeta=id_carpeta,
@@ -177,9 +183,26 @@ def test_subir_varios_archivos_carpeta():
     for i, archivo in enumerate(archivos_falsos):
         assert archivo_response.archivos[i].id == archivo.id
         assert archivo_response.archivos[i].nombre_original == archivo.nombre_original
-        assert archivo_response.archivos[i].path == archivo.path
         assert archivo_response.archivos[i].id_usuario == archivo.id_usuario
         assert archivo_response.archivos[i].nombre_usuario == usuario.nombre
         assert archivo_response.archivos[i].id_carpeta == archivo.id_carpeta
+
+    app.dependency_overrides.clear()
+
+
+def test_subir_archivo_carpeta_tipo_no_permitido():
+    app.dependency_overrides[get_current_user] = override_get_current_user
+    id_carpeta: uuid.UUID = uuid.uuid4()
+
+    with patch("app.routes.folder_routes.folder_services.guardar_archivo_carpeta", new_callable=AsyncMock) as mock_guardar:
+        mock_guardar.side_effect = TipoArchivoNoPermitidoException(
+            "Extensión '.exe' no permitida")
+
+        response = client.post(f"/api/folders/{id_carpeta}/files", files={
+            "file_upload": ("malware.exe", io.BytesIO(b"MZ"), "application/x-msdownload")
+        })
+
+    assert response.status_code == 415
+    assert response.json()["detail"] == "Extensión '.exe' no permitida"
 
     app.dependency_overrides.clear()

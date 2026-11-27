@@ -1,6 +1,7 @@
 import uuid
-from pydantic import BaseModel, ConfigDict
 from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict
 
 
 class FileBase(BaseModel):
@@ -8,7 +9,6 @@ class FileBase(BaseModel):
 
     id: uuid.UUID
     nombre_original: str
-    path: str
     fecha_creacion: datetime
     tamaño_bytes: int
     id_usuario: uuid.UUID

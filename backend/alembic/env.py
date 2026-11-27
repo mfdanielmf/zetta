@@ -1,25 +1,28 @@
-from app.database.db import Base
 from logging.config import fileConfig
-from app.config import config as configuracion
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from app.database.db import Base, engine
 
-from app.models.user import User
-from app.models.file import File
-from app.models.folder import Folder
-from app.models.carpeta_compartida import CarpetaCompartida
+# Importar los modelos registra sus tablas en Base.metadata, que es lo que usa
+# `alembic revision --autogenerate`. No quitar aunque parezcan imports sin uso.
 from app.models.archivo_compartido import ArchivoCompartido
 from app.models.archivo_favorito import ArchivoFavorito
+from app.models.carpeta_compartida import CarpetaCompartida
 from app.models.carpeta_favorita import CarpetaFavorita
+from app.models.file import File
+from app.models.folder import Folder
+from app.models.user import User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-config.set_main_option("sqlalchemy.url", configuracion.DATABASE_URL)
+config.set_main_option(
+    "sqlalchemy.url",
+    engine.url.render_as_string(hide_password=False).replace("%", "%%"),
+)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

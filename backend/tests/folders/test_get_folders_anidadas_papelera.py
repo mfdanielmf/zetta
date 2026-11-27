@@ -1,14 +1,15 @@
 import uuid
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
+
+from app.config import config
 from app.main import app
+from app.middleware.auth_middleware import get_current_user
 from app.models.exceptions import CarpetaNoEncontradaException
 from app.models.folder import Folder
 from app.models.user import User
-from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
-from unittest.mock import patch
-from app.config import config
 
 client = TestClient(app=app)
 
@@ -145,7 +146,6 @@ def test_get_anidadas_con_varias_carpetas_papelera():
 
         assert item["id"] == str(carpeta.id)
         assert item["nombre_original"] == carpeta.nombre_original
-        assert item["path"] == carpeta.path
         assert item["id_usuario"] == str(carpeta.id_usuario)
         assert item["nombre_usuario"] == usuario.nombre
         assert item["id_carpeta"] == str(carpeta.id_carpeta)

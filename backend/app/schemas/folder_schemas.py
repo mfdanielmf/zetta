@@ -1,5 +1,5 @@
-from datetime import datetime
 import uuid
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
@@ -15,7 +15,6 @@ class FolderBase(BaseModel):
 
     id: uuid.UUID
     nombre_original: str
-    path: str
     fecha_creacion: datetime
     id_usuario: uuid.UUID
     nombre_usuario: str

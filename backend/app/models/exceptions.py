@@ -1,8 +1,4 @@
 # AUTH
-class NombreYaUsadoException(Exception):
-    pass
-
-
 class CorreoYaUsadoException(Exception):
     pass
 
@@ -22,6 +18,10 @@ class ContraseñaIncorrectaException(Exception):
 
 # ARCHIVOS
 class TamañoExcedidoException(Exception):
+    pass
+
+
+class TipoArchivoNoPermitidoException(Exception):
     pass
 
 

@@ -1,14 +1,20 @@
 import uuid
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
+
 from app.main import app
+from app.middleware.auth_middleware import get_current_user
 from app.models.carpeta_compartida import CarpetaCompartida
-from app.models.exceptions import CarpetaNoEncontradaException, PropietarioException, YaCompartidoException, UsuarioNoEncontradoException
+from app.models.exceptions import (
+    CarpetaNoEncontradaException,
+    PropietarioException,
+    UsuarioNoEncontradoException,
+    YaCompartidoException,
+)
 from app.models.folder import Folder
 from app.models.user import User
-from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
-from unittest.mock import patch
 
 client = TestClient(app=app)
 
@@ -61,7 +67,6 @@ def test_crear_compartir_carpeta_success():
     assert resp_json["receptor"]["correo"] == usuario_falso2.correo
     assert resp_json["carpeta"]["id"] == str(carpeta_falsa.id)
     assert resp_json["carpeta"]["nombre_original"] == carpeta_falsa.nombre_original
-    assert resp_json["carpeta"]["path"] == carpeta_falsa.path
     assert resp_json["carpeta"]["id_usuario"] == str(usuario.id)
 
     app.dependency_overrides.clear()
@@ -131,16 +136,18 @@ def test_compartir_carpeta_receptor_no_encontrado():
     app.dependency_overrides[get_current_user] = lambda: usuario
 
     id_test: uuid.UUID = uuid.uuid4()
+    correo = "victima@example.com"
 
     with patch("app.routes.shared_routes.shared_folder_services.compartir_carpeta") as mock_compartir:
         mock_compartir.side_effect = UsuarioNoEncontradoException(
-            "Usuario no encontrado")
+            f"No se ha encontrado el usuario con correo {correo}")
 
         response = client.post(
-            "/api/shared/sent/folders", json={"id_carpeta": str(id_test), "correo_usuario": usuario.correo}
+            "/api/shared/sent/folders", json={"id_carpeta": str(id_test), "correo_usuario": correo}
         )
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Usuario no encontrado"
+    assert correo not in response.text
 
     app.dependency_overrides.clear()

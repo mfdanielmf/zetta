@@ -52,7 +52,7 @@ import Checkbox from '@/components/ui/checkbox/Checkbox.vue'
 import Spinner from '@/components/ui/spinner/Spinner.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
-import type { ItemMultipleRequest } from '@/api/types/types'
+import type { ItemMultipleRequest, SharedFileItem, SharedFolderItem } from '@/api/types/types'
 import { useToggleFavoriteMultiple } from '@/queries/useMultipleQuery'
 
 const router = useRouter()
@@ -99,10 +99,12 @@ const { data: dataItems, isLoading: loadingItems } = useGetReceivedItems(
 )
 const { mutateAsync: mutateToggleFavorito } = useToggleFavoriteMultiple()
 
-function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
-  folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
+function handleNavigationDetallesCarpeta(item: SharedFileItem | SharedFolderItem) {
+  if (item.tipo === 'file') return
 
-  router.push({ name: 'carpetaRecibida', params: { id: idCarpeta } })
+  folderStore.setCarpetaActiva(item.carpeta.id, item.carpeta.nombre_original)
+
+  router.push({ name: 'carpetaRecibida', params: { id: item.carpeta.id } })
 }
 
 async function descargarArchivo(id: string, nombre: string) {
@@ -111,6 +113,14 @@ async function descargarArchivo(id: string, nombre: string) {
 
 async function descargarCarpeta(id: string, nombre: string) {
   await downloadFolderService(id, nombre)
+}
+
+async function descargarElemento(item: SharedFileItem | SharedFolderItem) {
+  if (item.tipo === 'file') {
+    await descargarArchivo(item.archivo.id, item.archivo.nombre_original)
+  } else {
+    await descargarCarpeta(item.carpeta.id, item.carpeta.nombre_original)
+  }
 }
 
 function handleSelection(id: string, tipo: 'file' | 'folder') {
@@ -147,16 +157,16 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
   }
 }
 
-async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
+async function añadirFavorito(item: SharedFileItem | SharedFolderItem) {
   const data: ItemMultipleRequest = [
     {
-      id: idItem,
-      tipo: tipo === 'file' ? 'archivo' : 'carpeta',
+      id: item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
+      tipo: item.tipo === 'file' ? 'archivo' : 'carpeta',
     },
   ]
 
   try {
-    loadingFavoritoId.value = idItem
+    loadingFavoritoId.value = item.id
 
     await mutateToggleFavorito(data)
   } catch {
@@ -226,11 +236,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
         <TableRow
           v-for="item in dataItems?.items"
           :key="item.id"
-          @click="
-            item.tipo === 'folder'
-              ? handleNavigationDetallesCarpeta(item.carpeta.id, item.carpeta.nombre_original)
-              : null
-          "
+          @click="handleNavigationDetallesCarpeta(item)"
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
           <TableCell class="cursor-default" @click.stop>
@@ -258,12 +264,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
               />
               <Star
                 v-else
-                @click.stop="
-                  añadirFavorito(
-                    item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
-                    item.tipo,
-                  )
-                "
+                @click.stop="añadirFavorito(item)"
                 :size="20"
                 :fill="item.favorito === true ? 'black' : 'transparent'"
               />
@@ -297,14 +298,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  class="hover:cursor-pointer"
-                  @click="
-                    item.tipo === 'folder'
-                      ? descargarCarpeta(item.carpeta.id, item.carpeta.nombre_original)
-                      : descargarArchivo(item.archivo.id, item.archivo.nombre_original)
-                  "
-                >
+                <DropdownMenuItem class="hover:cursor-pointer" @click="descargarElemento(item)">
                   <Download />
                   Descargar
                 </DropdownMenuItem>

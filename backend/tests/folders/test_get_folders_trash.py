@@ -1,10 +1,12 @@
-from unittest.mock import patch
 import uuid
-from app.main import app
+from unittest.mock import patch
+
 from fastapi.testclient import TestClient
+
+from app.main import app
+from app.middleware.auth_middleware import get_current_user
 from app.models.folder import Folder
 from app.models.user import User
-from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
 
 client = TestClient(app)
@@ -56,7 +58,6 @@ def test_get_papelera_1_carpeta():
     assert item["nombre_original"] == carpeta.nombre_original
     assert item["nombre_usuario"] == usuario.nombre
     assert item["fecha_eliminacion"] == carpeta.fecha_eliminacion
-    assert item["path"] == carpeta.path
 
     app.dependency_overrides.clear()
 
@@ -104,7 +105,6 @@ def test_get_papelera_varias_carpetas():
 
         assert item["id"] == str(carpeta.id)
         assert item["nombre_original"] == carpeta.nombre_original
-        assert item["path"] == carpeta.path
         assert item["id_usuario"] == str(carpeta.id_usuario)
         assert item["nombre_usuario"] == usuario.nombre
         assert item["fecha_eliminacion"] == carpeta.fecha_eliminacion

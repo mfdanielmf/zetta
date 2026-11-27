@@ -1,14 +1,14 @@
 import uuid
-
-from fastapi.testclient import TestClient
-from app.main import app
-from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException
-from app.models.folder import Folder
-from app.middleware.auth_middleware import get_current_user
-from tests.util import override_get_current_user
 from unittest.mock import patch
 
+from fastapi.testclient import TestClient
+
 from app.config import config
+from app.main import app
+from app.middleware.auth_middleware import get_current_user
+from app.models.exceptions import IdYaUsadaException, NombreYaUsadoException
+from app.models.folder import Folder
+from tests.util import override_get_current_user
 
 client = TestClient(app=app)
 
@@ -40,7 +40,6 @@ def test_crear_carpeta_success():
     assert resp_json["msg"] == "Carpeta creada correctamente"
     assert resp_json["carpeta"]["id"] == str(id_test)
     assert resp_json["carpeta"]["nombre_original"] == nombre_carpeta
-    assert resp_json["carpeta"]["path"] == f"{config.UPLOAD_DIR}/{usuario.id}/{id_test}"
     assert resp_json["carpeta"]["fecha_creacion"] == "2026-01-21T01:44:31.825198"
     assert resp_json["carpeta"]["id_usuario"] == str(usuario.id)
     assert resp_json["carpeta"]["nombre_usuario"] == usuario.nombre

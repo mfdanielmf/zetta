@@ -1,13 +1,14 @@
-from unittest.mock import patch
 import uuid
+from unittest.mock import patch
+
 from fastapi.testclient import TestClient
+
 from app.main import app
+from app.middleware.auth_middleware import get_current_user
 from app.models.exceptions import ArchivoNoEncontradoException
 from app.models.file import File
 from app.models.user import User
-from app.middleware.auth_middleware import get_current_user
 from tests.util import override_get_current_user
-
 
 client = TestClient(app)
 
@@ -38,7 +39,6 @@ def test_restaurar_archivo():
     assert json_response["msg"] == "Archivo restaurado correctamente"
     assert archivo_response["id"] == str(archivo_fake.id)
     assert archivo_response["nombre_original"] == archivo_fake.nombre_original
-    assert archivo_response["path"] == archivo_fake.path
     assert archivo_response["id_usuario"] == str(archivo_fake.id_usuario)
     assert archivo_response["fecha_eliminacion"] == None
 

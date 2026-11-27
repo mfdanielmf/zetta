@@ -1,18 +1,25 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
+from app.core.limiter import AUTH_RATE_LIMIT, limiter
 from app.database.db import get_db
 from app.middleware.auth_middleware import get_current_user
+from app.models.exceptions import (
+    ContraseñaIncorrectaException,
+    CorreoYaUsadoException,
+    NombreYaUsadoException,
+    UsuarioNoEncontradoException,
+)
 from app.models.user import User
-from app.models.exceptions import CorreoYaUsadoException, NombreYaUsadoException, UsuarioNoEncontradoException, ContraseñaIncorrectaException, UsuarioNoAutenticadoException
+from app.schemas.auth_schemas import (
+    LoginRequest,
+    LoginResponse,
+    MeResponse,
+    RegisterResponse,
+)
 from app.schemas.user_schemas import UserCreate, UserReturn
-from app.schemas.auth_schemas import RegisterResponse, LoginRequest, LoginResponse, MeResponse, LogoutResponse
+from app.services.auth_services import login_usuario
 from app.services.user_services import crear_usuario
-from app.services.auth_services import login_usuario, obtener_usuario_jwt
-from app.core.limiter import limiter, AUTH_RATE_LIMIT
-
-from app.config import config
 
 auth_router = APIRouter()
 
@@ -25,12 +32,13 @@ def register(request: Request, usuario: UserCreate, db: Session = Depends(get_db
 
         return {
             "msg": "Usuario creado con exito",
-            "usuario": UserReturn.model_validate(usuario_db)
+            "usuario": UserReturn.model_validate(usuario_db),
         }
-    except CorreoYaUsadoException as e1:
-        raise HTTPException(status_code=400, detail=str(e1))
-    except NombreYaUsadoException as e2:
-        raise HTTPException(status_code=400, detail=str(e2))
+    except (CorreoYaUsadoException, NombreYaUsadoException):
+        raise HTTPException(
+            status_code=400,
+            detail="El nombre de usuario o el correo ya están en uso",
+        )
 
 
 @auth_router.post("/login", response_model=LoginResponse)
@@ -42,16 +50,12 @@ def login(request: Request, usuario_req: LoginRequest, db: Session = Depends(get
         return {
             "msg": "Sesión iniciada correctamente",
             "usuario": UserReturn.model_validate(usuario).model_dump(mode="json"),
-            "token": token
+            "token": token,
         }
-    except UsuarioNoEncontradoException as e1:
-        raise HTTPException(status_code=404, detail=str(e1))
-    except ContraseñaIncorrectaException as e2:
-        raise HTTPException(status_code=400, detail=str(e2))
+    except (UsuarioNoEncontradoException, ContraseñaIncorrectaException):
+        raise HTTPException(status_code=401, detail="Credenciales incorrectas")
 
 
 @auth_router.get("/me", response_model=MeResponse)
 def me(usuario: User = Depends(get_current_user)):
-    return {
-        "usuario": UserReturn.model_validate(usuario)
-    }
+    return {"usuario": UserReturn.model_validate(usuario)}

@@ -52,7 +52,7 @@ import { useDownloadStore } from '@/stores/download.store'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { useDebounceFn } from '@vueuse/core'
 import { useCancelMultipleShared, useToggleFavoriteMultiple } from '@/queries/useMultipleQuery'
-import type { ItemMultipleRequest } from '@/api/types/types'
+import type { ItemMultipleRequest, SharedFileItem, SharedFolderItem } from '@/api/types/types'
 
 const router = useRouter()
 const folderStore = useFolderStore()
@@ -104,10 +104,12 @@ const {
 } = useCancelMultipleShared()
 const { mutateAsync: mutateToggleFavorito } = useToggleFavoriteMultiple()
 
-function handleNavigationDetallesCarpeta(idCarpeta: string, nombreCarpeta: string) {
-  folderStore.setCarpetaActiva(idCarpeta, nombreCarpeta)
+function handleNavigationDetallesCarpeta(item: SharedFileItem | SharedFolderItem) {
+  if (item.tipo === 'file') return
 
-  router.push({ name: 'carpetaCompartida', params: { id: idCarpeta } })
+  folderStore.setCarpetaActiva(item.carpeta.id, item.carpeta.nombre_original)
+
+  router.push({ name: 'carpetaCompartida', params: { id: item.carpeta.id } })
 }
 
 async function descargarArchivo(id: string, nombre: string) {
@@ -116,6 +118,14 @@ async function descargarArchivo(id: string, nombre: string) {
 
 async function descargarCarpeta(id: string, nombre: string) {
   await downloadFolderService(id, nombre)
+}
+
+async function descargarElemento(item: SharedFileItem | SharedFolderItem) {
+  if (item.tipo === 'file') {
+    await descargarArchivo(item.archivo.id, item.archivo.nombre_original)
+  } else {
+    await descargarCarpeta(item.carpeta.id, item.carpeta.nombre_original)
+  }
 }
 
 function handleSelection(id: string, tipo: 'file' | 'folder') {
@@ -153,17 +163,13 @@ function handleSelectAll(checked: boolean | 'indeterminate') {
   }
 }
 
-async function cancelarCompartido(
-  idElemento: string,
-  tipo: 'archivo' | 'carpeta',
-  idCompartido: string,
-) {
+async function cancelarCompartido(item: SharedFileItem | SharedFolderItem) {
   try {
     const data: ItemMultipleRequest = [
       {
-        id: idElemento,
-        tipo: tipo,
-        id_compartido: idCompartido,
+        id: item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
+        tipo: item.tipo === 'file' ? 'archivo' : 'carpeta',
+        id_compartido: item.id,
       },
     ]
 
@@ -184,16 +190,16 @@ async function cancelarCompartidoSeleccion() {
   } catch {}
 }
 
-async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
+async function añadirFavorito(item: SharedFileItem | SharedFolderItem) {
   const data: ItemMultipleRequest = [
     {
-      id: idItem,
-      tipo: tipo === 'file' ? 'archivo' : 'carpeta',
+      id: item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
+      tipo: item.tipo === 'file' ? 'archivo' : 'carpeta',
     },
   ]
 
   try {
-    loadingFavoritoId.value = idItem
+    loadingFavoritoId.value = item.id
 
     await mutateToggleFavorito(data)
   } catch {
@@ -274,11 +280,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
         <TableRow
           v-for="item in dataItems?.items"
           :key="item.id"
-          @click="
-            item.tipo === 'folder'
-              ? handleNavigationDetallesCarpeta(item.carpeta.id, item.carpeta.nombre_original)
-              : null
-          "
+          @click="item.tipo === 'folder' ? handleNavigationDetallesCarpeta(item) : null"
           :class="{ 'hover:cursor-pointer': item.tipo === 'folder' }"
         >
           <TableCell class="cursor-default" @click.stop>
@@ -306,12 +308,7 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
               />
               <Star
                 v-else
-                @click.stop="
-                  añadirFavorito(
-                    item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
-                    item.tipo,
-                  )
-                "
+                @click.stop="añadirFavorito(item)"
                 :size="20"
                 :fill="item.favorito === true ? 'black' : 'transparent'"
               />
@@ -348,27 +345,11 @@ async function añadirFavorito(idItem: string, tipo: 'file' | 'folder') {
               <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  class="cursor-pointer"
-                  @click="
-                    item.tipo === 'folder'
-                      ? descargarCarpeta(item.carpeta.id, item.carpeta.nombre_original)
-                      : descargarArchivo(item.archivo.id, item.archivo.nombre_original)
-                  "
-                >
+                <DropdownMenuItem class="cursor-pointer" @click="descargarElemento(item)">
                   <Download />
                   Descargar
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  class="cursor-pointer"
-                  @click="
-                    cancelarCompartido(
-                      item.tipo === 'file' ? item.archivo.id : item.carpeta.id,
-                      item.tipo === 'file' ? 'archivo' : 'carpeta',
-                      item.id,
-                    )
-                  "
-                >
+                <DropdownMenuItem class="cursor-pointer" @click="cancelarCompartido(item)">
                   <UserRoundX />
                   Cancelar compartido
                 </DropdownMenuItem>
